@@ -20,8 +20,14 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 ![Diagrami i databazës](docs/databaza-diagrami.png)
 
 ## Si ndizet
+Duhet PostgreSQL i instaluar dhe një databazë e quajtur `raportimi_komuna`.
+Connection string-u është te `Backend/appsettings.Development.json`.
+
     cd Backend
-    dotnet run
+    dotnet ef database update
+    dotnet run --launch-profile http
+
+Swagger: http://localhost:5267/swagger
 
 ## Statusi
-🚧 Në zhvillim, Faza 1: setup i projektit
+🚧 Në zhvillim. Përfunduar: Faza 1-3 (setup, Swagger, databaza me EF Core). Tani: Faza 4 (Users dhe JWT).

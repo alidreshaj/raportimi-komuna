@@ -32,4 +32,5 @@ Controllers → Services → Data (AppDbContext) → PostgreSQL
 - Vetëm Admin ndryshon statusin.
 
 ## Faza aktuale
-Faza 1: setup i projektit.
+Fazat 1, 2 dhe 3 janë përfunduar (setup, Swagger, PostgreSQL + EF Core + migration fillestar).
+Tani: Faza 4 (Users, Register/Login, JWT, Rolet).
