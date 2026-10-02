@@ -1,6 +1,9 @@
+using System.Text;
 using Backend.Data;
 using Backend.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +12,29 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddSingleton<PasswordHasher>();
+builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
+
+// Autentikimi: si verifikohet tokeni që vjen me çdo kërkesë.
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("Mungon Jwt:Key. Vendose me: dotnet user-secrets set \"Jwt:Key\" \"...\"");
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -26,6 +51,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Rendi ka rëndësi: fillimisht "kush je?", pastaj "çfarë të lejohet?".
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

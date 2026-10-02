@@ -9,11 +9,13 @@ public class AuthService
 {
     private readonly AppDbContext _db;
     private readonly PasswordHasher _passwordHasher;
+    private readonly JwtService _jwtService;
 
-    public AuthService(AppDbContext db, PasswordHasher passwordHasher)
+    public AuthService(AppDbContext db, PasswordHasher passwordHasher, JwtService jwtService)
     {
         _db = db;
         _passwordHasher = passwordHasher;
+        _jwtService = jwtService;
     }
 
     // Regjistron një qytetar të ri. Kthen null nëse email-i ekziston tashmë.
@@ -42,6 +44,31 @@ public class AuthService
         return new UserDto
         {
             Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role.ToString()
+        };
+    }
+
+    // Hyrja në sistem. Kthen null nëse email-i ose password-i është i gabuar.
+    public async Task<AuthResponseDto?> LoginAsync(LoginDto dto)
+    {
+        var email = dto.Email.Trim().ToLowerInvariant();
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        // Njëjtë për "email nuk ekziston" dhe "password i gabuar", që të mos zbulojmë cilat email-e ekzistojnë.
+        if (user is null || !_passwordHasher.Verify(dto.Password, user.PasswordHash))
+        {
+            return null;
+        }
+
+        var (token, expiresAt) = _jwtService.CreateToken(user);
+
+        return new AuthResponseDto
+        {
+            Token = token,
+            ExpiresAt = expiresAt,
             Name = user.Name,
             Email = user.Email,
             Role = user.Role.ToString()
