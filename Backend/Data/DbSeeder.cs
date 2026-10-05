@@ -48,4 +48,34 @@ public static class DbSeeder
         await db.SaveChangesAsync();
         logger.LogInformation("Admin-i u krijua.");
     }
+
+    // Kategoritë fillestare (nga docs/plani.md).
+    private static readonly string[] DefaultCategories =
+    [
+        "Rrugë", "Ndriçim", "Mbeturina", "Ujë", "Kanalizim", "Hapësira publike", "Të tjera"
+    ];
+
+    // Shton vetëm kategoritë që mungojnë, kështu mund të ekzekutohet sa herë të duash.
+    public static async Task SeedCategoriesAsync(IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DbSeeder");
+
+        var existing = await db.Categories.Select(c => c.Name).ToListAsync();
+
+        var missing = DefaultCategories
+            .Where(name => !existing.Contains(name))
+            .Select(name => new Category { Name = name })
+            .ToList();
+
+        if (missing.Count == 0)
+        {
+            return;
+        }
+
+        db.Categories.AddRange(missing);
+        await db.SaveChangesAsync();
+        logger.LogInformation("U shtuan {Count} kategori.", missing.Count);
+    }
 }

@@ -58,8 +58,9 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Krijon admin-in në nisje, nëse nuk ekziston.
+// Të dhënat fillestare në nisje: admin-i dhe kategoritë (vetëm nëse mungojnë).
 await DbSeeder.SeedAdminAsync(app.Services);
+await DbSeeder.SeedCategoriesAsync(app.Services);
 
 // Pipeline i kërkesave: çdo kërkesë kalon nëpër këto hapa sipas radhës.
 if (app.Environment.IsDevelopment())
