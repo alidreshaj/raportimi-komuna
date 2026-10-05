@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Backend.DTOs;
 using Backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
@@ -45,5 +47,27 @@ public class AuthController : ControllerBase
         }
 
         return Ok(result);
+    }
+
+    // GET /api/auth/me: kthen të dhënat e përdoruesit të loguar, të lexuara nga tokeni.
+    [HttpGet("me")]
+    [Authorize]
+    public IActionResult Me()
+    {
+        return Ok(new
+        {
+            id = User.FindFirstValue(ClaimTypes.NameIdentifier),
+            email = User.FindFirstValue(ClaimTypes.Email),
+            name = User.FindFirstValue(ClaimTypes.Name),
+            role = User.FindFirstValue(ClaimTypes.Role)
+        });
+    }
+
+    // GET /api/auth/admin-only: endpoint prove, hyn vetëm Admin.
+    [HttpGet("admin-only")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult AdminOnly()
+    {
+        return Ok(new { message = "Je Admin. Ke qasje këtu." });
     }
 }
