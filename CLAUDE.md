@@ -32,5 +32,7 @@ Controllers → Services → Data (AppDbContext) → PostgreSQL
 - Vetëm Admin ndryshon statusin.
 
 ## Faza aktuale
-Fazat 1, 2 dhe 3 janë përfunduar (setup, Swagger, PostgreSQL + EF Core + migration fillestar).
-Tani: Faza 4 (Users, Register/Login, JWT, Rolet).
+Fazat 1-4 janë përfunduar (setup, Swagger, PostgreSQL + EF Core, Register/Login, JWT, Rolet, seed i Admin-it).
+Tani: Faza 5 (Categories me vlera fillestare).
+
+Sekretet (Jwt:Key, Admin:Email, Admin:Password) ruhen me `dotnet user-secrets`, kurrë në Git.
