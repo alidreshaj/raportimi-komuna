@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddSingleton<PasswordHasher>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<CategoryService>();
 
 // Autentikimi: si verifikohet tokeni që vjen me çdo kërkesë.
 var jwtKey = builder.Configuration["Jwt:Key"]

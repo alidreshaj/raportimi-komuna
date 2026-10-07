@@ -53,6 +53,7 @@ dhe vendose te butoni **Authorize** i Swagger.
 | POST | `/api/auth/login` | publike (kthen JWT) |
 | GET | `/api/auth/me` | çdo përdorues i loguar |
 | GET | `/api/auth/admin-only` | vetëm Admin (endpoint prove) |
+| GET | `/api/categories` | publike (lista e kategorive) |
 
 ## Statusi
-🚧 Në zhvillim. Përfunduar: Faza 1-4 (setup, Swagger, databaza, përdoruesit, JWT dhe rolet). Tani: Faza 5 (kategoritë).
+🚧 Në zhvillim. Përfunduar: Faza 1-5 (setup, Swagger, databaza, përdoruesit, JWT dhe rolet, kategoritë). Tani: Faza 6 (raportet).
