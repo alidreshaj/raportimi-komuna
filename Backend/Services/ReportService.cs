@@ -62,4 +62,26 @@ public class ReportService
             .Select(ToDto)
             .FirstAsync();
     }
+
+    // Raportet e përdoruesit të loguar, më të rejat të parat.
+    public async Task<List<ReportDto>> GetMyAsync(int userId)
+    {
+        return await _db.Reports
+            .AsNoTracking()
+            .Where(r => r.UserId == userId)
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(ToDto)
+            .ToListAsync();
+    }
+
+    // Një raport sipas id-së. Admin sheh çdo raport, qytetari vetëm të vetët.
+    // Raporti i dikujt tjetër kthehet si null (404), njëlloj si ai që nuk ekziston.
+    public async Task<ReportDto?> GetByIdAsync(int userId, bool isAdmin, int id)
+    {
+        return await _db.Reports
+            .AsNoTracking()
+            .Where(r => r.Id == id && (isAdmin || r.UserId == userId))
+            .Select(ToDto)
+            .FirstOrDefaultAsync();
+    }
 }
