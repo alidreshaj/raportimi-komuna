@@ -16,6 +16,7 @@ builder.Services.AddSingleton<PasswordHasher>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ReportService>();
 
 // Autentikimi: si verifikohet tokeni që vjen me çdo kërkesë.
 var jwtKey = builder.Configuration["Jwt:Key"]
