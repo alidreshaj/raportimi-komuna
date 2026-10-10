@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Backend.Data;
 using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,7 +40,9 @@ builder.Services
         };
     });
 
-builder.Services.AddControllers();
+// Enum-et shfaqen dhe pranohen si emra ("New"), jo si numra.
+builder.Services.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

@@ -1,5 +1,6 @@
 using Backend.DTOs;
 using Backend.Extensions;
+using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,22 @@ public class ReportsController : ControllerBase
         }
 
         return CreatedAtAction(nameof(GetById), new { id = report.Id }, report);
+    }
+
+    // GET /api/reports: të gjitha raportet, me filtra opsionalë (vetëm Admin).
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(List<ReportDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAll(ReportStatus? status, int? categoryId, DateOnly? from, DateOnly? to)
+    {
+        if (from.HasValue && to.HasValue && from > to)
+        {
+            return BadRequest(new { message = "Data 'from' nuk mund të jetë pas datës 'to'." });
+        }
+
+        var reports = await _reportService.GetAllAsync(status, categoryId, from, to);
+        return Ok(reports);
     }
 
     // GET /api/reports/my: raportet e qytetarit të loguar.

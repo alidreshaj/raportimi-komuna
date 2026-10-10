@@ -74,6 +74,41 @@ public class ReportService
             .ToListAsync();
     }
 
+    // Të gjitha raportet (për Admin), me filtra opsionalë. Më të rejat të parat.
+    public async Task<List<ReportDto>> GetAllAsync(ReportStatus? status, int? categoryId, DateOnly? from, DateOnly? to)
+    {
+        var query = _db.Reports.AsNoTracking().AsQueryable();
+
+        // Shtojmë një kusht vetëm për filtrat që klienti i ka dhënë.
+        if (status.HasValue)
+        {
+            query = query.Where(r => r.Status == status.Value);
+        }
+
+        if (categoryId.HasValue)
+        {
+            query = query.Where(r => r.CategoryId == categoryId.Value);
+        }
+
+        if (from.HasValue)
+        {
+            var start = from.Value.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+            query = query.Where(r => r.CreatedAt >= start);
+        }
+
+        if (to.HasValue)
+        {
+            // "to" përfshin gjithë ditën, prandaj marrim fillimin e ditës tjetër.
+            var endExclusive = to.Value.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+            query = query.Where(r => r.CreatedAt < endExclusive);
+        }
+
+        return await query
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(ToDto)
+            .ToListAsync();
+    }
+
     // Një raport sipas id-së. Admin sheh çdo raport, qytetari vetëm të vetët.
     // Raporti i dikujt tjetër kthehet si null (404), njëlloj si ai që nuk ekziston.
     public async Task<ReportDto?> GetByIdAsync(int userId, bool isAdmin, int id)
