@@ -62,6 +62,44 @@ public class ReportsController : ControllerBase
         return Ok(reports);
     }
 
+    // PUT /api/reports/{id}: qytetari ndryshon raportin e vet (vetëm kur është New).
+    [HttpPut("{id:int}")]
+    [Authorize(Roles = "Citizen")]
+    [ProducesResponseType(typeof(ReportDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Update(int id, UpdateReportDto dto)
+    {
+        var (result, report) = await _reportService.UpdateAsync(User.GetUserId(), id, dto);
+
+        return result switch
+        {
+            ReportActionResult.Success => Ok(report),
+            ReportActionResult.NotFound => NotFound(),
+            ReportActionResult.NotEditable => Conflict(new { message = "Raporti nuk mund të ndryshohet pasi komuna e ka marrë në shqyrtim." }),
+            _ => BadRequest(new { message = "Kategoria nuk ekziston." })
+        };
+    }
+
+    // DELETE /api/reports/{id}: qytetari fshin raportin e vet (vetëm kur është New).
+    [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Citizen")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await _reportService.DeleteAsync(User.GetUserId(), id);
+
+        return result switch
+        {
+            ReportActionResult.Success => NoContent(),
+            ReportActionResult.NotFound => NotFound(),
+            _ => Conflict(new { message = "Raporti nuk mund të fshihet pasi komuna e ka marrë në shqyrtim." })
+        };
+    }
+
     // GET /api/reports/{id}: detajet e një raporti (i zoti ose Admin).
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ReportDto), StatusCodes.Status200OK)]

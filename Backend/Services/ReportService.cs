@@ -109,6 +109,66 @@ public class ReportService
             .ToListAsync();
     }
 
+    // Ndryshon raportin e vet. Lejohet vetëm kur statusi është New.
+    public async Task<(ReportActionResult Result, ReportDto? Report)> UpdateAsync(int userId, int id, UpdateReportDto dto)
+    {
+        // Pronësia: gjejmë vetëm raportin që është i këtij përdoruesi.
+        var report = await _db.Reports.FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
+        if (report is null)
+        {
+            return (ReportActionResult.NotFound, null);
+        }
+
+        if (report.Status != ReportStatus.New)
+        {
+            return (ReportActionResult.NotEditable, null);
+        }
+
+        var categoryExists = await _db.Categories.AnyAsync(c => c.Id == dto.CategoryId);
+        if (!categoryExists)
+        {
+            return (ReportActionResult.InvalidCategory, null);
+        }
+
+        report.Title = dto.Title.Trim();
+        report.Description = dto.Description.Trim();
+        report.Location = dto.Location.Trim();
+        report.Latitude = dto.Latitude;
+        report.Longitude = dto.Longitude;
+        report.CategoryId = dto.CategoryId;
+        report.UpdatedAt = DateTime.UtcNow; // CreatedAt nuk ndryshon
+
+        await _db.SaveChangesAsync();
+
+        var updated = await _db.Reports
+            .AsNoTracking()
+            .Where(r => r.Id == id)
+            .Select(ToDto)
+            .FirstAsync();
+
+        return (ReportActionResult.Success, updated);
+    }
+
+    // Fshin raportin e vet. Lejohet vetëm kur statusi është New.
+    public async Task<ReportActionResult> DeleteAsync(int userId, int id)
+    {
+        var report = await _db.Reports.FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
+        if (report is null)
+        {
+            return ReportActionResult.NotFound;
+        }
+
+        if (report.Status != ReportStatus.New)
+        {
+            return ReportActionResult.NotEditable;
+        }
+
+        _db.Reports.Remove(report);
+        await _db.SaveChangesAsync();
+
+        return ReportActionResult.Success;
+    }
+
     // Një raport sipas id-së. Admin sheh çdo raport, qytetari vetëm të vetët.
     // Raporti i dikujt tjetër kthehet si null (404), njëlloj si ai që nuk ekziston.
     public async Task<ReportDto?> GetByIdAsync(int userId, bool isAdmin, int id)
