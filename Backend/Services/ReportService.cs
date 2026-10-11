@@ -109,6 +109,43 @@ public class ReportService
             .ToListAsync();
     }
 
+    // Rrugët e lejuara të statusit (nga docs/plani.md): New → InProgress → Resolved, ose New → Rejected.
+    // Resolved dhe Rejected janë të mbyllura, nuk ndryshojnë më.
+    private static readonly Dictionary<ReportStatus, ReportStatus[]> AllowedTransitions = new()
+    {
+        [ReportStatus.New] = [ReportStatus.InProgress, ReportStatus.Rejected],
+        [ReportStatus.InProgress] = [ReportStatus.Resolved],
+        [ReportStatus.Resolved] = [],
+        [ReportStatus.Rejected] = []
+    };
+
+    // Admini ndryshon statusin e çdo raporti, vetëm sipas rrugëve të lejuara.
+    public async Task<(ReportActionResult Result, ReportDto? Report)> UpdateStatusAsync(int id, ReportStatus newStatus)
+    {
+        var report = await _db.Reports.FirstOrDefaultAsync(r => r.Id == id);
+        if (report is null)
+        {
+            return (ReportActionResult.NotFound, null);
+        }
+
+        if (!AllowedTransitions[report.Status].Contains(newStatus))
+        {
+            return (ReportActionResult.InvalidTransition, null);
+        }
+
+        report.Status = newStatus;
+        report.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+
+        var updated = await _db.Reports
+            .AsNoTracking()
+            .Where(r => r.Id == id)
+            .Select(ToDto)
+            .FirstAsync();
+
+        return (ReportActionResult.Success, updated);
+    }
+
     // Ndryshon raportin e vet. Lejohet vetëm kur statusi është New.
     public async Task<(ReportActionResult Result, ReportDto? Report)> UpdateAsync(int userId, int id, UpdateReportDto dto)
     {

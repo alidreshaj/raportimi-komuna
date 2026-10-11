@@ -7,5 +7,6 @@ public enum ReportActionResult
     Success,         // u krye
     NotFound,        // raporti nuk ekziston ose nuk është i këtij përdoruesi → 404
     NotEditable,     // statusi nuk është New → 409
-    InvalidCategory  // kategoria e re nuk ekziston → 400
+    InvalidCategory, // kategoria e re nuk ekziston → 400
+    InvalidTransition // kalimi i statusit nuk lejohet (p.sh. nga Resolved) → 409
 }

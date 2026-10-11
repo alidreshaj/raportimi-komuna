@@ -82,6 +82,24 @@ public class ReportsController : ControllerBase
         };
     }
 
+    // PATCH /api/reports/{id}/status: admini ndryshon statusin (vetëm sipas rrugëve të lejuara).
+    [HttpPatch("{id:int}/status")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(ReportDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> UpdateStatus(int id, UpdateStatusDto dto)
+    {
+        var (result, report) = await _reportService.UpdateStatusAsync(id, dto.Status!.Value);
+
+        return result switch
+        {
+            ReportActionResult.Success => Ok(report),
+            ReportActionResult.NotFound => NotFound(),
+            _ => Conflict(new { message = "Ky ndryshim statusi nuk lejohet. Rrugët: New → InProgress → Resolved, ose New → Rejected." })
+        };
+    }
+
     // DELETE /api/reports/{id}: qytetari fshin raportin e vet (vetëm kur është New).
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Citizen")]
