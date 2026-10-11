@@ -54,6 +54,21 @@ dhe vendose te butoni **Authorize** i Swagger.
 | GET | `/api/auth/me` | çdo përdorues i loguar |
 | GET | `/api/auth/admin-only` | vetëm Admin (endpoint prove) |
 | GET | `/api/categories` | publike (lista e kategorive) |
+| POST | `/api/reports` | Qytetari (krijon raport me status `New`) |
+| GET | `/api/reports/my` | Qytetari (raportet e veta) |
+| GET | `/api/reports/{id}` | I zoti ose Admin (të tjerët marrin 404) |
+| GET | `/api/reports` | vetëm Admin, filtra: `status`, `categoryId`, `from`, `to` |
+| PUT | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
+| DELETE | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
+| PATCH | `/api/reports/{id}/status` | vetëm Admin (New → InProgress → Resolved, ose New → Rejected) |
+
+### Kodet e përgjigjes
+- **401**: nuk je i identifikuar (pa token, token i prishur ose i skaduar).
+- **403**: je i identifikuar, por roli nuk e lejon veprimin.
+- **404**: raporti nuk ekziston ose nuk është i yti.
+- **409**: veprimi nuk lejohet për gjendjen aktuale të raportit (p.sh. ndryshim kur nuk është `New`).
+
+Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 
 ## Statusi
-🚧 Në zhvillim. Përfunduar: Faza 1-5 (setup, Swagger, databaza, përdoruesit, JWT dhe rolet, kategoritë). Tani: Faza 6 (raportet).
+🚧 Në zhvillim. Përfunduar: Faza 1-6 (setup, Swagger, databaza, përdoruesit, JWT dhe rolet, kategoritë, raportet). Tani: Faza 7 (komentet dhe fotot).

@@ -32,7 +32,10 @@ Controllers → Services → Data (AppDbContext) → PostgreSQL
 - Vetëm Admin ndryshon statusin.
 
 ## Faza aktuale
-Fazat 1-5 janë përfunduar (setup, Swagger, PostgreSQL + EF Core, Register/Login, JWT, Rolet, seed i Admin-it, Categories me seed dhe GET /api/categories).
-Tani: Faza 6 (Reports + CRUD + rregullat e autorizimit).
+Fazat 1-6 janë përfunduar (setup, Swagger, PostgreSQL + EF Core, Register/Login, JWT, Rolet, seed i Admin-it, Categories, Reports me CRUD, filtra dhe rregullat e autorizimit).
+Tani: Faza 7 (Comments + Images).
+
+Për Fazën 7: rregulli "kur admini e bën Rejected, duhet të shkruajë arsyen si koment" (docs/plani.md, pika 8) nuk është zbatuar ende, sepse komentet nuk ekzistonin kur u ndërtua PATCH /api/reports/{id}/status. Duhet shtuar kur të ndërtohen komentet.
+Kur fshihet një raport, fotot e tij duhet të fshihen edhe si file nga uploads/ (jo vetëm rreshtat në databazë).
 
 Sekretet (Jwt:Key, Admin:Email, Admin:Password) ruhen me `dotnet user-secrets`, kurrë në Git.
