@@ -18,6 +18,7 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<CommentService>();
 
 // Autentikimi: si verifikohet tokeni që vjen me çdo kërkesë.
 var jwtKey = builder.Configuration["Jwt:Key"]
