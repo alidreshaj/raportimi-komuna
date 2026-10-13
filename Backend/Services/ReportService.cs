@@ -120,7 +120,9 @@ public class ReportService
     };
 
     // Admini ndryshon statusin e çdo raporti, vetëm sipas rrugëve të lejuara.
-    public async Task<(ReportActionResult Result, ReportDto? Report)> UpdateStatusAsync(int id, ReportStatus newStatus)
+    // Rejected kërkon arsye. Arsyeja (nëse ka) ruhet si koment nga admini.
+    public async Task<(ReportActionResult Result, ReportDto? Report)> UpdateStatusAsync(
+        int adminId, int id, ReportStatus newStatus, string? reason)
     {
         var report = await _db.Reports.FirstOrDefaultAsync(r => r.Id == id);
         if (report is null)
@@ -133,8 +135,26 @@ public class ReportService
             return (ReportActionResult.InvalidTransition, null);
         }
 
+        var hasReason = !string.IsNullOrWhiteSpace(reason);
+        if (newStatus == ReportStatus.Rejected && !hasReason)
+        {
+            return (ReportActionResult.ReasonRequired, null);
+        }
+
         report.Status = newStatus;
         report.UpdatedAt = DateTime.UtcNow;
+
+        if (hasReason)
+        {
+            _db.Comments.Add(new Comment
+            {
+                Text = reason!.Trim(),
+                ReportId = id,
+                UserId = adminId
+            });
+        }
+
+        // Një ruajtje e vetme: ose ndryshojnë të dyja (statusi dhe komenti), ose asnjëra.
         await _db.SaveChangesAsync();
 
         var updated = await _db.Reports

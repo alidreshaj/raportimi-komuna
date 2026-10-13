@@ -86,16 +86,18 @@ public class ReportsController : ControllerBase
     [HttpPatch("{id:int}/status")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(ReportDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> UpdateStatus(int id, UpdateStatusDto dto)
     {
-        var (result, report) = await _reportService.UpdateStatusAsync(id, dto.Status!.Value);
+        var (result, report) = await _reportService.UpdateStatusAsync(User.GetUserId(), id, dto.Status!.Value, dto.Reason);
 
         return result switch
         {
             ReportActionResult.Success => Ok(report),
             ReportActionResult.NotFound => NotFound(),
+            ReportActionResult.ReasonRequired => BadRequest(new { message = "Arsyeja është e detyrueshme kur raporti refuzohet." }),
             _ => Conflict(new { message = "Ky ndryshim statusi nuk lejohet. Rrugët: New → InProgress → Resolved, ose New → Rejected." })
         };
     }
