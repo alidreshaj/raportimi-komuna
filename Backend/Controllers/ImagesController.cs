@@ -36,6 +36,24 @@ public class ImagesController : ControllerBase
         return PhysicalFile(image.FullPath, image.ContentType);
     }
 
+    // DELETE /api/reports/{reportId}/images/{imageId}: qytetari heq një foto të raportit të vet (vetëm kur është New).
+    [HttpDelete("{imageId:int}")]
+    [Authorize(Roles = "Citizen")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Delete(int reportId, int imageId)
+    {
+        var result = await _imageService.DeleteAsync(User.GetUserId(), reportId, imageId);
+
+        return result switch
+        {
+            ImageDeleteResult.Success => NoContent(),
+            ImageDeleteResult.NotFound => NotFound(),
+            _ => Conflict(new { message = "Fotoja nuk mund të fshihet pasi komuna e ka marrë raportin në shqyrtim." })
+        };
+    }
+
     // POST /api/reports/{reportId}/images: qytetari ngarkon foto te raporti i vet (vetëm kur është New).
     // Kufiri i gjithë kërkesës: 5 foto x 5 MB + pak shtesë. Nëse kalohet, kërkesa refuzohet
     // para se të ruhet gjë (kthehet 400 me mesazh "Request body too large").

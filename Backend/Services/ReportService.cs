@@ -9,10 +9,14 @@ namespace Backend.Services;
 public class ReportService
 {
     private readonly AppDbContext _db;
+    private readonly ImageFileService _files;
+    private readonly ILogger<ReportService> _logger;
 
-    public ReportService(AppDbContext db)
+    public ReportService(AppDbContext db, ImageFileService files, ILogger<ReportService> logger)
     {
         _db = db;
+        _files = files;
+        _logger = logger;
     }
 
     // Si kthehet një Report në ReportDto. E shkruajmë një herë dhe e ripërdorim te çdo lexim.
@@ -230,8 +234,29 @@ public class ReportService
             return ReportActionResult.NotEditable;
         }
 
+        // Emrat e file-ve i lexojmë PARA fshirjes: pasi rreshtat të ikin, nuk kemi ku t'i gjejmë.
+        var fileNames = await _db.Images
+            .Where(i => i.ReportId == id)
+            .Select(i => i.FilePath)
+            .ToListAsync();
+
+        // Databaza e para: raporti dhe rreshtat e fotove (Cascade) fshihen. Nëse dështon, asgjë nuk ka ndryshuar.
         _db.Reports.Remove(report);
         await _db.SaveChangesAsync();
+
+        // Pastaj file-t nga disku. Nëse një file nuk fshihet, mbetet vetëm një file i tepërt (jetim):
+        // e regjistrojmë, por përdoruesi merr sukses, sepse raporti u fshi.
+        foreach (var fileName in fileNames)
+        {
+            try
+            {
+                _files.Delete(fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Nuk u fshi file-i {FileName} i raportit të fshirë {ReportId}.", fileName, id);
+            }
+        }
 
         return ReportActionResult.Success;
     }

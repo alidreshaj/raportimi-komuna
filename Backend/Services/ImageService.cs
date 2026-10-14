@@ -15,6 +15,13 @@ public enum ImageUploadResult
     InvalidFile     // një file nuk kalon validimin → 400
 }
 
+public enum ImageDeleteResult
+{
+    Success,
+    NotFound,    // fotoja nuk ekziston, ose raporti nuk është i këtij përdoruesi → 404
+    NotEditable  // statusi i raportit nuk është New → 409
+}
+
 // Rezultati i ngarkimit: kodi, fotot e ngarkuara (nëse u krye), dhe mesazhi i gabimit (nëse dështoi).
 public record ImageUploadOutcome(ImageUploadResult Result, List<ImageDto>? Images = null, string? Message = null);
 
@@ -25,11 +32,13 @@ public class ImageService
 {
     private readonly AppDbContext _db;
     private readonly ImageFileService _files;
+    private readonly ILogger<ImageService> _logger;
 
-    public ImageService(AppDbContext db, ImageFileService files)
+    public ImageService(AppDbContext db, ImageFileService files, ILogger<ImageService> logger)
     {
         _db = db;
         _files = files;
+        _logger = logger;
     }
 
     // Gjen një foto për ta dërguar. Admin sheh çdo foto, qytetari vetëm ato të raporteve të veta.
@@ -59,6 +68,43 @@ public class ImageService
         // Lloji nxirret nga prapashtesa që e ruajtëm ne (e vërtetuar sipas përmbajtjes), jo nga klienti.
         var contentType = Path.GetExtension(fileName) == ".png" ? "image/png" : "image/jpeg";
         return new ImageFile(fullPath, contentType);
+    }
+
+    // Heq një foto të raportit të vet. Lejohet vetëm kur raporti është New.
+    public async Task<ImageDeleteResult> DeleteAsync(int userId, int reportId, int imageId)
+    {
+        // Pronësia: fotoja duhet të jetë e këtij raporti, dhe raporti i këtij përdoruesi.
+        var image = await _db.Images
+            .Include(i => i.Report)
+            .FirstOrDefaultAsync(i => i.Id == imageId && i.ReportId == reportId && i.Report.UserId == userId);
+
+        if (image is null)
+        {
+            return ImageDeleteResult.NotFound;
+        }
+
+        if (image.Report.Status != ReportStatus.New)
+        {
+            return ImageDeleteResult.NotEditable;
+        }
+
+        var fileName = image.FilePath;
+
+        // Databaza e para: nëse dështon, asgjë nuk ka ndryshuar.
+        _db.Images.Remove(image);
+        await _db.SaveChangesAsync();
+
+        // Pastaj file-i nga disku. Nëse dështon, mbetet vetëm një file i tepërt (jetim): e regjistrojmë.
+        try
+        {
+            _files.Delete(fileName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Nuk u fshi file-i {FileName} i foto-s {ImageId}.", fileName, imageId);
+        }
+
+        return ImageDeleteResult.Success;
     }
 
     // Ngarkon foto te raporti i vet. Lejohet vetëm kur raporti është New.
