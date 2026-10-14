@@ -1,44 +1,28 @@
-import { useEffect, useState } from 'react'
-import { getCategories } from './api/categories'
-import type { Category } from './types'
+import { Navigate, Route, Routes } from 'react-router'
+import AppLayout from './components/AppLayout'
+import ProtectedRoute from './components/ProtectedRoute'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import ReportsPage from './pages/ReportsPage'
 
-// FAQE PROVË E PËRKOHSHME (8.3): shfaq kategoritë nga backend-i, për të provuar shtresën e API-t.
-// Zëvendësohet me faqet e vërteta në 8.4.
+// Rrugët e aplikacionit: cila adresë shfaq cilën faqe.
 function App() {
-  const [categories, setCategories] = useState<Category[] | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-
-    getCategories()
-      .then((list) => {
-        if (!cancelled) setCategories(list)
-      })
-      .catch((e: Error) => {
-        if (!cancelled) setError(e.message)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
   return (
-    <main>
-      <h1>Raportimi në komunë</h1>
-      <h2>Kategoritë (nga API)</h2>
+    <Routes>
+      {/* Faqe publike */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/regjistrohu" element={<RegisterPage />} />
 
-      {error && <p role="alert">Gabim: {error}</p>}
-      {!error && !categories && <p>Po ngarkohet...</p>}
-      {categories && (
-        <ul>
-          {categories.map((c) => (
-            <li key={c.id}>{c.name}</li>
-          ))}
-        </ul>
-      )}
-    </main>
+      {/* Faqe që kërkojnë hyrje: ProtectedRoute kontrollon sesionin, AppLayout shton menynë lart */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="/raportet" element={<ReportsPage />} />
+        </Route>
+      </Route>
+
+      {/* Çdo adresë tjetër shkon te lista e raporteve (që, pa hyrje, të çon te login) */}
+      <Route path="*" element={<Navigate to="/raportet" replace />} />
+    </Routes>
   )
 }
 

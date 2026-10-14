@@ -22,6 +22,13 @@ export interface User {
   role: Role
 }
 
+// Përdoruesi i loguar, siç e mban aplikacioni (nga login ose nga GET /api/auth/me). Pa token.
+export interface SessionUser {
+  name: string
+  email: string
+  role: Role
+}
+
 export interface Category {
   id: number
   name: string

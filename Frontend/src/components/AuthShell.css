@@ -1,0 +1,150 @@
+/* Faqet e hyrjes dhe regjistrimit: paneli blu majtas, karta djathtas (docs/design/01-hyrja.png). */
+
+.auth {
+  min-height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* ---- Paneli blu ---- */
+
+.auth-brand {
+  flex: 1 1 480px;
+  background: var(--accent);
+  color: #ffffff;
+  padding: 56px 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.auth-pitch {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 460px;
+}
+
+.auth-pitch h1 {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.auth-pitch p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.55;
+  color: #dce7f2;
+}
+
+.auth-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-steps li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 16px;
+}
+
+.auth-step-number {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* ---- Pjesa e kartës (hyrja ose regjistrimi) ---- */
+
+.auth-form-side {
+  flex: 1 1 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 32px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 1px 2px rgba(20, 32, 46, 0.06);
+}
+
+.auth-card h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.auth-card .auth-subtitle {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.auth-divider {
+  height: 1px;
+  background: var(--line-soft);
+}
+
+.auth-alt {
+  margin: 0;
+  font-size: 15px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.auth-alt a {
+  font-weight: 600;
+}
+
+/* ---- Ekrane të vogla (telefon) ---- */
+
+@media (max-width: 640px) {
+  .auth-brand {
+    padding: 32px 24px;
+    gap: 32px;
+  }
+
+  .auth-pitch h1 {
+    font-size: 32px;
+  }
+
+  .auth-form-side {
+    padding: 32px 16px;
+  }
+
+  .auth-card {
+    padding: 28px 24px;
+  }
+}
