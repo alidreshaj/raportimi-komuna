@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Cilësimet lokale (adresa e API-t); shembulli është te .env.example
+.env
