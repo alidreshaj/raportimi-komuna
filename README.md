@@ -60,15 +60,29 @@ dhe vendose te butoni **Authorize** i Swagger.
 | GET | `/api/reports` | vetëm Admin, filtra: `status`, `categoryId`, `from`, `to` |
 | PUT | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | DELETE | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
-| PATCH | `/api/reports/{id}/status` | vetëm Admin (New → InProgress → Resolved, ose New → Rejected) |
+| PATCH | `/api/reports/{id}/status` | vetëm Admin (New → InProgress → Resolved, ose New → Rejected). Fusha `reason` është e detyrueshme për `Rejected`, opsionale për të tjerat, dhe ruhet si koment |
+| GET | `/api/reports/{id}/comments` | I zoti ose Admin (komentet, nga më i vjetri) |
+| POST | `/api/reports/{id}/comments` | I zoti ose Admin (edhe kur raporti është i mbyllur) |
+| POST | `/api/reports/{id}/images` | Qytetari, raportin e vet, vetëm kur është `New` (`multipart/form-data`, fusha `files`) |
+| GET | `/api/reports/{id}/images/{imageId}` | I zoti ose Admin (kthen vetë foton) |
+| DELETE | `/api/reports/{id}/images/{imageId}` | Qytetari, raportin e vet, vetëm kur është `New` |
 
 ### Kodet e përgjigjes
 - **401**: nuk je i identifikuar (pa token, token i prishur ose i skaduar).
 - **403**: je i identifikuar, por roli nuk e lejon veprimin.
-- **404**: raporti nuk ekziston ose nuk është i yti.
+- **404**: raporti (ose fotoja) nuk ekziston ose nuk është i yti.
 - **409**: veprimi nuk lejohet për gjendjen aktuale të raportit (p.sh. ndryshim kur nuk është `New`).
+- **400**: të dhëna të pavlefshme (fushë e munguar, file i pavlefshëm, kufi i kaluar).
 
 Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 
+## Fotot
+- Lejohen vetëm `.jpg`, `.jpeg`, `.png`, maksimumi **5 MB** për foto dhe **5 foto** për raport.
+- Serveri kontrollon përmbajtjen e vërtetë të file-it (jo vetëm emrin), dhe e ruan me emër të rastësishëm.
+- Fotot ruhen si file te `Backend/uploads/` (krijohet vetë në ngarkimin e parë), dhe te databaza ruhet vetëm emri i file-it.
+- `Backend/uploads/` është te `.gitignore`: fotot e qytetarëve nuk shkojnë kurrë në Git.
+- Fotot shihen vetëm përmes endpoint-it të mbrojtur (kërkon token). Nuk mund të hapen direkt nga shfletuesi pa token.
+- Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.
+
 ## Statusi
-🚧 Në zhvillim. Përfunduar: Faza 1-6 (setup, Swagger, databaza, përdoruesit, JWT dhe rolet, kategoritë, raportet). Tani: Faza 7 (komentet dhe fotot).
+🚧 Në zhvillim. Përfunduar: Faza 1-7 (backend i plotë: setup, Swagger, databaza, përdoruesit, JWT dhe rolet, kategoritë, raportet, komentet dhe fotot). Tani: Faza 8 (frontend me React).

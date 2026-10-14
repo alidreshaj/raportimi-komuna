@@ -32,10 +32,15 @@ Controllers → Services → Data (AppDbContext) → PostgreSQL
 - Vetëm Admin ndryshon statusin.
 
 ## Faza aktuale
-Fazat 1-6 janë përfunduar (setup, Swagger, PostgreSQL + EF Core, Register/Login, JWT, Rolet, seed i Admin-it, Categories, Reports me CRUD, filtra dhe rregullat e autorizimit).
-Tani: Faza 7 (Comments + Images).
+Fazat 1-7 janë përfunduar: backend-i është i plotë (setup, Swagger, PostgreSQL + EF Core, Register/Login, JWT, Rolet, seed i Admin-it, Categories, Reports me CRUD, filtra dhe autorizim, Comments, Images me ngarkim të sigurt, shfaqje të mbrojtur dhe fshirje).
+Tani: Faza 8 (React + TypeScript: login, raportet e mia, forma e raportit).
 
-Për Fazën 7: rregulli "kur admini e bën Rejected, duhet të shkruajë arsyen si koment" (docs/plani.md, pika 8) nuk është zbatuar ende, sepse komentet nuk ekzistonin kur u ndërtua PATCH /api/reports/{id}/status. Duhet shtuar kur të ndërtohen komentet.
-Kur fshihet një raport, fotot e tij duhet të fshihen edhe si file nga uploads/ (jo vetëm rreshtat në databazë).
+Për frontend-in (Faza 8-10):
+- Tokeni JWT vlen 120 minuta; dërgohet si `Authorization: Bearer <token>`. Kur skadon, API kthen 401.
+- Fotot shihen vetëm përmes `GET /api/reports/{id}/images/{imageId}`, që kërkon token. `<img src>` nuk dërgon vetë header-in Authorization, prandaj fotot duhen marrë me `fetch` me token dhe të shfaqen si blob.
+- Ngarkimi i fotove: `POST /api/reports/{id}/images` me `multipart/form-data`, fusha `files`.
+- Kodet: 401 (pa identitet), 403 (roli nuk lejon), 404 (nuk ekziston ose nuk është i yti), 409 (gjendja e raportit nuk lejon), 400 (të dhëna të pavlefshme).
+- Datat vijnë në UTC.
+- API-ja nuk ka CORS të konfiguruar ende: duhet shtuar te `Program.cs` para se React të thërrasë API-n nga shfletuesi.
 
 Sekretet (Jwt:Key, Admin:Email, Admin:Password) ruhen me `dotnet user-secrets`, kurrë në Git.
