@@ -64,6 +64,17 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// CORS: lejon vetëm frontend-in tonë (adresat te appsettings, "Cors:AllowedOrigins"), jo të gjithë.
+// Tokeni dërgohet te header-i Authorization, prandaj nuk na duhen cookie (pa AllowCredentials).
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy => policy
+        .WithOrigins(allowedOrigins)
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 // Të dhënat fillestare në nisje: admin-i dhe kategoritë (vetëm nëse mungojnë).
@@ -78,6 +89,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// CORS vjen para autentikimit: kërkesa "pyetëse" e shfletuesit (OPTIONS) nuk ka token.
+app.UseCors("Frontend");
 
 // Rendi ka rëndësi: fillimisht "kush je?", pastaj "çfarë të lejohet?".
 app.UseAuthentication();
