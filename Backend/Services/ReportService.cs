@@ -29,7 +29,17 @@ public class ReportService
         UpdatedAt = r.UpdatedAt,
         CategoryId = r.CategoryId,
         CategoryName = r.Category.Name,
-        ReporterName = r.User.Name
+        ReporterName = r.User.Name,
+        Images = r.Images
+            .OrderBy(i => i.UploadedAt)
+            .ThenBy(i => i.Id)
+            .Select(i => new ImageDto
+            {
+                Id = i.Id,
+                UploadedAt = i.UploadedAt,
+                Url = "/api/reports/" + r.Id.ToString() + "/images/" + i.Id.ToString()
+            })
+            .ToList()
     };
 
     // Krijon raport të ri për përdoruesin e loguar. Kthen null nëse kategoria nuk ekziston.

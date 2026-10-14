@@ -18,6 +18,9 @@ public enum ImageUploadResult
 // Rezultati i ngarkimit: kodi, fotot e ngarkuara (nëse u krye), dhe mesazhi i gabimit (nëse dështoi).
 public record ImageUploadOutcome(ImageUploadResult Result, List<ImageDto>? Images = null, string? Message = null);
 
+// Një foto gati për t'u dërguar: rruga e plotë në disk dhe lloji i përmbajtjes.
+public record ImageFile(string FullPath, string ContentType);
+
 public class ImageService
 {
     private readonly AppDbContext _db;
@@ -27,6 +30,35 @@ public class ImageService
     {
         _db = db;
         _files = files;
+    }
+
+    // Gjen një foto për ta dërguar. Admin sheh çdo foto, qytetari vetëm ato të raporteve të veta.
+    // Kthen null nëse fotoja nuk gjendet, nuk është e lejuar, ose file mungon në disk (404).
+    public async Task<ImageFile?> GetFileAsync(int userId, bool isAdmin, int reportId, int imageId)
+    {
+        var fileName = await _db.Images
+            .AsNoTracking()
+            .Where(i => i.Id == imageId
+                        && i.ReportId == reportId
+                        && (isAdmin || i.Report.UserId == userId))
+            .Select(i => i.FilePath)
+            .FirstOrDefaultAsync();
+
+        if (fileName is null)
+        {
+            return null;
+        }
+
+        // Roja kontrollon që emri është i pastër dhe që file ekziston.
+        var fullPath = _files.GetFullPath(fileName);
+        if (fullPath is null)
+        {
+            return null;
+        }
+
+        // Lloji nxirret nga prapashtesa që e ruajtëm ne (e vërtetuar sipas përmbajtjes), jo nga klienti.
+        var contentType = Path.GetExtension(fileName) == ".png" ? "image/png" : "image/jpeg";
+        return new ImageFile(fullPath, contentType);
     }
 
     // Ngarkon foto te raporti i vet. Lejohet vetëm kur raporti është New.

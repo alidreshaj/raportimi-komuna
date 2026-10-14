@@ -18,4 +18,7 @@ public class ReportDto
 
     // Vetëm emri i raportuesit, që admini të di kush e ka dërguar.
     public string ReporterName { get; set; } = string.Empty;
+
+    // Fotot e raportit (nga më e vjetra), me adresën ku shihet secila.
+    public List<ImageDto> Images { get; set; } = new();
 }

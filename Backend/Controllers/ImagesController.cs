@@ -18,6 +18,24 @@ public class ImagesController : ControllerBase
         _imageService = imageService;
     }
 
+    // GET /api/reports/{reportId}/images/{imageId}: dërgon foton (i zoti i raportit ose Admin).
+    [HttpGet("{imageId:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(int reportId, int imageId)
+    {
+        var image = await _imageService.GetFileAsync(User.GetUserId(), User.IsInRole("Admin"), reportId, imageId);
+
+        if (image is null)
+        {
+            return NotFound();
+        }
+
+        // Shfletuesi të mos "hamendësojë" llojin e file-it: trajtoje strikt si foto.
+        Response.Headers["X-Content-Type-Options"] = "nosniff";
+        return PhysicalFile(image.FullPath, image.ContentType);
+    }
+
     // POST /api/reports/{reportId}/images: qytetari ngarkon foto te raporti i vet (vetëm kur është New).
     // Kufiri i gjithë kërkesës: 5 foto x 5 MB + pak shtesë. Nëse kalohet, kërkesa refuzohet
     // para se të ruhet gjë (kthehet 400 me mesazh "Request body too large").
