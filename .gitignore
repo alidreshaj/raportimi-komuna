@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Fotot e ngarkuara nga qytetarët: të dhëna private, nuk shkojnë në Git
+Backend/uploads/
