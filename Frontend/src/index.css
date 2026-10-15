@@ -58,16 +58,35 @@ a:hover {
   font-weight: 600;
 }
 
-.field input {
-  height: 48px;
+.field input,
+.field select,
+.field textarea {
   width: 100%;
-  padding: 0 14px;
   border: 1px solid var(--field-border);
   border-radius: 8px;
   font: inherit;
   font-size: 16px;
   background: var(--surface);
   color: var(--ink);
+}
+
+.field input,
+.field select {
+  height: 48px;
+  padding: 0 14px;
+}
+
+.field textarea {
+  min-height: 110px;
+  padding: 12px 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* Tekst i vogël ndihmës nën një kuti (p.sh. numëruesi i karaktereve). */
+.field-hint {
+  font-size: 13px;
+  color: var(--muted);
 }
 
 .btn {
@@ -96,6 +115,20 @@ a:hover {
 
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-dark);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  border: 1px solid var(--field-border);
+}
+
+.btn-secondary,
+.btn-secondary:hover {
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  background: var(--ground);
 }
 
 .btn:disabled {
