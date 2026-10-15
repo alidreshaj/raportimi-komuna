@@ -60,8 +60,9 @@ async function readErrorMessage(response: Response): Promise<string> {
   }
 }
 
-// Thërret backend-in. Shton adresën, tokenin (nëse ka), dhe e kthen përgjigjen ose hedh ApiError.
-export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
+// Pjesa e përbashkët: shton adresën dhe tokenin, dërgon kërkesën dhe hedh ApiError nëse dështon.
+// Kthen përgjigjen e papërpunuar (të suksesshme), që thirrësi ta lexojë si JSON ose si blob.
+async function request(path: string, options: RequestOptions): Promise<Response> {
   const headers: Record<string, string> = {}
 
   const token = getToken()
@@ -95,9 +96,23 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
     throw new ApiError(response.status, await readErrorMessage(response))
   }
 
+  return response
+}
+
+// Thërret backend-in dhe e lexon përgjigjen si JSON.
+export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const response = await request(path, options)
+
   if (response.status === 204) {
     return undefined as T // përgjigje pa trup (p.sh. DELETE)
   }
 
   return (await response.json()) as T
+}
+
+// Thërret backend-in dhe e lexon përgjigjen si blob (bajtet e një file-i, p.sh. një foto).
+// <img src> nuk dërgon dot tokenin, prandaj fotot e mbrojtura merren kështu.
+export async function apiFetchBlob(path: string): Promise<Blob> {
+  const response = await request(path, {})
+  return response.blob()
 }

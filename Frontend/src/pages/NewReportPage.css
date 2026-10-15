@@ -19,6 +19,17 @@
   gap: 24px;
 }
 
+/* <fieldset> grupon fushat që bllokohen bashkë; heqim pamjen e tij të paracaktuar. */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
 .form-actions {
   display: flex;
   flex-wrap: wrap;

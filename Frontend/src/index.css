@@ -83,6 +83,19 @@ a:hover {
   resize: vertical;
 }
 
+/* E fshehur vizualisht, por e arritshme nga tastiera dhe lexuesit e ekranit (p.sh. input-i i file-ve). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Tekst i vogël ndihmës nën një kuti (p.sh. numëruesi i karaktereve). */
 .field-hint {
   font-size: 13px;

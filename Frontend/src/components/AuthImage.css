@@ -1,0 +1,21 @@
+/* Foto e mbrojtur (me token). Përmasat i vendos faqja që e përdor. */
+
+.auth-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #dce3ea;
+}
+
+/* Gjendjet "po ngarkohet" dhe "gabim". */
+.auth-image--state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
