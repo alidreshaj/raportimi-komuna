@@ -1,0 +1,30 @@
+/* Etiketa e statusit (ngjyrat nga docs/design/). Sfond i çelët + tekst i errët për kontrast të mirë. */
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-badge--New {
+  background: #e3edf8;
+  color: #174a7c;
+}
+
+.status-badge--InProgress {
+  background: #fbefd5;
+  color: #7a4b00;
+}
+
+.status-badge--Resolved {
+  background: #dff1e6;
+  color: #14633a;
+}
+
+.status-badge--Rejected {
+  background: #f6e1e1;
+  color: #8a2323;
+}

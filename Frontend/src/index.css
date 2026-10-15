@@ -71,6 +71,10 @@ a:hover {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   height: 48px;
   padding: 0 24px;
   border: 0;
@@ -81,9 +85,13 @@ a:hover {
   cursor: pointer;
 }
 
+.btn-primary,
+.btn-primary:hover {
+  color: #ffffff; /* edhe kur është lidhje: a:hover nuk e ndryshon ngjyrën e tekstit */
+}
+
 .btn-primary {
   background: var(--accent);
-  color: #ffffff;
 }
 
 .btn-primary:hover:not(:disabled) {

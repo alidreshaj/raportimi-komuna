@@ -2,7 +2,9 @@ import { Navigate, Route, Routes } from 'react-router'
 import AppLayout from './components/AppLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
+import NewReportPage from './pages/NewReportPage'
 import RegisterPage from './pages/RegisterPage'
+import ReportDetailPage from './pages/ReportDetailPage'
 import ReportsPage from './pages/ReportsPage'
 
 // Rrugët e aplikacionit: cila adresë shfaq cilën faqe.
@@ -17,6 +19,9 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/raportet" element={<ReportsPage />} />
+          {/* /raportet/i-ri fiton mbi /raportet/:id sepse është më specifike */}
+          <Route path="/raportet/i-ri" element={<NewReportPage />} />
+          <Route path="/raportet/:id" element={<ReportDetailPage />} />
         </Route>
       </Route>
 

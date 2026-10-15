@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import './AppLayout.css'
 
@@ -6,6 +6,7 @@ import './AppLayout.css'
 function AppLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const onNewReport = useLocation().pathname === '/raportet/i-ri'
 
   function handleLogout() {
     logout()
@@ -36,8 +37,15 @@ function AppLayout() {
           </NavLink>
 
           <nav className="app-nav" aria-label="Menyja kryesore">
-            <NavLink to="/raportet" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+            {/* "Raportet e mia" është aktive te lista dhe te detajet, por jo te forma e re */}
+            <NavLink
+              to="/raportet"
+              className={({ isActive }) => (isActive && !onNewReport ? 'active' : undefined)}
+            >
               Raportet e mia
+            </NavLink>
+            <NavLink to="/raportet/i-ri" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+              Raporto një problem
             </NavLink>
           </nav>
 
