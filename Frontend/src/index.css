@@ -144,6 +144,34 @@ a:hover {
   background: var(--ground);
 }
 
+/* Butoni i veprimeve të rrezikshme (fshirje): i kuq i plotë te dritarja e konfirmimit, me kontur te faqja. */
+.btn-danger,
+.btn-danger:hover {
+  color: #ffffff;
+}
+
+.btn-danger {
+  background: #b42318;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #8f1c13;
+}
+
+.btn-danger-outline {
+  background: var(--surface);
+  border: 1px solid #d9a0a0;
+}
+
+.btn-danger-outline,
+.btn-danger-outline:hover {
+  color: var(--danger-text);
+}
+
+.btn-danger-outline:hover:not(:disabled) {
+  background: #fbeeee;
+}
+
 .btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;

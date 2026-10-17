@@ -130,6 +130,12 @@
   gap: 12px;
 }
 
+/* Butonat reale (lidhje dhe buton) në kartën "Veprimet" kanë të njëjtën lartësi me ato të çaktivizuarit. */
+.detail-actions .btn {
+  height: 44px;
+  font-size: 15px;
+}
+
 .btn-disabled {
   height: 44px;
   border: 1px solid #c5cdd6;

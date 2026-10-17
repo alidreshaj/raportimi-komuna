@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router'
 import AppLayout from './components/AppLayout'
 import ProtectedRoute from './components/ProtectedRoute'
+import EditReportPage from './pages/EditReportPage'
 import LoginPage from './pages/LoginPage'
 import NewReportPage from './pages/NewReportPage'
 import RegisterPage from './pages/RegisterPage'
@@ -22,6 +23,7 @@ function App() {
           {/* /raportet/i-ri fiton mbi /raportet/:id sepse është më specifike */}
           <Route path="/raportet/i-ri" element={<NewReportPage />} />
           <Route path="/raportet/:id" element={<ReportDetailPage />} />
+          <Route path="/raportet/:id/ndrysho" element={<EditReportPage />} />
         </Route>
       </Route>
 

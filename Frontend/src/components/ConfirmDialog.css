@@ -1,0 +1,48 @@
+/* Dritarja e konfirmimit. <dialog> i shfletuesit e vendos vetë në qendër dhe e errëson sfondin (::backdrop). */
+
+.confirm-dialog {
+  width: min(440px, calc(100vw - 32px));
+  padding: 0; /* që klikimi te sfondi të dallohet nga klikimi brenda: përmbajtja ka kontejnerin e vet */
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 12px 40px rgba(20, 32, 46, 0.25);
+}
+
+.confirm-dialog::backdrop {
+  background: rgba(20, 32, 46, 0.55);
+}
+
+.confirm-body {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.confirm-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.confirm-message {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.confirm-actions .btn {
+  height: 44px;
+  font-size: 15px;
+}

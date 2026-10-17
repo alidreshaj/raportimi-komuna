@@ -1,47 +1,50 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
-import { getReport } from '../api/reports'
+import { useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router'
+import { deleteReport } from '../api/reports'
 import AuthImage from '../components/AuthImage'
+import ConfirmDialog from '../components/ConfirmDialog'
 import Conversation from '../components/Conversation'
 import StatusBadge from '../components/StatusBadge'
 import { useAuth } from '../context/useAuth'
-import type { Report } from '../types'
+import { useReport } from '../hooks/useReport'
 import { STATUS_LABELS, formatDate } from '../utils/format'
 import './ReportDetailPage.css'
 
-// Detajet e një raporti: përshkrimi, fotot, informacioni anash, dhe biseda me komunën.
+// Detajet e një raporti: përshkrimi, fotot, informacioni anash, veprimet, dhe biseda me komunën.
 function ReportDetailPage() {
   const { user } = useAuth()
+  const navigate = useNavigate()
 
   // useParams lexon vlerën nga adresa: te /raportet/5, id = "5".
   const { id } = useParams()
-  const reportId = Number(id)
-  // Vlerat që mund të llogariten gjatë vizatimit nuk duhen futur te gjendja përmes efektit.
-  const validId = Number.isInteger(reportId) && reportId > 0
+  const { report, error } = useReport(Number(id))
 
-  const [report, setReport] = useState<Report | null>(null)
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const error = validId ? loadError : 'Adresa e raportit nuk është e vlefshme.'
+  // Dritarja e konfirmimit të fshirjes.
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!validId) {
-      return
+  function openConfirm() {
+    setDeleteError(null)
+    setConfirmOpen(true)
+  }
+
+  async function handleDelete() {
+    if (!report) return
+
+    setDeleting(true)
+    setDeleteError(null)
+
+    try {
+      await deleteReport(report.id)
+      // replace: butoni "mbrapa" të mos të kthejë te një raport që nuk ekziston më.
+      navigate('/raportet', { replace: true })
+    } catch (e) {
+      // P.sh. 409 nëse komuna e mori raportin në shqyrtim ndërkohë. Dritarja mbetet e hapur me gabimin.
+      setDeleteError(e instanceof Error ? e.message : 'Ndodhi një gabim. Provo përsëri.')
+      setDeleting(false)
     }
-
-    let cancelled = false
-
-    getReport(reportId)
-      .then((r) => {
-        if (!cancelled) setReport(r)
-      })
-      .catch((e: Error) => {
-        if (!cancelled) setLoadError(e.message)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [reportId, validId])
+  }
 
   return (
     <>
@@ -107,26 +110,51 @@ function ReportDetailPage() {
               </dl>
             </section>
 
-            {/* Rregulli i planit: qytetari ndryshon ose fshin raportin vetëm kur është New.
-                Kur është New, butonat e vërtetë shtohen në hapin 8.9. */}
-            {user?.role === 'Citizen' && report.status !== 'New' && (
+            {/* Rregulli i planit: qytetari ndryshon ose fshin raportin vetëm kur është New. */}
+            {user?.role === 'Citizen' && (
               <section className="detail-card">
                 <h2 className="detail-side-title">Veprimet</h2>
-                <div className="detail-actions">
-                  <button type="button" className="btn-disabled" disabled>
-                    Ndrysho raportin
-                  </button>
-                  <button type="button" className="btn-disabled" disabled>
-                    Fshi raportin
-                  </button>
-                </div>
-                <p className="detail-actions-note">
-                  Raporti nuk mund të ndryshohet ose të fshihet pasi komuna e ka marrë në shqyrtim. Mund të
-                  vazhdosh bisedën.
-                </p>
+
+                {report.status === 'New' ? (
+                  <div className="detail-actions">
+                    <Link to={`/raportet/${report.id}/ndrysho`} className="btn btn-secondary">
+                      Ndrysho raportin
+                    </Link>
+                    <button type="button" className="btn btn-danger-outline" onClick={openConfirm}>
+                      Fshi raportin
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="detail-actions">
+                      <button type="button" className="btn-disabled" disabled>
+                        Ndrysho raportin
+                      </button>
+                      <button type="button" className="btn-disabled" disabled>
+                        Fshi raportin
+                      </button>
+                    </div>
+                    <p className="detail-actions-note">
+                      Raporti nuk mund të ndryshohet ose të fshihet pasi komuna e ka marrë në shqyrtim. Mund të
+                      vazhdosh bisedën.
+                    </p>
+                  </>
+                )}
               </section>
             )}
           </aside>
+
+          <ConfirmDialog
+            open={confirmOpen}
+            title="Të fshihet raporti?"
+            message="Raporti, komentet dhe fotot e tij do të fshihen përgjithmonë. Ky veprim nuk kthehet."
+            confirmLabel="Fshi raportin"
+            busyLabel="Duke fshirë..."
+            busy={deleting}
+            error={deleteError}
+            onConfirm={handleDelete}
+            onCancel={() => setConfirmOpen(false)}
+          />
         </div>
       )}
     </>
