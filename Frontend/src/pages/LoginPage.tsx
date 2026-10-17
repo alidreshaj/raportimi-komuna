@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router'
 import AuthShell from '../components/AuthShell'
 import { useAuth } from '../context/useAuth'
+import { homePathFor } from '../utils/roles'
 
 function LoginPage() {
   const { user, login } = useAuth()
@@ -14,12 +15,12 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  // Faqja ku ishe duke shkuar kur të ridrejtuan këtu (nëse ka), përndryshe lista e raporteve.
-  const from = (location.state as { from?: string } | null)?.from ?? '/raportet'
+  // Faqja ku ishe duke shkuar kur të ridrejtuan këtu (nëse ka), përndryshe "/" që të çon te faqja e rolit tënd.
+  const from = (location.state as { from?: string } | null)?.from ?? '/'
 
   // Nëse je i loguar tashmë, nuk ka kuptim të shohësh hyrjen.
   if (user) {
-    return <Navigate to="/raportet" replace />
+    return <Navigate to={homePathFor(user.role)} replace />
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

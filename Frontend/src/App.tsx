@@ -1,6 +1,8 @@
-import { Navigate, Route, Routes } from 'react-router'
+import { Route, Routes } from 'react-router'
 import AppLayout from './components/AppLayout'
+import HomeRedirect from './components/HomeRedirect'
 import ProtectedRoute from './components/ProtectedRoute'
+import AdminReportsPage from './pages/AdminReportsPage'
 import EditReportPage from './pages/EditReportPage'
 import LoginPage from './pages/LoginPage'
 import NewReportPage from './pages/NewReportPage'
@@ -16,8 +18,8 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/regjistrohu" element={<RegisterPage />} />
 
-      {/* Faqe që kërkojnë hyrje: ProtectedRoute kontrollon sesionin, AppLayout shton menynë lart */}
-      <Route element={<ProtectedRoute />}>
+      {/* Faqet e qytetarit: ProtectedRoute kontrollon sesionin dhe rolin, AppLayout shton menynë lart */}
+      <Route element={<ProtectedRoute role="Citizen" />}>
         <Route element={<AppLayout />}>
           <Route path="/raportet" element={<ReportsPage />} />
           {/* /raportet/i-ri fiton mbi /raportet/:id sepse është më specifike */}
@@ -27,8 +29,15 @@ function App() {
         </Route>
       </Route>
 
-      {/* Çdo adresë tjetër shkon te lista e raporteve (që, pa hyrje, të çon te login) */}
-      <Route path="*" element={<Navigate to="/raportet" replace />} />
+      {/* Faqet e adminit (komuna): vetëm roli Admin */}
+      <Route element={<ProtectedRoute role="Admin" />}>
+        <Route element={<AppLayout />}>
+          <Route path="/admin/raportet" element={<AdminReportsPage />} />
+        </Route>
+      </Route>
+
+      {/* Çdo adresë tjetër të çon te faqja kryesore e rolit tënd (pa hyrje, te login) */}
+      <Route path="*" element={<HomeRedirect />} />
     </Routes>
   )
 }

@@ -53,7 +53,7 @@ function RegisterPage() {
     // Llogaria u krijua. Hyjmë automatikisht, që përdoruesi të mos shkruajë gjithçka përsëri.
     try {
       await login(email.trim(), password)
-      navigate('/raportet', { replace: true })
+      navigate('/', { replace: true })
     } catch {
       navigate('/login', { replace: true })
     }
