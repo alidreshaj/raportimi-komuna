@@ -13,7 +13,7 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 ## Teknologjitë
 - Backend: ASP.NET Core Web API (C#, .NET 10)
 - Databaza: PostgreSQL + Entity Framework Core
-- Frontend: React + TypeScript (në zhvillim)
+- Frontend: React 19 + TypeScript, Vite, React Router
 - Autentikimi: JWT
 
 ## Databaza
@@ -44,6 +44,37 @@ Swagger: http://localhost:5267/swagger
 
 Për endpoint-et e mbrojtura: bëj login te `POST /api/auth/login`, kopjo vetëm tokenin
 dhe vendose te butoni **Authorize** i Swagger.
+
+## Si niset frontend-i
+Duhet Node.js i instaluar. Backend-i duhet të punojë njëkohësisht (secili në terminalin e vet).
+
+    cd Frontend
+    cp .env.example .env
+    npm install
+    npm run dev
+
+Hapet te http://localhost:5173. Adresa e API-t është te `Frontend/.env` (`VITE_API_URL`);
+Vite e lexon `.env` vetëm kur niset, prandaj pas çdo ndryshimi nise sërish.
+
+CORS në backend lejon vetëm `http://localhost:5173` (`Cors:AllowedOrigins` te `Backend/appsettings.json`),
+prandaj frontend-i duhet hapur saktësisht në atë adresë.
+
+Kontrollet para commit-it:
+
+    npm run build
+    npm run lint
+
+### Faqet e qytetarit
+| Rruga | Çfarë bën |
+|---|---|
+| `/login` | Hyrja |
+| `/regjistrohu` | Regjistrimi i qytetarit |
+| `/raportet` | Raportet e mia (lista) |
+| `/raportet/i-ri` | Forma e raportit të ri, me deri në 5 foto |
+| `/raportet/:id` | Detajet, fotot dhe biseda me komunën |
+| `/raportet/:id/ndrysho` | Ndryshimi i raportit (vetëm kur është `New`) |
+
+Faqet pas hyrjes janë të mbrojtura: pa token të vlefshëm çojnë te `/login`.
 
 ## Endpoint-et deri tani
 | Metoda | Rruga | Qasja |
@@ -85,4 +116,4 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 - Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.
 
 ## Statusi
-🚧 Në zhvillim. Përfunduar: Faza 1-7 (backend i plotë: setup, Swagger, databaza, përdoruesit, JWT dhe rolet, kategoritë, raportet, komentet dhe fotot). Tani: Faza 8 (frontend me React).
+🚧 Në zhvillim. Përfunduar: Faza 1-7 (backend i plotë) dhe Faza 8-9 (frontend i qytetarit lidhur me API-n: hyrja, regjistrimi, raportet, fotot, biseda, ndryshimi dhe fshirja). Tani: Faza 10 (paneli i adminit). Pastaj Faza 11 (testimi final dhe README i plotë me foto të faqeve).
