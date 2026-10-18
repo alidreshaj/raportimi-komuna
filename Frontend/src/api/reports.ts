@@ -1,4 +1,4 @@
-import type { Report, ReportInput } from '../types'
+import type { Report, ReportInput, ReportStatus } from '../types'
 import { apiFetch } from './client'
 
 // Detajet e një raporti (i zoti ose Admin). Kthen 404 nëse nuk ekziston ose nuk është i yti.
@@ -24,4 +24,33 @@ export function createReport(input: ReportInput): Promise<Report> {
 // Raportet e qytetarit të loguar, më të rejat të parat (backend-i e filtron sipas tokenit).
 export function getMyReports(): Promise<Report[]> {
   return apiFetch<Report[]>('/api/reports/my')
+}
+
+// Filtrat e listës së adminit. Fushat bosh nuk dërgohen fare. Datat janë "yyyy-MM-dd" (siç i jep <input type="date">).
+export interface ReportFilters {
+  status?: ReportStatus | ''
+  categoryId?: number | ''
+  from?: string
+  to?: string
+}
+
+// Të gjitha raportet (vetëm Admin), më të rejat të parat. Filtrimin e bën backend-i.
+export function getAllReports(filters: ReportFilters = {}): Promise<Report[]> {
+  const params = new URLSearchParams()
+  if (filters.status) params.set('status', filters.status)
+  if (filters.categoryId) params.set('categoryId', String(filters.categoryId))
+  if (filters.from) params.set('from', filters.from)
+  if (filters.to) params.set('to', filters.to)
+
+  const query = params.toString()
+  return apiFetch<Report[]>(`/api/reports${query ? `?${query}` : ''}`)
+}
+
+// Ndryshon statusin (vetëm Admin). `reason` është e detyrueshme për Rejected dhe ruhet si koment.
+// Kthen raportin e përditësuar. 409 nëse rruga nuk lejohet (p.sh. Resolved → New).
+export function updateReportStatus(id: number, status: ReportStatus, reason?: string): Promise<Report> {
+  return apiFetch<Report>(`/api/reports/${id}/status`, {
+    method: 'PATCH',
+    body: { status, reason: reason?.trim() || undefined },
+  })
 }

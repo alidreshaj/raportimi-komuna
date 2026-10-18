@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import type { ReactNode } from 'react'
 import './ConfirmDialog.css'
 
 interface ConfirmDialogProps {
@@ -9,6 +10,8 @@ interface ConfirmDialogProps {
   busyLabel: string
   busy?: boolean
   error?: string | null
+  // Përmbajtje shtesë mes mesazhit dhe butonave (p.sh. një fushë teksti).
+  children?: ReactNode
   onConfirm: () => void
   onCancel: () => void
 }
@@ -23,6 +26,7 @@ function ConfirmDialog({
   busyLabel,
   busy = false,
   error = null,
+  children,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -60,6 +64,8 @@ function ConfirmDialog({
           {title}
         </h2>
         <p className="confirm-message">{message}</p>
+
+        {children}
 
         {error && (
           <p className="form-error" role="alert">

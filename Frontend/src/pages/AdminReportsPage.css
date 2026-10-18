@@ -1,0 +1,23 @@
+/* Filtrat e listës së adminit: një rresht që zbret poshtë në ekran të vogël. */
+
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.admin-filters .field {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.admin-filters .btn-outline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

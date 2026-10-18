@@ -76,6 +76,18 @@ Kontrollet para commit-it:
 
 Faqet pas hyrjes janë të mbrojtura: pa token të vlefshëm çojnë te `/login`.
 
+### Faqet e adminit (komuna)
+Admini hyn me email-in dhe fjalëkalimin e vendosur te `user-secrets` dhe shkon vetë te `/admin/raportet`.
+Qytetari nuk i hap këto faqe (ridrejtohet), dhe admini nuk hap faqet e qytetarit.
+
+| Rruga | Çfarë bën |
+|---|---|
+| `/admin/raportet` | Të gjitha raportet, me filtra: status, kategori, nga data, deri më |
+| `/admin/raportet/:id` | Raportuesi, përshkrimi, fotot, biseda dhe ndryshimi i statusit |
+
+Statusi ndryshon vetëm sipas rrugëve të lejuara: `New` → `InProgress` → `Resolved`, ose `New` → `Rejected`.
+Refuzimi kërkon arsye, që qytetari e shikon te biseda si koment.
+
 ## Endpoint-et deri tani
 | Metoda | Rruga | Qasja |
 |---|---|---|
@@ -116,4 +128,4 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 - Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.
 
 ## Statusi
-🚧 Në zhvillim. Përfunduar: Faza 1-7 (backend i plotë) dhe Faza 8-9 (frontend i qytetarit lidhur me API-n: hyrja, regjistrimi, raportet, fotot, biseda, ndryshimi dhe fshirja). Tani: Faza 10 (paneli i adminit). Pastaj Faza 11 (testimi final dhe README i plotë me foto të faqeve).
+🚧 Në zhvillim. Përfunduar: Faza 1-7 (backend i plotë) dhe Faza 8-9 (frontend i qytetarit lidhur me API-n: hyrja, regjistrimi, raportet, fotot, biseda, ndryshimi dhe fshirja). Faza 10 (paneli i adminit: lista me filtra, detajet, ndryshimi i statusit, komentet). Tani: Faza 11 (testimi final dhe README i plotë me foto të faqeve).

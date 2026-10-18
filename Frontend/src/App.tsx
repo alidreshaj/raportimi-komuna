@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router'
 import AppLayout from './components/AppLayout'
 import HomeRedirect from './components/HomeRedirect'
 import ProtectedRoute from './components/ProtectedRoute'
+import AdminReportDetailPage from './pages/AdminReportDetailPage'
 import AdminReportsPage from './pages/AdminReportsPage'
 import EditReportPage from './pages/EditReportPage'
 import LoginPage from './pages/LoginPage'
@@ -33,6 +34,7 @@ function App() {
       <Route element={<ProtectedRoute role="Admin" />}>
         <Route element={<AppLayout />}>
           <Route path="/admin/raportet" element={<AdminReportsPage />} />
+          <Route path="/admin/raportet/:id" element={<AdminReportDetailPage />} />
         </Route>
       </Route>
 

@@ -4,12 +4,20 @@ import { formatDate } from '../utils/format'
 import StatusBadge from './StatusBadge'
 import './ReportCard.css'
 
+interface ReportCardProps {
+  report: Report
+  // Ku çon karta; qytetari te /raportet/:id, admini te /admin/raportet/:id.
+  to?: string
+  // Admini duhet të shohë kush e ka dërguar raportin.
+  showReporter?: boolean
+}
+
 // Karta e një raporti te lista. E gjithë karta është lidhje drejt detajeve të raportit.
-function ReportCard({ report }: { report: Report }) {
+function ReportCard({ report, to = `/raportet/${report.id}`, showReporter = false }: ReportCardProps) {
   const photoCount = report.images.length
 
   return (
-    <Link to={`/raportet/${report.id}`} className="report-card">
+    <Link to={to} className="report-card">
       <div className="report-card-main">
         <div className="report-card-top">
           <StatusBadge status={report.status} />
@@ -17,6 +25,7 @@ function ReportCard({ report }: { report: Report }) {
         </div>
         <h3 className="report-card-title">{report.title}</h3>
         <p className="report-card-location">{report.location}</p>
+        {showReporter && <p className="report-card-location">Raportuar nga {report.reporterName}</p>}
       </div>
 
       <div className="report-card-meta">
