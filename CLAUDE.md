@@ -45,8 +45,9 @@ Faza 8 (frontend i qytetarit) është ndërtuar deri te hapi 8.9: hyrja, regjist
 
 Faza 10 (paneli i adminit) është ndërtuar: menyja dhe rrugët sipas rolit, lista e të gjitha raporteve me filtra (status, kategori, nga data, deri më), detajet me foto dhe bisedë, ndryshimi i statusit (Refuzo kërkon arsye) dhe komentimi. Kodi kalon `npm run build` dhe `npm run lint`; provat te shfletuesi i bën përdoruesi.
 
-Mbetet:
-- Faza 11: testimi final (qytetar dhe admin), README i plotë me foto të faqeve.
+Faza 11 është përfunduar: testimi final nga përdoruesi dhe README i plotë me foto te `docs/screenshots/`. Projekti është i përfunduar; shtesat e mundshme janë te `docs/plani.md` (seksioni 14).
+
+Mbetet (opsionale):
 - Gjëra të vogla të njohura: numri i komenteve nuk shfaqet te kartat (API nuk e kthen; do të duhej fusha `commentCount` te `ReportDto`); pozicioni i scroll-it ruhet kur ndërron faqe; mesazhet e validimit të backend-it janë në anglisht (frontend-i i parandalon); nuk ka teste automatike; biseda nuk rifreskohet vetë.
 
 ## Frontend: organizimi (Frontend/src)

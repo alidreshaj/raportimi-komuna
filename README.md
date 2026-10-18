@@ -16,6 +16,34 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 - Frontend: React 19 + TypeScript, Vite, React Router
 - Autentikimi: JWT
 
+## Pamje të faqeve
+
+### Qytetari
+**Hyrja** (`/login`)
+
+![Hyrja](docs/screenshots/01-hyrja.png)
+
+**Raportet e mia** (`/raportet`): lista me statusin e secilit raport
+
+![Raportet e mia](docs/screenshots/02-raportet-e-mia.png)
+
+**Raporto një problem** (`/raportet/i-ri`): titulli, kategoria, përshkrimi, vendi dhe deri në 5 foto
+
+![Forma e raportit](docs/screenshots/03-raport-i-ri.png)
+
+**Detajet e raportit** (`/raportet/:id`): fotot dhe biseda me komunën
+
+![Detajet e raportit](docs/screenshots/04-detajet.png)
+
+### Admini (komuna)
+**Të gjitha raportet** (`/admin/raportet`): lista me filtra sipas statusit, kategorisë dhe datës
+
+![Lista e adminit](docs/screenshots/05-admin-lista.png)
+
+**Detajet dhe ndryshimi i statusit** (`/admin/raportet/:id`)
+
+![Detajet e adminit](docs/screenshots/06-admin-detajet.png)
+
 ## Databaza
 ![Diagrami i databazës](docs/databaza-diagrami.png)
 
@@ -128,4 +156,6 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 - Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.
 
 ## Statusi
-🚧 Në zhvillim. Përfunduar: Faza 1-7 (backend i plotë) dhe Faza 8-9 (frontend i qytetarit lidhur me API-n: hyrja, regjistrimi, raportet, fotot, biseda, ndryshimi dhe fshirja). Faza 10 (paneli i adminit: lista me filtra, detajet, ndryshimi i statusit, komentet). Tani: Faza 11 (testimi final dhe README i plotë me foto të faqeve).
+✅ I përfunduar. Fazat 1-11: backend-i i plotë, frontend-i i qytetarit dhe paneli i adminit, i lidhur me API-n dhe i provuar.
+
+Ide për më vonë: historiku i statuseve, statistika për komunën, hartë me lokacionin e problemit, njoftim me email.
