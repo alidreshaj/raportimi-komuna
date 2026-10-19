@@ -152,6 +152,42 @@ namespace Backend.Migrations
                     b.ToTable("Reports");
                 });
 
+            modelBuilder.Entity("Backend.Models.StatusHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ChangedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FromStatus")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("ReportId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ToStatus")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangedByUserId");
+
+                    b.HasIndex("ReportId");
+
+                    b.ToTable("StatusHistories");
+                });
+
             modelBuilder.Entity("Backend.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -239,6 +275,25 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Backend.Models.StatusHistory", b =>
+                {
+                    b.HasOne("Backend.Models.User", "ChangedByUser")
+                        .WithMany()
+                        .HasForeignKey("ChangedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.Report", "Report")
+                        .WithMany("StatusHistory")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChangedByUser");
+
+                    b.Navigation("Report");
+                });
+
             modelBuilder.Entity("Backend.Models.Category", b =>
                 {
                     b.Navigation("Reports");
@@ -249,6 +304,8 @@ namespace Backend.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Images");
+
+                    b.Navigation("StatusHistory");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>

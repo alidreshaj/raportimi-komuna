@@ -25,7 +25,8 @@ public class Report
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
 
-    // Një raport ka shumë foto dhe shumë komente.
+    // Një raport ka shumë foto, shumë komente dhe historikun e ndryshimeve të statusit.
     public List<Image> Images { get; set; } = new();
     public List<Comment> Comments { get; set; } = new();
+    public List<StatusHistory> StatusHistory { get; set; } = new();
 }

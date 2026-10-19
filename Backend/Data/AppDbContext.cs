@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<Image> Images => Set<Image>();
+    public DbSet<StatusHistory> StatusHistories => Set<StatusHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -82,6 +83,25 @@ public class AppDbContext : DbContext
                 .WithMany(r => r.Images)
                 .HasForeignKey(i => i.ReportId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<StatusHistory>(e =>
+        {
+            // Statuset ruhen si tekst ("New", "InProgress"...), njësoj si te Reports.
+            e.Property(h => h.FromStatus).HasConversion<string>().HasMaxLength(20);
+            e.Property(h => h.ToStatus).HasConversion<string>().HasMaxLength(20);
+
+            // Kur fshihet raporti, fshihet edhe historiku i tij.
+            e.HasOne(h => h.Report)
+                .WithMany(r => r.StatusHistory)
+                .HasForeignKey(h => h.ReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Nuk lejohet të fshihet përdoruesi që ka bërë ndryshime.
+            e.HasOne(h => h.ChangedByUser)
+                .WithMany()
+                .HasForeignKey(h => h.ChangedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

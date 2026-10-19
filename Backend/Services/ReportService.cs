@@ -155,6 +155,15 @@ public class ReportService
             return (ReportActionResult.ReasonRequired, null);
         }
 
+        // Ruajmë historikun përpara se ta mbishkruajmë statusin: pas mbishkrimit vlera e vjetër humbet.
+        _db.StatusHistories.Add(new StatusHistory
+        {
+            ReportId = id,
+            FromStatus = report.Status,
+            ToStatus = newStatus,
+            ChangedByUserId = adminId
+        });
+
         report.Status = newStatus;
         report.UpdatedAt = DateTime.UtcNow;
 
@@ -168,7 +177,7 @@ public class ReportService
             });
         }
 
-        // Një ruajtje e vetme: ose ndryshojnë të dyja (statusi dhe komenti), ose asnjëra.
+        // Një ruajtje e vetme: ose ruhen të gjitha (statusi, historiku dhe komenti), ose asnjëra.
         await _db.SaveChangesAsync();
 
         var updated = await _db.Reports
