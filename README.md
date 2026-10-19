@@ -6,7 +6,7 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 ## Funksionalitetet
 - Regjistrim dhe login (qytetar / admin)
 - Krijimi i raportimeve me kategori, lokacion dhe foto
-- Ndjekja e statusit: New → InProgress → Resolved / Rejected
+- Ndjekja e statusit: New → InProgress → Resolved / Rejected, me historik të ndryshimeve (kush e ndryshoi dhe kur)
 - Komente mes komunës dhe qytetarit
 - Paneli i adminit për menaxhimin e raportimeve
 
@@ -99,7 +99,7 @@ Kontrollet para commit-it:
 | `/regjistrohu` | Regjistrimi i qytetarit |
 | `/raportet` | Raportet e mia (lista) |
 | `/raportet/i-ri` | Forma e raportit të ri, me deri në 5 foto |
-| `/raportet/:id` | Detajet, fotot dhe biseda me komunën |
+| `/raportet/:id` | Detajet, fotot, historiku i statusit dhe biseda me komunën |
 | `/raportet/:id/ndrysho` | Ndryshimi i raportit (vetëm kur është `New`) |
 
 Faqet pas hyrjes janë të mbrojtura: pa token të vlefshëm çojnë te `/login`.
@@ -111,10 +111,11 @@ Qytetari nuk i hap këto faqe (ridrejtohet), dhe admini nuk hap faqet e qytetari
 | Rruga | Çfarë bën |
 |---|---|
 | `/admin/raportet` | Të gjitha raportet, me filtra: status, kategori, nga data, deri më |
-| `/admin/raportet/:id` | Raportuesi, përshkrimi, fotot, biseda dhe ndryshimi i statusit |
+| `/admin/raportet/:id` | Raportuesi, përshkrimi, fotot, historiku i statusit, biseda dhe ndryshimi i statusit |
 
 Statusi ndryshon vetëm sipas rrugëve të lejuara: `New` → `InProgress` → `Resolved`, ose `New` → `Rejected`.
 Refuzimi kërkon arsye, që qytetari e shikon te biseda si koment.
+Çdo ndryshim statusi ruhet te tabela `StatusHistories` dhe shfaqet te detajet si afat kohor ("Historiku i statusit"). Raportet që kanë ndryshuar status para kësaj veçorie nuk kanë histori.
 
 ## Endpoint-et deri tani
 | Metoda | Rruga | Qasja |
@@ -132,6 +133,7 @@ Refuzimi kërkon arsye, që qytetari e shikon te biseda si koment.
 | PUT | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | DELETE | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | PATCH | `/api/reports/{id}/status` | vetëm Admin (New → InProgress → Resolved, ose New → Rejected). Fusha `reason` është e detyrueshme për `Rejected`, opsionale për të tjerat, dhe ruhet si koment |
+| GET | `/api/reports/{id}/history` | I zoti ose Admin (ndryshimet e statusit nga më i vjetri: nga, te, kush e ndryshoi, kur; lista bosh nëse s'ka ndryshuar ende) |
 | GET | `/api/reports/{id}/comments` | I zoti ose Admin (komentet, nga më i vjetri) |
 | POST | `/api/reports/{id}/comments` | I zoti ose Admin (edhe kur raporti është i mbyllur) |
 | POST | `/api/reports/{id}/images` | Qytetari, raportin e vet, vetëm kur është `New` (`multipart/form-data`, fusha `files`) |
@@ -156,6 +158,6 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 - Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.
 
 ## Statusi
-✅ I përfunduar. Fazat 1-11: backend-i i plotë, frontend-i i qytetarit dhe paneli i adminit, i lidhur me API-n dhe i provuar.
+✅ I përfunduar. Fazat 1-12: backend-i i plotë, frontend-i i qytetarit, paneli i adminit dhe historiku i statuseve, i lidhur me API-n dhe i provuar.
 
-Ide për më vonë: historiku i statuseve, statistika për komunën, hartë me lokacionin e problemit, njoftim me email.
+Ide për më vonë: statistika për komunën, hartë me lokacionin e problemit, njoftim me email.

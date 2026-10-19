@@ -1,4 +1,4 @@
-import type { Report, ReportInput, ReportStatus } from '../types'
+import type { Report, ReportInput, ReportStatus, StatusHistoryItem } from '../types'
 import { apiFetch } from './client'
 
 // Detajet e një raporti (i zoti ose Admin). Kthen 404 nëse nuk ekziston ose nuk është i yti.
@@ -53,4 +53,9 @@ export function updateReportStatus(id: number, status: ReportStatus, reason?: st
     method: 'PATCH',
     body: { status, reason: reason?.trim() || undefined },
   })
+}
+
+// Historiku i ndryshimeve të statusit (i zoti ose Admin). Lista bosh = statusi nuk ka ndryshuar ende.
+export function getStatusHistory(reportId: number): Promise<StatusHistoryItem[]> {
+  return apiFetch<StatusHistoryItem[]>(`/api/reports/${reportId}/history`)
 }

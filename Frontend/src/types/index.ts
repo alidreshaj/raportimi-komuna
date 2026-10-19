@@ -65,6 +65,15 @@ export interface CommentItem {
   authorRole: Role
 }
 
+// Një ndryshim statusi te historiku i raportit (GET /api/reports/{id}/history), nga më i vjetri te më i riu.
+export interface StatusHistoryItem {
+  id: number
+  fromStatus: ReportStatus
+  toStatus: ReportStatus
+  changedAt: string
+  changedByName: string
+}
+
 // Çfarë dërgohet për të krijuar ose ndryshuar një raport (POST dhe PUT /api/reports).
 export interface ReportInput {
   title: string

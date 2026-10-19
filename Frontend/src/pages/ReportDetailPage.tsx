@@ -5,6 +5,7 @@ import AuthImage from '../components/AuthImage'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Conversation from '../components/Conversation'
 import StatusBadge from '../components/StatusBadge'
+import StatusTimeline from '../components/StatusTimeline'
 import { useAuth } from '../context/useAuth'
 import { useReport } from '../hooks/useReport'
 import { STATUS_LABELS, formatDate } from '../utils/format'
@@ -109,6 +110,8 @@ function ReportDetailPage() {
                 </div>
               </dl>
             </section>
+
+            <StatusTimeline reportId={report.id} />
 
             {/* Rregulli i planit: qytetari ndryshon ose fshin raportin vetëm kur është New. */}
             {user?.role === 'Citizen' && (

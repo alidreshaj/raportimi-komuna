@@ -24,7 +24,7 @@ Controllers → Services → Data (AppDbContext) → PostgreSQL
 - Controllers: vetëm pranojnë kërkesën dhe kthejnë përgjigjen, pa logjikë.
 - Services: logjika dhe rregullat e biznesit.
 - Data: AppDbContext me EF Core.
-- Models: User, Report, Category, Comment, Image.
+- Models: User, Report, Category, Comment, Image, StatusHistory.
 - DTOs: të dhënat që shkojnë/vijnë nga klienti (kurrë mos kthe PasswordHash).
 
 ## Rregulla
@@ -45,7 +45,9 @@ Faza 8 (frontend i qytetarit) është ndërtuar deri te hapi 8.9: hyrja, regjist
 
 Faza 10 (paneli i adminit) është ndërtuar: menyja dhe rrugët sipas rolit, lista e të gjitha raporteve me filtra (status, kategori, nga data, deri më), detajet me foto dhe bisedë, ndryshimi i statusit (Refuzo kërkon arsye) dhe komentimi. Kodi kalon `npm run build` dhe `npm run lint`; provat te shfletuesi i bën përdoruesi.
 
-Faza 11 është përfunduar: testimi final nga përdoruesi dhe README i plotë me foto te `docs/screenshots/`. Projekti është i përfunduar; shtesat e mundshme janë te `docs/plani.md` (seksioni 14).
+Faza 12 (historiku i statuseve) është përfunduar: tabela `StatusHistories` (nga, te, kush, kur; lidhet me Reports dhe Users), `UpdateStatusAsync` e regjistron çdo ndryshim në të njëjtën ruajtje me statusin, endpoint-i `GET /api/reports/{id}/history` (i zoti ose Admin, 404 për të tjerët), dhe komponenti `StatusTimeline` te të dyja faqet e detajeve. Raportet e vjetra nuk kanë histori (lista bosh).
+
+Faza 11 është përfunduar: testimi final nga përdoruesi dhe README i plotë me foto te `docs/screenshots/`. Projekti është i përfunduar; shtesat e mundshme janë te `docs/plani.md` (seksioni 14): statistika për komunën, hartë, email (historiku i statuseve u bë te Faza 12).
 
 Mbetet (opsionale):
 - Gjëra të vogla të njohura: numri i komenteve nuk shfaqet te kartat (API nuk e kthen; do të duhej fusha `commentCount` te `ReportDto`); pozicioni i scroll-it ruhet kur ndërron faqe; mesazhet e validimit të backend-it janë në anglisht (frontend-i i parandalon); nuk ka teste automatike; biseda nuk rifreskohet vetë.
@@ -54,7 +56,7 @@ Mbetet (opsionale):
 - `api/`: i vetmi vend që flet me backend-in. `client.ts` ka `apiFetch` (JSON) dhe `apiFetchBlob` (foto); shton tokenin vetë, hedh `ApiError` me `status` dhe mesazh në shqip, dhe te 401 me token pastron sesionin. Tokeni ruhet te `localStorage` (`token.ts`). Një file për temë: `auth`, `categories`, `reports`, `comments`, `images`.
 - `context/`: `AuthProvider` + `useAuth` mbajnë sesionin (`user`, `loading`, `login`, `logout`) dhe e rikthejnë pas rifreskimit me `GET /api/auth/me`.
 - `hooks/`: `useReport`, `useCategories` (ngarkim me gjendje po ngarkohet/gabim).
-- `components/`: `AppLayout` (menyja), `AuthShell` (paneli blu i hyrjes/regjistrimit), `ProtectedRoute`, `StatusBadge`, `ReportCard`, `ReportFields` (fushat e formës së raportit), `HomeRedirect` (te faqja kryesore e rolit), `StatusPanel` (admini ndryshon statusin; rrugët e lejuara dhe dialogu i arsyes), `PhotoPicker` (zgjedhja e fotove me parapamje), `AuthImage` (foto e mbrojtur me token), `Conversation` (biseda), `ConfirmDialog` (konfirmim me `<dialog>`, pranon përmbajtje shtesë si `children`). `ProtectedRoute` pranon `role` opsional.
+- `components/`: `AppLayout` (menyja), `AuthShell` (paneli blu i hyrjes/regjistrimit), `ProtectedRoute`, `StatusBadge`, `ReportCard`, `ReportFields` (fushat e formës së raportit), `HomeRedirect` (te faqja kryesore e rolit), `StatusPanel` (admini ndryshon statusin; rrugët e lejuara dhe dialogu i arsyes), `PhotoPicker` (zgjedhja e fotove me parapamje), `AuthImage` (foto e mbrojtur me token), `Conversation` (biseda), `StatusTimeline` (afati kohor i statusit), `ConfirmDialog` (konfirmim me `<dialog>`, pranon përmbajtje shtesë si `children`). `ProtectedRoute` pranon `role` opsional.
 - `pages/`: `LoginPage`, `RegisterPage`, `ReportsPage`, `NewReportPage`, `ReportDetailPage`, `EditReportPage`, `AdminReportsPage` (lista me filtra), `AdminReportDetailPage`.
 - `utils/`: `format.ts` (data/ora në shqip, etiketat e statuseve), `roles.ts` (`homePathFor`: faqja kryesore e rolit), `photos.ts` (rregullat e fotove), `reportForm.ts` (validimi dhe kufijtë e formës së raportit).
 - `types/index.ts`: tipet që pasqyrojnë DTO-të e backend-it.

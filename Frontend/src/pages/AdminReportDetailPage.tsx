@@ -4,6 +4,7 @@ import AuthImage from '../components/AuthImage'
 import Conversation from '../components/Conversation'
 import StatusBadge from '../components/StatusBadge'
 import StatusPanel from '../components/StatusPanel'
+import StatusTimeline from '../components/StatusTimeline'
 import { useReport } from '../hooks/useReport'
 import type { Report } from '../types'
 import { STATUS_LABELS, formatDate } from '../utils/format'
@@ -17,7 +18,7 @@ function AdminReportDetailPage() {
 
   // Raporti i përditësuar pas ndryshimit të statusit (përgjigjja e serverit). Kur nuk ka, përdorim të ngarkuarin.
   const [updated, setUpdated] = useState<Report | null>(null)
-  // Rritet pas çdo ndryshimi statusi: biseda rikarkohet, sepse arsyeja e refuzimit ruhet si koment i ri.
+  // Rritet pas çdo ndryshimi statusi: biseda dhe historiku rikarkohen (arsyeja e refuzimit ruhet si koment i ri).
   const [chatVersion, setChatVersion] = useState(0)
 
   const report = updated && updated.id === loaded?.id ? updated : loaded
@@ -96,6 +97,8 @@ function AdminReportDetailPage() {
                 </div>
               </dl>
             </section>
+
+            <StatusTimeline key={chatVersion} reportId={report.id} />
           </aside>
         </div>
       )}
