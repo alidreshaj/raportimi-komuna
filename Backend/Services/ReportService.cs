@@ -280,4 +280,30 @@ public class ReportService
             .Select(ToDto)
             .FirstOrDefaultAsync();
     }
+
+    // Historiku i ndryshimeve të statusit, nga më i vjetri te më i riu (i zoti i raportit ose Admin).
+    // Kthen null nëse raporti nuk ekziston ose nuk është i këtij përdoruesi (404). Lista bosh = pa ndryshime ende.
+    public async Task<List<StatusHistoryDto>?> GetHistoryAsync(int userId, bool isAdmin, int id)
+    {
+        var canAccess = await _db.Reports.AnyAsync(r => r.Id == id && (isAdmin || r.UserId == userId));
+        if (!canAccess)
+        {
+            return null;
+        }
+
+        return await _db.StatusHistories
+            .AsNoTracking()
+            .Where(h => h.ReportId == id)
+            .OrderBy(h => h.ChangedAt)
+            .ThenBy(h => h.Id)
+            .Select(h => new StatusHistoryDto
+            {
+                Id = h.Id,
+                FromStatus = h.FromStatus.ToString(),
+                ToStatus = h.ToStatus.ToString(),
+                ChangedAt = h.ChangedAt,
+                ChangedByName = h.ChangedByUser.Name
+            })
+            .ToListAsync();
+    }
 }

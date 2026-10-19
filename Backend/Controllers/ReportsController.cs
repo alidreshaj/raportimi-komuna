@@ -135,4 +135,20 @@ public class ReportsController : ControllerBase
 
         return Ok(report);
     }
+
+    // GET /api/reports/{id}/history: ndryshimet e statusit të raportit (i zoti ose Admin).
+    [HttpGet("{id:int}/history")]
+    [ProducesResponseType(typeof(List<StatusHistoryDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHistory(int id)
+    {
+        var history = await _reportService.GetHistoryAsync(User.GetUserId(), User.IsInRole("Admin"), id);
+
+        if (history is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(history);
+    }
 }
