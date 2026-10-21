@@ -6,7 +6,7 @@ import ReportFields from '../components/ReportFields'
 import { useAuth } from '../context/useAuth'
 import { useCategories } from '../hooks/useCategories'
 import { useReport } from '../hooks/useReport'
-import type { Report } from '../types'
+import type { GeoPoint, Report } from '../types'
 import { formFromReport, toReportInput, validateReportForm } from '../utils/reportForm'
 import type { ReportFormState } from '../utils/reportForm'
 // Përdor të njëjtat stile si forma e krijimit (.new-report, .report-form, .form-actions).
@@ -24,6 +24,10 @@ function EditReportForm({ report }: { report: Report }) {
 
   function updateField(field: keyof ReportFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  function updatePoint(point: GeoPoint | null) {
+    setForm((prev) => ({ ...prev, point }))
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -55,6 +59,7 @@ function EditReportForm({ report }: { report: Report }) {
         <ReportFields
           form={form}
           onChange={updateField}
+          onPointChange={updatePoint}
           categories={categories}
           categoriesError={categoriesError}
           onRetryCategories={retryCategories}

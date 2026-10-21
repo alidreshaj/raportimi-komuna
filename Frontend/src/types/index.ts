@@ -41,6 +41,12 @@ export interface ImageInfo {
   url: string
 }
 
+// Një pikë në hartë (koordinata gjeografike).
+export interface GeoPoint {
+  latitude: number
+  longitude: number
+}
+
 export interface Report {
   id: number
   title: string

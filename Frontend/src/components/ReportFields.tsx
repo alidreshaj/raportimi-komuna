@@ -1,17 +1,20 @@
-import type { Category } from '../types'
+import type { Category, GeoPoint } from '../types'
+import LocationPicker from './maps/LocationPicker'
 import { LIMITS } from '../utils/reportForm'
 import type { ReportFormState } from '../utils/reportForm'
 
 interface ReportFieldsProps {
   form: ReportFormState
   onChange: (field: keyof ReportFormState, value: string) => void
+  // Pika në hartë ndryshon veçmas, sepse nuk është tekst.
+  onPointChange: (point: GeoPoint | null) => void
   categories: Category[] | null
   categoriesError: string | null
   onRetryCategories: () => void
 }
 
-// Katër fushat e formës së raportit (titulli, kategoria, përshkrimi, vendi). I përdorin krijimi dhe ndryshimi.
-function ReportFields({ form, onChange, categories, categoriesError, onRetryCategories }: ReportFieldsProps) {
+// Fushat e formës së raportit (titulli, kategoria, përshkrimi, vendi dhe pika në hartë). I përdorin krijimi dhe ndryshimi.
+function ReportFields({ form, onChange, onPointChange, categories, categoriesError, onRetryCategories }: ReportFieldsProps) {
   return (
     <>
       <div className="field">
@@ -83,6 +86,8 @@ function ReportFields({ form, onChange, categories, categoriesError, onRetryCate
         />
         <span className="field-hint">Adresa ose një përshkrim i vendit.</span>
       </div>
+
+      <LocationPicker value={form.point} onChange={onPointChange} />
     </>
   )
 }

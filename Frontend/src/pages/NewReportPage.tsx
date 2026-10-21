@@ -6,6 +6,7 @@ import { createReport } from '../api/reports'
 import PhotoPicker from '../components/PhotoPicker'
 import ReportFields from '../components/ReportFields'
 import { useCategories } from '../hooks/useCategories'
+import type { GeoPoint } from '../types'
 import { EMPTY_REPORT_FORM, toReportInput, validateReportForm } from '../utils/reportForm'
 import type { ReportFormState } from '../utils/reportForm'
 import './NewReportPage.css'
@@ -27,6 +28,10 @@ function NewReportPage() {
   // Ndryshon vetëm një fushë dhe i lë të tjerat siç janë.
   function updateField(field: keyof ReportFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  function updatePoint(point: GeoPoint | null) {
+    setForm((prev) => ({ ...prev, point }))
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -91,6 +96,7 @@ function NewReportPage() {
           <ReportFields
             form={form}
             onChange={updateField}
+            onPointChange={updatePoint}
             categories={categories}
             categoriesError={categoriesError}
             onRetryCategories={retryCategories}
