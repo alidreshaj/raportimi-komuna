@@ -5,16 +5,18 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 
 ## Funksionalitetet
 - Regjistrim dhe login (qytetar / admin)
-- Krijimi i raportimeve me kategori, lokacion dhe foto
+- Krijimi i raportimeve me kategori, lokacion, foto dhe pikë në hartë
 - Ndjekja e statusit: New → InProgress → Resolved / Rejected, me historik të ndryshimeve (kush e ndryshoi dhe kur)
 - Komente mes komunës dhe qytetarit
 - Paneli i adminit për menaxhimin e raportimeve
 - Statistika për komunën: totali, sipas statusit, sipas kategorisë dhe sipas muajit, me grafikë
+- Harta: qytetari zgjedh vendin e problemit në hartë (me klikim ose me vendndodhjen e tij), dhe admini i sheh të gjitha raportet në hartë
 
 ## Teknologjitë
 - Backend: ASP.NET Core Web API (C#, .NET 10)
 - Databaza: PostgreSQL + Entity Framework Core
 - Frontend: React 19 + TypeScript, Vite, React Router
+- Harta: Leaflet (react-leaflet), pllakat e OpenStreetMap dhe imazhet satelitore të Esri, pa çelës API
 - Autentikimi: JWT
 
 ## Pamje të faqeve
@@ -99,8 +101,8 @@ Kontrollet para commit-it:
 | `/login` | Hyrja |
 | `/regjistrohu` | Regjistrimi i qytetarit |
 | `/raportet` | Raportet e mia (lista) |
-| `/raportet/i-ri` | Forma e raportit të ri, me deri në 5 foto |
-| `/raportet/:id` | Detajet, fotot, historiku i statusit dhe biseda me komunën |
+| `/raportet/i-ri` | Forma e raportit të ri, me deri në 5 foto dhe pikë opsionale në hartë (klikim, tërheqje e shenjës, ose "Përdor vendndodhjen time") |
+| `/raportet/:id` | Detajet, fotot, harta (kur raporti ka pikë), historiku i statusit dhe biseda me komunën |
 | `/raportet/:id/ndrysho` | Ndryshimi i raportit (vetëm kur është `New`) |
 
 Faqet pas hyrjes janë të mbrojtura: pa token të vlefshëm çojnë te `/login`.
@@ -111,13 +113,16 @@ Qytetari nuk i hap këto faqe (ridrejtohet), dhe admini nuk hap faqet e qytetari
 
 | Rruga | Çfarë bën |
 |---|---|
-| `/admin/raportet` | Të gjitha raportet, me filtra: status, kategori, nga data, deri më |
-| `/admin/raportet/:id` | Raportuesi, përshkrimi, fotot, historiku i statusit, biseda dhe ndryshimi i statusit |
+| `/admin/raportet` | Të gjitha raportet, me filtra: status, kategori, nga data, deri më. Çelës "Listë / Hartë": harta shfaq raportet me pikë, me shenjë në ngjyrën e statusit, grupe kur janë afër njëra-tjetrës dhe një kartë me lidhje te detajet |
+| `/admin/raportet/:id` | Raportuesi, përshkrimi, fotot, harta, historiku i statusit, biseda dhe ndryshimi i statusit |
 | `/admin/statistika` | Statistikat: katër numra kryesorë, donut sipas statusit, shirita sipas kategorisë, vija e raporteve çdo muaj. Çdo grafik ka edhe pamje si tabelë |
 
 Statusi ndryshon vetëm sipas rrugëve të lejuara: `New` → `InProgress` → `Resolved`, ose `New` → `Rejected`.
 Refuzimi kërkon arsye, që qytetari e shikon te biseda si koment.
 Çdo ndryshim statusi ruhet te tabela `StatusHistories` dhe shfaqet te detajet si afat kohor ("Historiku i statusit"). Raportet që kanë ndryshuar status para kësaj veçorie nuk kanë histori.
+
+### Hartat
+Të gjitha hartat kanë një çelës lart djathtas për të ndërruar mes "Harta" (OpenStreetMap) dhe "Satelit" (Esri World Imagery me emrat e vendeve). Koordinatat ruhen te `Reports` (`Latitude`, `Longitude`), të dyja opsionale; raportet pa pikë nuk shfaqen në hartë, por numërohen poshtë saj. Atribuimi poshtë djathtas është kusht i ofruesve të pllakave dhe nuk hiqet.
 
 ## Endpoint-et deri tani
 | Metoda | Rruga | Qasja |
@@ -128,7 +133,7 @@ Refuzimi kërkon arsye, që qytetari e shikon te biseda si koment.
 | GET | `/api/auth/me` | çdo përdorues i loguar |
 | GET | `/api/auth/admin-only` | vetëm Admin (endpoint prove) |
 | GET | `/api/categories` | publike (lista e kategorive) |
-| POST | `/api/reports` | Qytetari (krijon raport me status `New`) |
+| POST | `/api/reports` | Qytetari (krijon raport me status `New`; `latitude` dhe `longitude` janë opsionale) |
 | GET | `/api/reports/my` | Qytetari (raportet e veta) |
 | GET | `/api/reports/{id}` | I zoti ose Admin (të tjerët marrin 404) |
 | GET | `/api/reports` | vetëm Admin, filtra: `status`, `categoryId`, `from`, `to` |
@@ -161,6 +166,6 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 - Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.
 
 ## Statusi
-✅ I përfunduar. Fazat 1-13: backend-i i plotë, frontend-i i qytetarit, paneli i adminit, historiku i statuseve dhe statistikat për komunën, i lidhur me API-n dhe i provuar.
+✅ I përfunduar. Fazat 1-14: backend-i i plotë, frontend-i i qytetarit, paneli i adminit, historiku i statuseve, statistikat për komunën dhe hartat, i lidhur me API-n dhe i provuar.
 
-Ide për më vonë: hartë me lokacionin e problemit, njoftim me email.
+Ide për më vonë: njoftim me email; hartë e komunave të Kosovës e ngjyrosur sipas numrit të raporteve.
