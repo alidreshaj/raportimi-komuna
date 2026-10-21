@@ -12,14 +12,32 @@ interface MapViewProps {
   children?: ReactNode
   // Teksti për lexuesit e ekranit.
   label: string
+  // Rrota e mausit zmadhon hartën. Te faqet me scroll (detajet) e fikim, përndryshe harta e "kap" rrotën kur kalon sipër saj.
+  scrollWheelZoom?: boolean
+  // Klasë shtesë, që faqja ta ndryshojë lartësinë.
+  className?: string
 }
 
 // Harta bazë me dy pamje që ndërrohen me çelësin lart djathtas: "Harta" (OpenStreetMap) dhe "Satelit" (foto nga lart).
 // Të dyja janë pa çelës API. Atribuimi poshtë djathtas është kusht i tyre, prandaj nuk hiqet.
 // Komponentët e tjerë (zgjedhja e pikës, harta e detajeve, harta e adminit) e përdorin këtë dhe shtojnë vetëm përmbajtjen e vet.
-function MapView({ center = DEFAULT_CENTER, zoom = DEFAULT_ZOOM, children, label }: MapViewProps) {
+function MapView({
+  center = DEFAULT_CENTER,
+  zoom = DEFAULT_ZOOM,
+  children,
+  label,
+  scrollWheelZoom = true,
+  className,
+}: MapViewProps) {
   return (
-    <MapContainer center={center} zoom={zoom} maxZoom={18} scrollWheelZoom className="map-view" aria-label={label}>
+    <MapContainer
+      center={center}
+      zoom={zoom}
+      maxZoom={18}
+      scrollWheelZoom={scrollWheelZoom}
+      className={className ? `map-view ${className}` : 'map-view'}
+      aria-label={label}
+    >
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="Harta">
           <TileLayer

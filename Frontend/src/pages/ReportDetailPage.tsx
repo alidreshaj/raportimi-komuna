@@ -4,6 +4,7 @@ import { deleteReport } from '../api/reports'
 import AuthImage from '../components/AuthImage'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Conversation from '../components/Conversation'
+import ReportMap from '../components/maps/ReportMap'
 import StatusBadge from '../components/StatusBadge'
 import StatusTimeline from '../components/StatusTimeline'
 import { useAuth } from '../context/useAuth'
@@ -84,6 +85,10 @@ function ReportDetailPage() {
                 </ul>
               )}
             </article>
+
+            {report.latitude !== null && report.longitude !== null && (
+              <ReportMap latitude={report.latitude} longitude={report.longitude} title={report.title} />
+            )}
 
             <Conversation reportId={report.id} />
           </div>

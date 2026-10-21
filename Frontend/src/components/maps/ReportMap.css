@@ -1,0 +1,10 @@
+/* Harta e detajeve është më e ulët se ajo e formës: është vetëm për ta parë vendin. */
+.report-map .report-map-view {
+  height: 280px;
+}
+
+.report-map-link {
+  align-self: flex-start;
+  font-size: 14px;
+  font-weight: 600;
+}
