@@ -19,6 +19,13 @@
   gap: 12px;
 }
 
+/* Butonat anash njëri-tjetrit; zbresin poshtë në ekran të ngushtë. */
+.location-picker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 /* Kur forma bllokohet (raporti u krijua), harta nuk pranon më klikime. */
 fieldset:disabled .location-picker-map {
   pointer-events: none;
