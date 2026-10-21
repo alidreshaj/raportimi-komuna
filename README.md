@@ -9,6 +9,7 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 - Ndjekja e statusit: New → InProgress → Resolved / Rejected, me historik të ndryshimeve (kush e ndryshoi dhe kur)
 - Komente mes komunës dhe qytetarit
 - Paneli i adminit për menaxhimin e raportimeve
+- Statistika për komunën: totali, sipas statusit, sipas kategorisë dhe sipas muajit, me grafikë
 
 ## Teknologjitë
 - Backend: ASP.NET Core Web API (C#, .NET 10)
@@ -112,6 +113,7 @@ Qytetari nuk i hap këto faqe (ridrejtohet), dhe admini nuk hap faqet e qytetari
 |---|---|
 | `/admin/raportet` | Të gjitha raportet, me filtra: status, kategori, nga data, deri më |
 | `/admin/raportet/:id` | Raportuesi, përshkrimi, fotot, historiku i statusit, biseda dhe ndryshimi i statusit |
+| `/admin/statistika` | Statistikat: katër numra kryesorë, donut sipas statusit, shirita sipas kategorisë, vija e raporteve çdo muaj. Çdo grafik ka edhe pamje si tabelë |
 
 Statusi ndryshon vetëm sipas rrugëve të lejuara: `New` → `InProgress` → `Resolved`, ose `New` → `Rejected`.
 Refuzimi kërkon arsye, që qytetari e shikon te biseda si koment.
@@ -133,6 +135,7 @@ Refuzimi kërkon arsye, që qytetari e shikon te biseda si koment.
 | PUT | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | DELETE | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | PATCH | `/api/reports/{id}/status` | vetëm Admin (New → InProgress → Resolved, ose New → Rejected). Fusha `reason` është e detyrueshme për `Rejected`, opsionale për të tjerat, dhe ruhet si koment |
+| GET | `/api/reports/stats` | vetëm Admin (vetëm numra: `total`, `byStatus` me të katër statuset, `byCategory` me të gjitha kategoritë, `byMonth` me 6 muajt e fundit; muajt me 0 përfshihen) |
 | GET | `/api/reports/{id}/history` | I zoti ose Admin (ndryshimet e statusit nga më i vjetri: nga, te, kush e ndryshoi, kur; lista bosh nëse s'ka ndryshuar ende) |
 | GET | `/api/reports/{id}/comments` | I zoti ose Admin (komentet, nga më i vjetri) |
 | POST | `/api/reports/{id}/comments` | I zoti ose Admin (edhe kur raporti është i mbyllur) |
@@ -158,6 +161,6 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 - Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.
 
 ## Statusi
-✅ I përfunduar. Fazat 1-12: backend-i i plotë, frontend-i i qytetarit, paneli i adminit dhe historiku i statuseve, i lidhur me API-n dhe i provuar.
+✅ I përfunduar. Fazat 1-13: backend-i i plotë, frontend-i i qytetarit, paneli i adminit, historiku i statuseve dhe statistikat për komunën, i lidhur me API-n dhe i provuar.
 
-Ide për më vonë: statistika për komunën, hartë me lokacionin e problemit, njoftim me email.
+Ide për më vonë: hartë me lokacionin e problemit, njoftim me email.
