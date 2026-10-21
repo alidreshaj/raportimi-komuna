@@ -1,0 +1,11 @@
+/* Harta ka lartësi të caktuar (Leaflet nuk vizatohet pa të). */
+.map-view {
+  width: 100%;
+  height: 360px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  /* Leaflet përdor z-index të lartë për shtresat e veta; "isolation" i mban brenda hartës, që të mos mbulojnë menynë ose kutitë. */
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+}

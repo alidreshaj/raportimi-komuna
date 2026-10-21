@@ -8,6 +8,7 @@ import AdminReportsPage from './pages/AdminReportsPage'
 import AdminStatsPage from './pages/AdminStatsPage'
 import EditReportPage from './pages/EditReportPage'
 import LoginPage from './pages/LoginPage'
+import MapDemoPage from './pages/MapDemoPage'
 import NewReportPage from './pages/NewReportPage'
 import RegisterPage from './pages/RegisterPage'
 import ReportDetailPage from './pages/ReportDetailPage'
@@ -22,6 +23,8 @@ function App() {
         {/* Faqe publike */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/regjistrohu" element={<RegisterPage />} />
+        {/* Përkohësisht (hapi 1 i hartës): fshihet te hapi 2 */}
+        <Route path="/harta-prove" element={<MapDemoPage />} />
 
         {/* Faqet e qytetarit: ProtectedRoute kontrollon sesionin dhe rolin, AppLayout shton menynë lart */}
         <Route element={<ProtectedRoute role="Citizen" />}>
