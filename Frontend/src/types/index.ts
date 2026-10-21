@@ -74,6 +74,33 @@ export interface StatusHistoryItem {
   changedByName: string
 }
 
+// Statistikat për komunën (GET /api/reports/stats, vetëm Admin): vetëm numra.
+export interface StatusCount {
+  status: ReportStatus
+  count: number
+}
+
+export interface CategoryCount {
+  categoryId: number
+  categoryName: string
+  count: number
+}
+
+export interface MonthCount {
+  year: number
+  // 1-12
+  month: number
+  count: number
+}
+
+export interface Stats {
+  total: number
+  byStatus: StatusCount[]
+  byCategory: CategoryCount[]
+  // 6 muajt e fundit, nga më i vjetri
+  byMonth: MonthCount[]
+}
+
 // Çfarë dërgohet për të krijuar ose ndryshuar një raport (POST dhe PUT /api/reports).
 export interface ReportInput {
   title: string

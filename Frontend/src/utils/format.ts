@@ -2,7 +2,7 @@ import type { ReportStatus } from '../types'
 
 // Datat vijnë nga backend-i në UTC (me "Z" në fund); new Date() i kthen në orën lokale të përdoruesit.
 // Muajt i shkruajmë vetë, sepse Intl varet nga gjuhët që ka shfletuesi: pa shqipen, data del në anglisht ("October 18").
-const MONTHS = [
+export const MONTHS = [
   'janar',
   'shkurt',
   'mars',
@@ -16,6 +16,9 @@ const MONTHS = [
   'nëntor',
   'dhjetor',
 ]
+
+// Shkurtimet për boshtet e grafikëve (vend i pakët): "tetor" → "tet".
+export const MONTHS_SHORT = ['jan', 'shk', 'mar', 'pri', 'maj', 'qer', 'kor', 'gus', 'sht', 'tet', 'nën', 'dhj']
 
 // "2026-10-12T14:30:00Z" → "12 tetor 2026"
 export function formatDate(iso: string): string {
@@ -44,4 +47,9 @@ export const STATUS_LABELS: Record<ReportStatus, string> = {
 // pluralize(1, 'raport', 'raporte') → "1 raport"; pluralize(4, ...) → "4 raporte"
 export function pluralize(count: number, singular: string, plural: string): string {
   return `${count} ${count === 1 ? singular : plural}`
+}
+
+// Përqindja e plotë e një pjese nga totali; 0 kur totali është 0 (që të mos dalë NaN).
+export function percentOf(part: number, total: number): number {
+  return total > 0 ? Math.round((part / total) * 100) : 0
 }

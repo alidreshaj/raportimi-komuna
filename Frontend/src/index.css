@@ -13,6 +13,13 @@
   --danger-bg: #f6e1e1;
   --danger-text: #8a2323;
 
+  /* Ngjyrat e statuseve te grafikët: të njëjtat nuanca si etiketat, më të forta, që të dallohen si shenja grafiku.
+     Të kontrolluara me validatorin (kontrast 3:1, dallueshmëri edhe për daltonizëm). */
+  --chart-new: #2b6cb0;
+  --chart-inprogress: #c48000;
+  --chart-resolved: #2fa870;
+  --chart-rejected: #9c2323;
+
   font-family: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--ink);
   line-height: 1.5;

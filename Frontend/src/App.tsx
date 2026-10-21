@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ScrollToTop from './components/ScrollToTop'
 import AdminReportDetailPage from './pages/AdminReportDetailPage'
 import AdminReportsPage from './pages/AdminReportsPage'
+import AdminStatsPage from './pages/AdminStatsPage'
 import EditReportPage from './pages/EditReportPage'
 import LoginPage from './pages/LoginPage'
 import NewReportPage from './pages/NewReportPage'
@@ -38,6 +39,7 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/admin/raportet" element={<AdminReportsPage />} />
             <Route path="/admin/raportet/:id" element={<AdminReportDetailPage />} />
+          <Route path="/admin/statistika" element={<AdminStatsPage />} />
           </Route>
         </Route>
 

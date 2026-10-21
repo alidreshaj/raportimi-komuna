@@ -1,0 +1,83 @@
+.line-chart {
+  width: 100%;
+  min-height: 260px;
+}
+
+.line-chart svg {
+  display: block;
+}
+
+/* Rrjeta dhe boshtet: vija të holla, të plota, pak më të errëta se sfondi (nuk kërkojnë vëmendje). */
+.line-grid {
+  stroke: var(--line-soft);
+  stroke-width: 1;
+}
+
+.line-axis {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.line-tick {
+  font-size: 12px;
+  fill: var(--muted);
+}
+
+.line-tick--strong {
+  font-weight: 700;
+  fill: var(--ink);
+}
+
+/* Zona nën vijë: vetëm një njollë e lehtë e së njëjtës ngjyrë (10%). */
+.line-area {
+  fill: var(--accent);
+  fill-opacity: 0.1;
+  animation: line-fade 0.8s ease-out;
+}
+
+.line-stroke {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  animation: line-draw 0.9s ease-out;
+}
+
+.line-cursor {
+  stroke: var(--field-border);
+  stroke-width: 1;
+}
+
+/* Pika në vijë: unazë e bardhë 2px që e ndan nga vija dhe nga rrjeta. */
+.line-dot {
+  fill: var(--accent);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+.line-end-value {
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--ink);
+}
+
+@keyframes line-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes line-fade {
+  from {
+    fill-opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line-stroke,
+  .line-area {
+    animation: none;
+  }
+}

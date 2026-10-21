@@ -1,0 +1,37 @@
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.stat-tile-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.stat-tile-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Numrat e mëdhenj me shifra proporcionale (jo "tabular"): "121" duket i shtrënguar, jo i hapur. */
+.stat-tile-value {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.stat-tile-hint {
+  font-size: 13px;
+  color: var(--muted);
+}

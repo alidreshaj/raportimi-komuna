@@ -39,9 +39,14 @@ function AppLayout() {
 
           <nav className="app-nav" aria-label="Menyja kryesore">
             {user?.role === 'Admin' ? (
-              <NavLink to="/admin/raportet" className={({ isActive }) => (isActive ? 'active' : undefined)}>
-                Të gjitha raportet
-              </NavLink>
+              <>
+                <NavLink to="/admin/raportet" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+                  Të gjitha raportet
+                </NavLink>
+                <NavLink to="/admin/statistika" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+                  Statistika
+                </NavLink>
+              </>
             ) : (
               <>
                 {/* "Raportet e mia" është aktive te lista dhe te detajet, por jo te forma e re */}
