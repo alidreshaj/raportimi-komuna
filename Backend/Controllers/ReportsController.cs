@@ -120,6 +120,16 @@ public class ReportsController : ControllerBase
         };
     }
 
+    // GET /api/reports/stats: përmbledhja për komunën (vetëm Admin).
+    // Nuk ka konflikt me /{id}, sepse adresa e atij pranon vetëm numra (id:int).
+    [HttpGet("stats")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(StatsDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStats()
+    {
+        return Ok(await _reportService.GetStatsAsync());
+    }
+
     // GET /api/reports/{id}: detajet e një raporti (i zoti ose Admin).
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ReportDto), StatusCodes.Status200OK)]

@@ -281,6 +281,69 @@ public class ReportService
             .FirstOrDefaultAsync();
     }
 
+    // Përmbledhja për komunën: sa raporte ka gjithsej, sipas statusit, sipas kategorisë dhe sipas muajit.
+    // Numërimi bëhet nga databaza (GroupBy), kështu nuk shkarkojmë raportet vetëm për t'i numëruar.
+    public async Task<StatsDto> GetStatsAsync()
+    {
+        var statusCounts = await _db.Reports
+            .AsNoTracking()
+            .GroupBy(r => r.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+        // Të katër statuset gjithmonë, edhe ato që nuk kanë asnjë raport.
+        var byStatus = Enum.GetValues<ReportStatus>()
+            .Select(s => new StatusCountDto
+            {
+                Status = s.ToString(),
+                Count = statusCounts.FirstOrDefault(x => x.Status == s)?.Count ?? 0
+            })
+            .ToList();
+
+        // Të gjitha kategoritë (edhe me 0 raporte), nga më e ngarkuara.
+        var byCategory = await _db.Categories
+            .AsNoTracking()
+            .OrderByDescending(c => c.Reports.Count())
+            .ThenBy(c => c.Name)
+            .Select(c => new CategoryCountDto
+            {
+                CategoryId = c.Id,
+                CategoryName = c.Name,
+                Count = c.Reports.Count()
+            })
+            .ToListAsync();
+
+        // 6 muajt e fundit: nga dita e parë e muajit që është 5 muaj më parë, deri te muaji aktual.
+        var now = DateTime.UtcNow;
+        var firstMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-5);
+
+        var monthCounts = await _db.Reports
+            .AsNoTracking()
+            .Where(r => r.CreatedAt >= firstMonth)
+            .GroupBy(r => new { r.CreatedAt.Year, r.CreatedAt.Month })
+            .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+            .ToListAsync();
+
+        // Muajt pa raporte shfaqen me 0, që vija e grafikut të mos ketë boshllëqe.
+        var byMonth = Enumerable.Range(0, 6)
+            .Select(i => firstMonth.AddMonths(i))
+            .Select(m => new MonthCountDto
+            {
+                Year = m.Year,
+                Month = m.Month,
+                Count = monthCounts.FirstOrDefault(x => x.Year == m.Year && x.Month == m.Month)?.Count ?? 0
+            })
+            .ToList();
+
+        return new StatsDto
+        {
+            Total = byStatus.Sum(s => s.Count),
+            ByStatus = byStatus,
+            ByCategory = byCategory,
+            ByMonth = byMonth
+        };
+    }
+
     // Historiku i ndryshimeve të statusit, nga më i vjetri te më i riu (i zoti i raportit ose Admin).
     // Kthen null nëse raporti nuk ekziston ose nuk është i këtij përdoruesi (404). Lista bosh = pa ndryshime ende.
     public async Task<List<StatusHistoryDto>?> GetHistoryAsync(int userId, bool isAdmin, int id)
