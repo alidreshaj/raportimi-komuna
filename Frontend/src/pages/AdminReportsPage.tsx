@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getAllReports } from '../api/reports'
 import type { ReportFilters } from '../api/reports'
+import ReportsMap from '../components/maps/ReportsMap'
 import ReportCard from '../components/ReportCard'
+import ViewSwitch from '../components/ViewSwitch'
 import { useCategories } from '../hooks/useCategories'
 import type { Report, ReportStatus } from '../types'
 import { STATUS_LABELS, pluralize } from '../utils/format'
@@ -17,6 +19,7 @@ const NO_FILTERS: ReportFilters = { status: '', categoryId: '', from: '', to: ''
 function AdminReportsPage() {
   const { categories } = useCategories()
 
+  const [view, setView] = useState<'list' | 'map'>('list')
   const [filters, setFilters] = useState<ReportFilters>(NO_FILTERS)
   const [reports, setReports] = useState<Report[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -70,6 +73,16 @@ function AdminReportsPage() {
             </p>
           )}
         </div>
+
+        <ViewSwitch
+          label="Pamja"
+          options={[
+            { value: 'list', label: 'Listë' },
+            { value: 'map', label: 'Hartë' },
+          ]}
+          value={view}
+          onChange={setView}
+        />
       </div>
 
       <form className="admin-filters" onSubmit={(e) => e.preventDefault()}>
@@ -158,7 +171,7 @@ function AdminReportsPage() {
       )}
 
       {/* Me të dhëna */}
-      {!badRange && reports && reports.length > 0 && (
+      {!badRange && reports && reports.length > 0 && view === 'list' && (
         <ul className="report-list">
           {reports.map((report) => (
             <li key={report.id}>
@@ -167,6 +180,9 @@ function AdminReportsPage() {
           ))}
         </ul>
       )}
+
+      {/* Harta përdor të njëjtat raporte dhe të njëjtat filtra si lista. */}
+      {!badRange && reports && reports.length > 0 && view === 'map' && <ReportsMap reports={reports} />}
     </>
   )
 }

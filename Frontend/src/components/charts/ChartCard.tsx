@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import ViewSwitch from '../ViewSwitch'
 import './ChartCard.css'
 
 export interface ChartTable {
@@ -27,14 +28,15 @@ function ChartCard({ title, subtitle, table, children }: ChartCardProps) {
           <p className="chart-card-subtitle">{subtitle}</p>
         </div>
 
-        <div className="chart-switch" role="group" aria-label="Pamja">
-          <button type="button" aria-pressed={view === 'chart'} onClick={() => setView('chart')}>
-            Grafik
-          </button>
-          <button type="button" aria-pressed={view === 'table'} onClick={() => setView('table')}>
-            Tabelë
-          </button>
-        </div>
+        <ViewSwitch
+          label="Pamja"
+          options={[
+            { value: 'chart', label: 'Grafik' },
+            { value: 'table', label: 'Tabelë' },
+          ]}
+          value={view}
+          onChange={setView}
+        />
       </header>
 
       {view === 'chart' ? (

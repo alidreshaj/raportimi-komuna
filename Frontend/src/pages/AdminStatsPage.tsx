@@ -7,15 +7,8 @@ import LineChart from '../components/charts/LineChart'
 import StatTile from '../components/charts/StatTile'
 import type { Stats, ReportStatus } from '../types'
 import { MONTHS, MONTHS_SHORT, STATUS_LABELS, percentOf } from '../utils/format'
+import { STATUS_COLORS } from '../utils/statusColors'
 import './AdminStatsPage.css'
-
-// Ngjyrat e statuseve (variablat te index.css): të njëjta kudo te faqja, kështu ngjyra do të thotë gjithmonë të njëjtën gjë.
-const STATUS_COLORS: Record<ReportStatus, string> = {
-  New: 'var(--chart-new)',
-  InProgress: 'var(--chart-inprogress)',
-  Resolved: 'var(--chart-resolved)',
-  Rejected: 'var(--chart-rejected)',
-}
 
 // Statistikat për komunën. Backend-i i numëron; këtu vetëm shfaqen. Katër gjendje: po ngarkohet, gabim, bosh, me të dhëna.
 function AdminStatsPage() {

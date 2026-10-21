@@ -31,33 +31,6 @@
   color: var(--muted);
 }
 
-/* Çelësi Grafik / Tabelë */
-.chart-switch {
-  display: inline-flex;
-  padding: 3px;
-  background: var(--ground);
-  border-radius: 8px;
-}
-
-.chart-switch button {
-  height: 30px;
-  padding: 0 14px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--muted);
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.chart-switch button[aria-pressed='true'] {
-  background: var(--surface);
-  color: var(--accent);
-  box-shadow: 0 1px 3px rgba(20, 32, 46, 0.12);
-}
-
 /* Pamja si tabelë */
 .chart-table {
   width: 100%;
