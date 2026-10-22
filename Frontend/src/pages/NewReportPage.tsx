@@ -8,12 +8,14 @@ import PhotoPicker from '../components/PhotoPicker'
 import ReportFields from '../components/ReportFields'
 import { useCategories } from '../hooks/useCategories'
 import type { GeoPoint } from '../types'
+import { useToast } from '../context/useToast'
 import { EMPTY_REPORT_FORM, toReportInput, validateReportForm } from '../utils/reportForm'
 import type { ReportFormState } from '../utils/reportForm'
 import './NewReportPage.css'
 
 function NewReportPage() {
   const navigate = useNavigate()
+  const toast = useToast()
   const { categories, error: categoriesError, retry: retryCategories } = useCategories()
 
   const [form, setForm] = useState<ReportFormState>(EMPTY_REPORT_FORM)
@@ -77,6 +79,7 @@ function NewReportPage() {
     }
 
     // Raporti i ri shfaqet i pari te lista.
+    toast.show('Raporti u dërgua me sukses.')
     navigate('/raportet')
   }
 

@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { CircleCheck, CircleX, Play } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { updateReportStatus } from '../api/reports'
+import { useToast } from '../context/useToast'
 import type { Report, ReportStatus } from '../types'
+import { STATUS_LABELS } from '../utils/format'
 import ConfirmDialog from './ConfirmDialog'
 import StatusBadge from './StatusBadge'
 
@@ -37,6 +39,7 @@ interface StatusPanelProps {
 
 // Paneli me të cilin admini ndryshon statusin. Refuzimi kërkon arsye (qytetari e sheh si koment).
 function StatusPanel({ report, onChanged }: StatusPanelProps) {
+  const toast = useToast()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -51,6 +54,7 @@ function StatusPanel({ report, onChanged }: StatusPanelProps) {
     try {
       const updated = await updateReportStatus(report.id, status, why)
       onChanged(updated)
+      toast.show(`Statusi u ndryshua: ${STATUS_LABELS[status]}.`)
       return true
     } catch (e) {
       // P.sh. 409 nëse statusi ndryshoi ndërkohë, ose 400 nga validimi.

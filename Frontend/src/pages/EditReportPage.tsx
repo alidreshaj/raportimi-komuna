@@ -7,6 +7,7 @@ import { useAuth } from '../context/useAuth'
 import { useCategories } from '../hooks/useCategories'
 import { useReport } from '../hooks/useReport'
 import type { GeoPoint, Report } from '../types'
+import { useToast } from '../context/useToast'
 import { formFromReport, toReportInput, validateReportForm } from '../utils/reportForm'
 import type { ReportFormState } from '../utils/reportForm'
 // Përdor të njëjtat stile si forma e krijimit (.new-report, .report-form, .form-actions).
@@ -15,6 +16,7 @@ import './NewReportPage.css'
 // Forma e ndryshimit. Krijohet vetëm kur raporti është ngarkuar, dhe e fillon formën me të dhënat e tij.
 function EditReportForm({ report }: { report: Report }) {
   const navigate = useNavigate()
+  const toast = useToast()
   const { categories, error: categoriesError, retry: retryCategories } = useCategories()
 
   // useState me funksion fillestar: forma mbushet një herë me të dhënat e raportit.
@@ -45,6 +47,7 @@ function EditReportForm({ report }: { report: Report }) {
     try {
       await updateReport(report.id, toReportInput(form))
       // Kthehemi te detajet, ku shihet ndryshimi.
+      toast.show('Ndryshimet u ruajtën.')
       navigate(`/raportet/${report.id}`)
     } catch (e) {
       // P.sh. 409 nëse komuna e mori raportin në shqyrtim ndërkohë.

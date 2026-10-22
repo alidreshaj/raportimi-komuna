@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
+import type { CSSProperties } from 'react'
+import { Inbox, SearchX } from 'lucide-react'
 import { getAllReports } from '../api/reports'
 import type { ReportFilters } from '../api/reports'
 import AttentionPanel from '../components/AttentionPanel'
+import EmptyState from '../components/EmptyState'
 import ReportsMap from '../components/maps/ReportsMap'
 import ReportCard from '../components/ReportCard'
+import ReportListSkeleton from '../components/ReportListSkeleton'
 import ViewSwitch from '../components/ViewSwitch'
 import { useCategories } from '../hooks/useCategories'
 import type { Report, ReportStatus } from '../types'
@@ -143,11 +147,7 @@ function AdminReportsPage() {
       )}
 
       {/* Po ngarkohet */}
-      {!badRange && !reports && !error && (
-        <p className="reports-message" role="status">
-          Po ngarkohen raportet...
-        </p>
-      )}
+      {!badRange && !reports && !error && <ReportListSkeleton />}
 
       {/* Gabim */}
       {error && (
@@ -163,21 +163,22 @@ function AdminReportsPage() {
 
       {/* Bosh */}
       {!badRange && reports && reports.length === 0 && (
-        <div className="reports-empty">
-          <h2>{hasFilters ? 'Asnjë raport nuk përputhet me filtrat' : 'Nuk ka raporte ende'}</h2>
-          <p>
-            {hasFilters
+        <EmptyState
+          icon={hasFilters ? SearchX : Inbox}
+          title={hasFilters ? 'Asnjë raport nuk përputhet me filtrat' : 'Nuk ka raporte ende'}
+          text={
+            hasFilters
               ? 'Provo t\'i ndryshosh ose t\'i pastrosh filtrat.'
-              : 'Kur qytetarët dërgojnë raporte, do t\'i shohësh këtu.'}
-          </p>
-        </div>
+              : 'Kur qytetarët dërgojnë raporte, do t\'i shohësh këtu.'
+          }
+        />
       )}
 
       {/* Me të dhëna */}
       {!badRange && reports && reports.length > 0 && view === 'list' && (
         <ul className="report-list">
-          {reports.map((report) => (
-            <li key={report.id}>
+          {reports.map((report, index) => (
+            <li key={report.id} style={{ '--i': Math.min(index, 8) } as CSSProperties}>
               <ReportCard report={report} to={`/admin/raportet/${report.id}`} showReporter />
             </li>
           ))}

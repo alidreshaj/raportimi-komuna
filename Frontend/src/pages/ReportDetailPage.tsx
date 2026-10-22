@@ -4,10 +4,12 @@ import { deleteReport } from '../api/reports'
 import AuthImage from '../components/AuthImage'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Conversation from '../components/Conversation'
+import DetailSkeleton from '../components/DetailSkeleton'
 import ReportMap from '../components/maps/ReportMap'
 import StatusBadge from '../components/StatusBadge'
 import StatusTimeline from '../components/StatusTimeline'
 import { useAuth } from '../context/useAuth'
+import { useToast } from '../context/useToast'
 import { useReport } from '../hooks/useReport'
 import { STATUS_LABELS, formatDate } from '../utils/format'
 import './ReportDetailPage.css'
@@ -16,6 +18,7 @@ import './ReportDetailPage.css'
 function ReportDetailPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const toast = useToast()
 
   // useParams lexon vlerën nga adresa: te /raportet/5, id = "5".
   const { id } = useParams()
@@ -40,6 +43,7 @@ function ReportDetailPage() {
     try {
       await deleteReport(report.id)
       // replace: butoni "mbrapa" të mos të kthejë te një raport që nuk ekziston më.
+      toast.show('Raporti u fshi.')
       navigate('/raportet', { replace: true })
     } catch (e) {
       // P.sh. 409 nëse komuna e mori raportin në shqyrtim ndërkohë. Dritarja mbetet e hapur me gabimin.
@@ -60,7 +64,7 @@ function ReportDetailPage() {
         </p>
       )}
 
-      {!report && !error && <p role="status">Po ngarkohet...</p>}
+      {!report && !error && <DetailSkeleton />}
 
       {report && (
         <div className="detail-layout">

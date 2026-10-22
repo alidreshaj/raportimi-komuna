@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
+import { BarChart3 } from 'lucide-react'
 import { getStats } from '../api/reports'
 import BarChart from '../components/charts/BarChart'
 import ChartCard from '../components/charts/ChartCard'
 import DonutChart from '../components/charts/DonutChart'
 import LineChart from '../components/charts/LineChart'
+import StatsSkeleton from '../components/charts/StatsSkeleton'
 import StatTile from '../components/charts/StatTile'
+import EmptyState from '../components/EmptyState'
 import type { Stats, ReportStatus } from '../types'
 import { MONTHS, MONTHS_SHORT, STATUS_LABELS, percentOf } from '../utils/format'
 import { STATUS_COLORS } from '../utils/statusColors'
@@ -45,11 +48,7 @@ function AdminStatsPage() {
         <p className="page-subtitle">Përmbledhje e të gjitha raporteve që kanë dërguar qytetarët.</p>
       </div>
 
-      {!stats && !error && (
-        <p className="stats-message" role="status">
-          Po ngarkohen statistikat...
-        </p>
-      )}
+      {!stats && !error && <StatsSkeleton />}
 
       {error && (
         <div className="stats-message">
@@ -63,10 +62,11 @@ function AdminStatsPage() {
       )}
 
       {stats && stats.total === 0 && (
-        <div className="stats-empty">
-          <h2>Nuk ka raporte ende</h2>
-          <p>Statistikat shfaqen sapo qytetarët të dërgojnë raportet e para.</p>
-        </div>
+        <EmptyState
+          icon={BarChart3}
+          title="Nuk ka raporte ende"
+          text="Statistikat shfaqen sapo qytetarët të dërgojnë raportet e para."
+        />
       )}
 
       {stats && stats.total > 0 && <StatsContent stats={stats} />}

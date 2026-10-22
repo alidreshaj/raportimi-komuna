@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import AuthImage from '../components/AuthImage'
 import Conversation from '../components/Conversation'
+import DetailSkeleton from '../components/DetailSkeleton'
 import ReportMap from '../components/maps/ReportMap'
 import StatusBadge from '../components/StatusBadge'
 import StatusPanel from '../components/StatusPanel'
@@ -41,7 +42,7 @@ function AdminReportDetailPage() {
         </p>
       )}
 
-      {!report && !error && <p role="status">Po ngarkohet...</p>}
+      {!report && !error && <DetailSkeleton />}
 
       {report && (
         <div className="detail-layout">

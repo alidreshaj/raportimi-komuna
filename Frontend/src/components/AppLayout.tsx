@@ -9,7 +9,8 @@ import './AppLayout.css'
 function AppLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const onNewReport = useLocation().pathname === '/raportet/i-ri'
+  const { pathname } = useLocation()
+  const onNewReport = pathname === '/raportet/i-ri'
 
   function handleLogout() {
     logout()
@@ -74,7 +75,10 @@ function AppLayout() {
       </header>
 
       <main className="app-main">
-        <Outlet />
+        {/* key = adresa: sa herë ndërron faqja, ky bllok krijohet përsëri dhe luan animacionin e hyrjes. */}
+        <div key={pathname} className="page-enter">
+          <Outlet />
+        </div>
       </main>
     </>
   )

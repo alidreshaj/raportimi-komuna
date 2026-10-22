@@ -4,13 +4,16 @@ import { BrowserRouter } from 'react-router'
 import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './context/AuthProvider.tsx'
+import { ToastProvider } from './context/ToastProvider.tsx'
 
-// BrowserRouter: routing sipas adresës. AuthProvider: sesioni i përdoruesit për gjithë aplikacionin.
+// BrowserRouter: routing sipas adresës. AuthProvider: sesioni i përdoruesit. ToastProvider: njoftimet e vogla pas veprimeve.
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <ToastProvider>
+          <App />
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

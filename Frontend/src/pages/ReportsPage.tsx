@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Plus } from 'lucide-react'
+import type { CSSProperties } from 'react'
+import { ClipboardList, Plus } from 'lucide-react'
 import { Link } from 'react-router'
 import { getMyReports } from '../api/reports'
 import StatTile from '../components/charts/StatTile'
+import EmptyState from '../components/EmptyState'
 import ReportCard from '../components/ReportCard'
+import ReportListSkeleton from '../components/ReportListSkeleton'
 import { useAuth } from '../context/useAuth'
 import type { Report, ReportStatus } from '../types'
 import { pluralize } from '../utils/format'
@@ -102,11 +105,7 @@ function ReportsPage() {
       <h2 className="section-title">Raportet e mia</h2>
 
       {/* Po ngarkohet */}
-      {!reports && !error && (
-        <p className="reports-message" role="status">
-          Po ngarkohen raportet...
-        </p>
-      )}
+      {!reports && !error && <ReportListSkeleton />}
 
       {/* Gabim */}
       {error && (
@@ -122,20 +121,22 @@ function ReportsPage() {
 
       {/* Bosh */}
       {reports && reports.length === 0 && (
-        <div className="reports-empty">
-          <h2>Nuk ke dërguar asnjë raport ende</h2>
-          <p>Kur dërgon një raport, do ta shohësh këtu me statusin e tij.</p>
+        <EmptyState
+          icon={ClipboardList}
+          title="Nuk ke dërguar asnjë raport ende"
+          text="Kur dërgon një raport, do ta shohësh këtu me statusin e tij."
+        >
           <Link to="/raportet/i-ri" className="btn btn-primary">
             Dërgo raportin e parë
           </Link>
-        </div>
+        </EmptyState>
       )}
 
       {/* Me të dhëna */}
       {reports && reports.length > 0 && (
         <ul className="report-list">
-          {reports.map((report) => (
-            <li key={report.id}>
+          {reports.map((report, index) => (
+            <li key={report.id} style={{ '--i': Math.min(index, 8) } as CSSProperties}>
               <ReportCard report={report} />
             </li>
           ))}
