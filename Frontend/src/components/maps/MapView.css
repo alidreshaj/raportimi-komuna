@@ -9,3 +9,21 @@
   isolation: isolate;
   z-index: 0;
 }
+
+/* Kartat e shenjave dhe butonat e Leaflet marrin ngjyrat e temës (përndryshe mbeten të bardha edhe në temë të errët). */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  background-color: var(--surface);
+  color: var(--ink);
+  border-bottom-color: var(--line);
+}
+
+.leaflet-bar a:hover {
+  background-color: var(--ground);
+}

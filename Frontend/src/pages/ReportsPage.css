@@ -22,7 +22,7 @@
   margin-bottom: 24px;
   padding: 32px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--accent) 0%, #2d6aa6 100%);
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
   color: #fff;
   box-shadow: var(--shadow-md);
 }

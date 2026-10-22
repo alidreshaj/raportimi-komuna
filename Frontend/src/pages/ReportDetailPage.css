@@ -138,10 +138,10 @@
 
 .btn-disabled {
   height: 44px;
-  border: 1px solid #c5cdd6;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #f1f3f6;
-  color: #6b7684;
+  background: var(--surface-2);
+  color: var(--muted);
   font: inherit;
   font-size: 15px;
   font-weight: 600;

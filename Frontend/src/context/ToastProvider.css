@@ -17,7 +17,7 @@
   gap: 12px;
   padding: 13px 14px 13px 16px;
   border-radius: var(--radius-md);
-  background: var(--ink);
+  background: var(--toast-bg);
   color: #fff;
   box-shadow: var(--shadow-lg);
   font-size: 14.5px;

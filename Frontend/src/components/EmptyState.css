@@ -36,7 +36,7 @@
   height: 22px;
   top: 2px;
   right: -8px;
-  background: #cfe0f1;
+  background: var(--accent-soft-2);
 }
 
 .empty-state-art::after {
@@ -44,7 +44,7 @@
   height: 14px;
   bottom: 6px;
   left: -10px;
-  background: #b7d0ea;
+  background: var(--accent-soft-3);
 }
 
 .empty-state-title {

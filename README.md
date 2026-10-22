@@ -10,12 +10,13 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 - Komente mes komunës dhe qytetarit
 - Paneli i adminit për menaxhimin e raportimeve
 - Statistika për komunën: totali, sipas statusit, sipas kategorisë dhe sipas muajit, me grafikë
+- Pamja: tema e çelët dhe e errët (çelës lart, ruhet te shfletuesi), njoftime të vogla pas veprimeve, skeletone ngarkimi, pult për qytetarin dhe kartë "Kërkon vëmendje" për adminin
 - Harta: qytetari zgjedh vendin e problemit në hartë (me klikim ose me vendndodhjen e tij), dhe admini i sheh të gjitha raportet në hartë
 
 ## Teknologjitë
 - Backend: ASP.NET Core Web API (C#, .NET 10)
 - Databaza: PostgreSQL + Entity Framework Core
-- Frontend: React 19 + TypeScript, Vite, React Router
+- Frontend: React 19 + TypeScript, Vite, React Router, ikona Lucide
 - Harta: Leaflet (react-leaflet), imazhet satelitore të Esri, pa çelës API
 - Autentikimi: JWT
 

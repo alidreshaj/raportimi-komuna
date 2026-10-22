@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import KosovoArt from './KosovoArt'
+import ThemeToggle from './ThemeToggle'
 import './AuthShell.css'
 
 // Faqja e përbashkët e hyrjes dhe e regjistrimit: paneli blu majtas dhe vendi i kartës djathtas.
@@ -7,6 +9,11 @@ function AuthShell({ children }: { children: ReactNode }) {
   return (
     <main className="auth">
       <section className="auth-brand">
+        {/* Stoli: silueta e Kosovës me pika në qytetet kryesore */}
+        <div className="auth-art">
+          <KosovoArt />
+        </div>
+
         <div className="auth-logo">
           <svg
             width="28"
@@ -56,7 +63,12 @@ function AuthShell({ children }: { children: ReactNode }) {
         </ol>
       </section>
 
-      <div className="auth-form-side">{children}</div>
+      <div className="auth-form-side">
+        <div className="auth-theme">
+          <ThemeToggle />
+        </div>
+        {children}
+      </div>
     </main>
   )
 }

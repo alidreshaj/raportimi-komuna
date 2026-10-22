@@ -12,21 +12,21 @@
 }
 
 .status-badge--New {
-  background: #e3edf8;
-  color: #174a7c;
+  background: var(--badge-new-bg);
+  color: var(--badge-new-fg);
 }
 
 .status-badge--InProgress {
-  background: #fbefd5;
-  color: #7a4b00;
+  background: var(--badge-inprogress-bg);
+  color: var(--badge-inprogress-fg);
 }
 
 .status-badge--Resolved {
-  background: #dff1e6;
-  color: #14633a;
+  background: var(--badge-resolved-bg);
+  color: var(--badge-resolved-fg);
 }
 
 .status-badge--Rejected {
-  background: #f6e1e1;
-  color: #8a2323;
+  background: var(--badge-rejected-bg);
+  color: var(--badge-rejected-fg);
 }

@@ -64,7 +64,7 @@
 }
 
 .message--citizen .message-bubble {
-  background: #eef2f6;
+  background: var(--surface-2);
   border-radius: 4px 12px 12px 12px;
 }
 
@@ -79,8 +79,8 @@
 }
 
 .message--municipality .message-bubble {
-  background: #e3edf8;
-  color: #123a63;
+  background: var(--accent-soft);
+  color: var(--bubble-fg);
   border-radius: 12px 4px 12px 12px;
 }
 

@@ -1,6 +1,6 @@
 .skeleton {
   display: block;
-  background: linear-gradient(90deg, #e3e8ee 25%, #eef2f6 50%, #e3e8ee 75%);
+  background: linear-gradient(90deg, var(--skeleton-a) 25%, var(--skeleton-b) 50%, var(--skeleton-a) 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s linear infinite;
 }

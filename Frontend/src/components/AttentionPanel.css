@@ -5,10 +5,10 @@
   gap: 14px;
   margin-bottom: 24px;
   padding: 20px 24px;
-  border: 1px solid #ecd9a8;
+  border: 1px solid var(--warn-border);
   border-left: 5px solid var(--chart-inprogress);
   border-radius: var(--radius-md);
-  background: #fffaf0;
+  background: var(--warn-bg);
   box-shadow: var(--shadow-sm);
 }
 
@@ -16,7 +16,7 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  color: #7a4b00;
+  color: var(--warn-text);
 }
 
 .attention-head svg {
@@ -52,8 +52,8 @@
   gap: 12px;
   padding: 10px 12px;
   border-radius: var(--radius-sm);
-  background: #fff;
-  border: 1px solid #f0e4c4;
+  background: var(--surface);
+  border: 1px solid var(--warn-item-border);
   color: var(--ink);
   text-decoration: none;
   transition:
@@ -110,10 +110,10 @@
   flex-direction: row;
   align-items: center;
   gap: 14px;
-  border-color: #c6e7d3;
+  border-color: var(--ok-border);
   border-left-color: var(--chart-resolved);
-  background: #f3fbf6;
-  color: #14633a;
+  background: var(--ok-bg);
+  color: var(--ok-text);
 }
 
 .attention--ok .attention-title {

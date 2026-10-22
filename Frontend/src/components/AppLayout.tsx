@@ -1,6 +1,7 @@
 import { BarChart3, ClipboardList, Landmark, List, LogOut, PlusCircle } from 'lucide-react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
+import ThemeToggle from './ThemeToggle'
 import { initialsOf } from '../utils/format'
 import { homePathFor } from '../utils/roles'
 import './AppLayout.css'
@@ -59,6 +60,7 @@ function AppLayout() {
           </nav>
 
           <div className="app-user">
+            <ThemeToggle />
             <span className="app-avatar" aria-hidden="true">
               {initialsOf(user?.name ?? '')}
             </span>

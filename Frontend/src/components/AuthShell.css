@@ -10,7 +10,9 @@
 
 .auth-brand {
   flex: 1 1 480px;
-  background: var(--accent);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--brand) 0%, #173f64 100%);
   color: #ffffff;
   padding: 56px 72px;
   display: flex;
@@ -70,7 +72,7 @@
   flex: none;
   border-radius: 50%;
   background: #ffffff;
-  color: var(--accent);
+  color: var(--brand);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,6 +82,7 @@
 /* ---- Pjesa e kartës (hyrja ose regjistrimi) ---- */
 
 .auth-form-side {
+  position: relative;
   flex: 1 1 480px;
   display: flex;
   align-items: center;
@@ -146,5 +149,36 @@
 
   .auth-card {
     padding: 28px 24px;
+  }
+}
+
+/* Çelësi i temës në qoshen lart djathtas të pjesës së kartës. */
+.auth-theme {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+/* Silueta e Kosovës lart djathtas në panelin blu, pas tekstit (teksti ka z-index më të lartë). */
+.auth-art {
+  position: absolute;
+  top: 48px;
+  right: 40px;
+  width: min(360px, 46%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.auth-logo,
+.auth-pitch,
+.auth-steps {
+  position: relative;
+  z-index: 1;
+}
+
+/* Në ekran të ngushtë (paneli zë gjithë gjerësinë) silueta fshihet, që të mos ngarkojë tekstin. */
+@media (max-width: 760px) {
+  .auth-art {
+    display: none;
   }
 }

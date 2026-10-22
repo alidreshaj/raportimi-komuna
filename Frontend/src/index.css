@@ -1,20 +1,63 @@
 /* Stilet globale dhe variablat e dizajnit (ngjyrat janë nga docs/design/). */
 :root {
+  /* ---- Tema e çelët (paracaktuar) ---- */
+
+  /* Blu: --accent për tekst, ikona dhe shenja të të dhënave; --accent-solid për sfonde me tekst të bardhë (butona);
+     --brand është blu e thellë që nuk ndryshon me temën (paneli i hyrjes, karta e mirëseardhjes). */
   --accent: #1f4e79;
   --accent-dark: #12375f;
+  --accent-solid: #1f4e79;
+  --accent-solid-hover: #12375f;
+  --brand: #1f4e79;
+  --brand-2: #2d6aa6;
+  --accent-soft: #e8f0f8;
+  --accent-soft-2: #cfe0f1;
+  --accent-soft-3: #b7d0ea;
+
+  /* Sfondet: faqja, kartat dhe sipërfaqet dytësore (kuti të lehta brenda kartave). */
   --ground: #f3f5f8;
+  --ground-top: #e6edf6;
   --surface: #ffffff;
+  --surface-2: #eef2f6;
+
   --ink: #14202e;
   --muted: #4a5868;
   --line: #d5dce4;
   --line-soft: #e3e8ee;
   --field-border: #8b97a5;
   --focus: #7fb0e0;
+
   --danger-bg: #f6e1e1;
   --danger-text: #8a2323;
+  --danger-border: #d9a0a0;
+  --danger-hover-bg: #fbeeee;
+
+  /* Etiketat e statuseve (sfond i çelët + tekst i errët). */
+  --badge-new-bg: #e3edf8;
+  --badge-new-fg: #174a7c;
+  --badge-inprogress-bg: #fbefd5;
+  --badge-inprogress-fg: #7a4b00;
+  --badge-resolved-bg: #dff1e6;
+  --badge-resolved-fg: #14633a;
+  --badge-rejected-bg: #f6e1e1;
+  --badge-rejected-fg: #8a2323;
+
+  /* Karta "Kërkon vëmendje" (qelibar) dhe gjendja "gjithçka në rregull" (jeshile). */
+  --warn-bg: #fffaf0;
+  --warn-border: #ecd9a8;
+  --warn-item-border: #f0e4c4;
+  --warn-text: #7a4b00;
+  --ok-bg: #f3fbf6;
+  --ok-border: #c6e7d3;
+  --ok-text: #14633a;
+
+  /* Njoftimet e vogla dhe kutia e grafikëve: gjithmonë e errët me tekst të bardhë. */
+  --toast-bg: #14202e;
+  --bubble-fg: #123a63;
+  --skeleton-a: #e3e8ee;
+  --skeleton-b: #eef2f6;
 
   /* Vlera të përbashkëta të dizajnit: kështu çdo faqe ka të njëjtat rreze, hije dhe shpejtësi lëvizjeje. */
-  --accent-soft: #e8f0f8;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -23,16 +66,79 @@
   --shadow-lg: 0 16px 36px rgba(20, 32, 46, 0.16);
   --ease: 0.18s ease;
 
-  /* Ngjyrat e statuseve te grafikët: të njëjtat nuanca si etiketat, më të forta, që të dallohen si shenja grafiku.
-     Të kontrolluara me validatorin (kontrast 3:1, dallueshmëri edhe për daltonizëm). */
+  /* Ngjyrat e statuseve te grafikët dhe harta: të njëjtat nuanca si etiketat, më të forta, që të dallohen si shenja grafiku.
+     Të kontrolluara me validatorin (kontrast 3:1, dallueshmëri edhe për daltonizëm), veç për secilën temë. */
   --chart-new: #2b6cb0;
   --chart-inprogress: #c48000;
   --chart-resolved: #2fa870;
   --chart-rejected: #9c2323;
 
+  color-scheme: light;
   font-family: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--ink);
   line-height: 1.5;
+}
+
+/* ---- Tema e errët: vendoset nga data-theme="dark" te <html> (shih utils/theme.ts) ---- */
+:root[data-theme='dark'] {
+  --accent: #7db4e8;
+  --accent-dark: #a5cdf2;
+  --accent-solid: #2f6fb0;
+  --accent-solid-hover: #3d80c4;
+  --accent-soft: #1d3a5a;
+  --accent-soft-2: #27496e;
+  --accent-soft-3: #335a85;
+
+  --ground: #0e1621;
+  --ground-top: #142033;
+  --surface: #172231;
+  --surface-2: #202d3f;
+
+  --ink: #e7edf5;
+  --muted: #a3b3c5;
+  --line: #2c3a4c;
+  --line-soft: #243142;
+  --field-border: #5b6b80;
+  --focus: #5b9bd5;
+
+  --danger-bg: #3a1f22;
+  --danger-text: #ff9b9b;
+  --danger-border: #6b3a3d;
+  --danger-hover-bg: #3a1f22;
+
+  --badge-new-bg: #1d3a5a;
+  --badge-new-fg: #a9d0f5;
+  --badge-inprogress-bg: #3a2e12;
+  --badge-inprogress-fg: #f0c675;
+  --badge-resolved-bg: #14332a;
+  --badge-resolved-fg: #7fd8a8;
+  --badge-rejected-bg: #3a1f22;
+  --badge-rejected-fg: #ff9b9b;
+
+  --warn-bg: #2b2415;
+  --warn-border: #5a4a22;
+  --warn-item-border: #4a3d1e;
+  --warn-text: #f0c675;
+  --ok-bg: #14291e;
+  --ok-border: #25503a;
+  --ok-text: #7fd8a8;
+
+  --toast-bg: #2a3a4f;
+  --bubble-fg: #cfe3f7;
+  --skeleton-a: #223041;
+  --skeleton-b: #2a3a4e;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.55);
+
+  /* Palet e provuar me validatorin për sfond të errët (#172231): kontrast mbi 3:1, CVD 8.6, brezi i lehtësisë 0.48-0.67. */
+  --chart-new: #3f8fd9;
+  --chart-inprogress: #bd8014;
+  --chart-resolved: #2aa57e;
+  --chart-rejected: #c94444;
+
+  color-scheme: dark;
 }
 
 * {
@@ -42,7 +148,7 @@
 body {
   margin: 0;
   /* Një ton i lehtë blu lart që zbehet te gri: faqja ka thellësi, jo një sfond i sheshtë. */
-  background: linear-gradient(180deg, #e6edf6 0, var(--ground) 320px) no-repeat, var(--ground);
+  background: linear-gradient(180deg, var(--ground-top) 0, var(--ground) 320px) no-repeat, var(--ground);
 }
 
 /* Fokusi i dukshëm për përdoruesit e tastierës. */
@@ -146,11 +252,11 @@ a:hover {
 }
 
 .btn-primary {
-  background: var(--accent);
+  background: var(--accent-solid);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-dark);
+  background: var(--accent-solid-hover);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -162,7 +268,7 @@ a:hover {
 
 .btn-light,
 .btn-light:hover {
-  color: var(--accent); /* butoni i bardhë mbi sfond blu */
+  color: var(--brand); /* butoni i bardhë mbi sfond blu */
 }
 
 .btn-light {
@@ -205,7 +311,7 @@ a:hover {
 
 .btn-danger-outline {
   background: var(--surface);
-  border: 1px solid #d9a0a0;
+  border: 1px solid var(--danger-border);
 }
 
 .btn-danger-outline,
@@ -214,7 +320,7 @@ a:hover {
 }
 
 .btn-danger-outline:hover:not(:disabled) {
-  background: #fbeeee;
+  background: var(--danger-hover-bg);
 }
 
 .btn:disabled {
