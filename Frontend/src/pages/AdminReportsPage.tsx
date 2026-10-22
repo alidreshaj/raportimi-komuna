@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getAllReports } from '../api/reports'
 import type { ReportFilters } from '../api/reports'
+import AttentionPanel from '../components/AttentionPanel'
 import ReportsMap from '../components/maps/ReportsMap'
 import ReportCard from '../components/ReportCard'
 import ViewSwitch from '../components/ViewSwitch'
@@ -84,6 +85,8 @@ function AdminReportsPage() {
           onChange={setView}
         />
       </div>
+
+      <AttentionPanel />
 
       <form className="admin-filters" onSubmit={(e) => e.preventDefault()}>
         <div className="field">

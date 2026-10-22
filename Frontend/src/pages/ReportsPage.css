@@ -1,5 +1,6 @@
 /* Faqja "Raportet e mia" (docs/design/02-raportet-e-mia.png). */
 
+/* Titulli i faqeve të listës (e përdor edhe faqja e adminit): titulli majtas dhe veprimet djathtas. */
 .reports-header {
   display: flex;
   flex-wrap: wrap;
@@ -7,6 +8,86 @@
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 28px;
+}
+
+/* Karta e mirëseardhjes: gradient blu, tekst i bardhë dhe butoni i madh i bardhë. */
+.welcome {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 32px;
+  margin-bottom: 24px;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--accent) 0%, #2d6aa6 100%);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+/* Dy rrathë të lehtë dekorativë në qoshe (vetëm stoli, asgjë e rëndësishme). */
+.welcome::before,
+.welcome::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+
+.welcome::before {
+  width: 220px;
+  height: 220px;
+  top: -90px;
+  right: -50px;
+}
+
+.welcome::after {
+  width: 140px;
+  height: 140px;
+  bottom: -70px;
+  right: 180px;
+}
+
+.welcome-text {
+  position: relative;
+  flex: 1 1 320px;
+}
+
+.welcome-title {
+  margin: 0 0 6px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.welcome-summary {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.welcome-button {
+  position: relative;
+  height: 52px;
+  padding: 0 28px;
+  box-shadow: var(--shadow-md);
+}
+
+/* Katër numrat personalë */
+.dash-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.section-title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .report-list {

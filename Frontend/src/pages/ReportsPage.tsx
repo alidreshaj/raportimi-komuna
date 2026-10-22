@@ -2,13 +2,37 @@ import { useEffect, useState } from 'react'
 import { Plus } from 'lucide-react'
 import { Link } from 'react-router'
 import { getMyReports } from '../api/reports'
+import StatTile from '../components/charts/StatTile'
 import ReportCard from '../components/ReportCard'
-import type { Report } from '../types'
+import { useAuth } from '../context/useAuth'
+import type { Report, ReportStatus } from '../types'
 import { pluralize } from '../utils/format'
+import { STATUS_COLORS } from '../utils/statusColors'
 import './ReportsPage.css'
 
-// Lista e raporteve të qytetarit. Katër gjendje: po ngarkohet, gabim, bosh, me të dhëna.
+// Një fjali që përmbledh gjendjen e raporteve të mia, p.sh. "2 presin shqyrtim, 1 është në trajtim."
+function summarize(reports: Report[]): string {
+  if (reports.length === 0) return 'Nuk ke dërguar asnjë raport ende. Dërgo të parin dhe ndiqe këtu.'
+
+  const count = (status: ReportStatus) => reports.filter((r) => r.status === status).length
+  const pending = count('New')
+  const inProgress = count('InProgress')
+  const resolved = count('Resolved')
+
+  const parts: string[] = []
+  if (pending > 0) parts.push(`${pending} ${pending === 1 ? 'pret' : 'presin'} shqyrtim`)
+  if (inProgress > 0) parts.push(`${inProgress} ${inProgress === 1 ? 'është' : 'janë'} në trajtim`)
+  if (resolved > 0) parts.push(`${resolved} ${resolved === 1 ? 'u zgjidh' : 'u zgjidhën'}`)
+
+  const total = `Ke dërguar ${pluralize(reports.length, 'raport', 'raporte')}.`
+  return parts.length > 0 ? `${total} ${parts.join(', ')}.` : total
+}
+
+// Faqja e parë e qytetarit: mirëseardhje, numrat e mi dhe lista e raporteve. Katër gjendje për listën: po ngarkohet, gabim, bosh, me të dhëna.
 function ReportsPage() {
+  const { user } = useAuth()
+  const firstName = user?.name.trim().split(/\s+/)[0] ?? ''
+
   // null = ende nuk e kemi listën; [] = e kemi dhe është bosh.
   const [reports, setReports] = useState<Report[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -39,20 +63,43 @@ function ReportsPage() {
 
   return (
     <>
-      <div className="reports-header">
-        <div>
-          <h1 className="page-title">Raportet e mia</h1>
-          {reports && reports.length > 0 && (
-            <p className="page-subtitle">
-              {pluralize(reports.length, 'raport', 'raporte')}. Statusin e përditëson komuna.
-            </p>
-          )}
+      <section className="welcome">
+        <div className="welcome-text">
+          <h1 className="welcome-title">Mirësevjen, {firstName}</h1>
+          <p className="welcome-summary">{reports ? summarize(reports) : 'Po ngarkohen raportet e tua...'}</p>
         </div>
-        <Link to="/raportet/i-ri" className="btn btn-primary">
+        <Link to="/raportet/i-ri" className="btn btn-light welcome-button">
           <Plus size={18} aria-hidden="true" />
           Raporto një problem
         </Link>
-      </div>
+      </section>
+
+      {/* Numrat e mi: vetëm kur ka raporte */}
+      {reports && reports.length > 0 && (
+        <div className="dash-kpis">
+          <StatTile label="Raporte gjithsej" value={reports.length} />
+          <StatTile
+            label="Të reja"
+            value={reports.filter((r) => r.status === 'New').length}
+            hint="presin shqyrtim"
+            color={STATUS_COLORS.New}
+          />
+          <StatTile
+            label="Në trajtim"
+            value={reports.filter((r) => r.status === 'InProgress').length}
+            hint="po zgjidhen tani"
+            color={STATUS_COLORS.InProgress}
+          />
+          <StatTile
+            label="Të zgjidhura"
+            value={reports.filter((r) => r.status === 'Resolved').length}
+            hint="problemi u rregullua"
+            color={STATUS_COLORS.Resolved}
+          />
+        </div>
+      )}
+
+      <h2 className="section-title">Raportet e mia</h2>
 
       {/* Po ngarkohet */}
       {!reports && !error && (

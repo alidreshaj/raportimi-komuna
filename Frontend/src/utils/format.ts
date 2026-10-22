@@ -64,3 +64,8 @@ export function initialsOf(name: string): string {
     .map((word) => word[0].toUpperCase())
   return letters.join('') || '?'
 }
+
+// Sa ditë të plota kanë kaluar që nga një datë (0 = sot). Përdoret te "pret prej X ditësh".
+export function daysSince(iso: string): number {
+  return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000))
+}

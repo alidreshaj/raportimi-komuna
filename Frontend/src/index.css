@@ -160,6 +160,21 @@ a:hover {
   box-shadow: none;
 }
 
+.btn-light,
+.btn-light:hover {
+  color: var(--accent); /* butoni i bardhë mbi sfond blu */
+}
+
+.btn-light {
+  background: #ffffff;
+}
+
+.btn-light:hover:not(:disabled) {
+  background: var(--accent-soft);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
 .btn-secondary {
   background: var(--surface);
   border: 1px solid var(--field-border);
