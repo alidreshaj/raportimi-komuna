@@ -1,6 +1,7 @@
 import { BarChart3, ClipboardList, Landmark, List, LogOut, PlusCircle } from 'lucide-react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
+import { initialsOf } from '../utils/format'
 import { homePathFor } from '../utils/roles'
 import './AppLayout.css'
 
@@ -20,7 +21,9 @@ function AppLayout() {
       <header className="app-header">
         <div className="app-header-inner">
           <NavLink to={homePathFor(user?.role ?? 'Citizen')} className="app-brand">
-            <Landmark size={26} strokeWidth={1.8} aria-hidden="true" />
+            <span className="app-brand-mark">
+              <Landmark size={20} strokeWidth={2} aria-hidden="true" />
+            </span>
             <span>Raportimi në komunë</span>
           </NavLink>
 
@@ -55,7 +58,13 @@ function AppLayout() {
           </nav>
 
           <div className="app-user">
-            <span>{user?.name}</span>
+            <span className="app-avatar" aria-hidden="true">
+              {initialsOf(user?.name ?? '')}
+            </span>
+            <span className="app-user-text">
+              <span className="app-user-name">{user?.name}</span>
+              <span className="app-user-role">{user?.role === 'Admin' ? 'Administrator' : 'Qytetar'}</span>
+            </span>
             <button type="button" className="btn-outline" onClick={handleLogout}>
               <LogOut size={16} aria-hidden="true" />
               Dil

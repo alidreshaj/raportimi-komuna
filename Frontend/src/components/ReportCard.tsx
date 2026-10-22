@@ -1,7 +1,9 @@
 import { CalendarDays, Image, MapPin, User } from 'lucide-react'
 import { Link } from 'react-router'
+import { useInView } from '../hooks/useInView'
 import type { Report } from '../types'
 import { formatDate } from '../utils/format'
+import AuthImage from './AuthImage'
 import CategoryIcon from './CategoryIcon'
 import StatusBadge from './StatusBadge'
 import './ReportCard.css'
@@ -14,12 +16,20 @@ interface ReportCardProps {
   showReporter?: boolean
 }
 
-// Karta e një raporti te lista. E gjithë karta është lidhje drejt detajeve të raportit.
+// Karta e një raporti te lista: miniaturë, statusi (edhe si vijë në anë), titulli, vendi dhe të dhënat e shkurtra.
+// E gjithë karta është lidhje drejt detajeve të raportit.
 function ReportCard({ report, to = `/raportet/${report.id}`, showReporter = false }: ReportCardProps) {
   const photoCount = report.images.length
+  const firstPhoto = report.images[0]
+  const { ref: thumbRef, seen } = useInView<HTMLDivElement>()
 
   return (
-    <Link to={to} className="report-card">
+    <Link to={to} className={`report-card report-card--${report.status}`}>
+      {/* Miniatura e fotos së parë; pa foto, një ikonë e kategorisë. Fotoja ngarkohet vetëm kur karta afrohet te ekrani. */}
+      <div ref={thumbRef} className={`report-card-thumb${firstPhoto ? '' : ' report-card-thumb--empty'}`}>
+        {firstPhoto ? seen && <AuthImage url={firstPhoto.url} alt="" /> : <CategoryIcon name={report.categoryName} size={30} />}
+      </div>
+
       <div className="report-card-main">
         <div className="report-card-top">
           <StatusBadge status={report.status} />

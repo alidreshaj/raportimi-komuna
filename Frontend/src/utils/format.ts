@@ -53,3 +53,14 @@ export function pluralize(count: number, singular: string, plural: string): stri
 export function percentOf(part: number, total: number): number {
   return total > 0 ? Math.round((part / total) * 100) : 0
 }
+
+// Inicialet për avatarin: "Ali Test" → "AT", "Ali" → "A". Deri në dy shkronja të para nga fjalët e emrit.
+export function initialsOf(name: string): string {
+  const letters = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+  return letters.join('') || '?'
+}

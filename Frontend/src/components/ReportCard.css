@@ -9,11 +9,13 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px 32px;
-  padding: 24px 28px;
+  gap: 16px 24px;
+  padding: 16px 24px 16px 16px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  /* Vija në anë me ngjyrën e statusit (ngjyra vendoset më poshtë sipas statusit). */
+  border-left: 5px solid var(--line);
+  border-radius: var(--radius-md);
   color: var(--ink);
   text-decoration: none;
 }
@@ -32,7 +34,7 @@
 }
 
 .report-card-main {
-  flex: 1 1 420px;
+  flex: 1 1 260px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -89,4 +91,52 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Ngjyra e vijës në anë sipas statusit (të njëjtat ngjyra si te grafikët dhe harta). */
+.report-card.report-card--New {
+  border-left-color: var(--chart-new);
+}
+
+.report-card.report-card--InProgress {
+  border-left-color: var(--chart-inprogress);
+}
+
+.report-card.report-card--Resolved {
+  border-left-color: var(--chart-resolved);
+}
+
+.report-card.report-card--Rejected {
+  border-left-color: var(--chart-rejected);
+}
+
+/* Miniatura: foto e prerë në kuti, ose një kuti e çelët me ikonën e kategorisë. */
+.report-card-thumb {
+  flex: none;
+  width: 112px;
+  height: 88px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #dce3ea;
+}
+
+.report-card-thumb--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Te miniatura nuk shfaqim tekstet "Po ngarkohet" ose "Fotoja nuk u ngarkua": kutia mbetet e qetë. */
+.report-card-thumb .auth-image--state {
+  font-size: 0;
+}
+
+@media (max-width: 560px) {
+  /* Në ekran të ngushtë miniatura zë gjerësinë e plotë sipër tekstit. */
+  .report-card-thumb {
+    width: 100%;
+    height: 140px;
+  }
 }
