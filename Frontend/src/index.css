@@ -13,6 +13,16 @@
   --danger-bg: #f6e1e1;
   --danger-text: #8a2323;
 
+  /* Vlera të përbashkëta të dizajnit: kështu çdo faqe ka të njëjtat rreze, hije dhe shpejtësi lëvizjeje. */
+  --accent-soft: #e8f0f8;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(20, 32, 46, 0.06), 0 1px 3px rgba(20, 32, 46, 0.05);
+  --shadow-md: 0 6px 16px rgba(20, 32, 46, 0.1), 0 2px 4px rgba(20, 32, 46, 0.06);
+  --shadow-lg: 0 16px 36px rgba(20, 32, 46, 0.16);
+  --ease: 0.18s ease;
+
   /* Ngjyrat e statuseve te grafikët: të njëjtat nuanca si etiketat, më të forta, që të dallohen si shenja grafiku.
      Të kontrolluara me validatorin (kontrast 3:1, dallueshmëri edhe për daltonizëm). */
   --chart-new: #2b6cb0;
@@ -31,7 +41,8 @@
 
 body {
   margin: 0;
-  background: var(--ground);
+  /* Një ton i lehtë blu lart që zbehet te gri: faqja ka thellësi, jo një sfond i sheshtë. */
+  background: linear-gradient(180deg, #e6edf6 0, var(--ground) 320px) no-repeat, var(--ground);
 }
 
 /* Fokusi i dukshëm për përdoruesit e tastierës. */
@@ -113,6 +124,11 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px; /* hapësira mes ikonës dhe tekstit */
+  transition:
+    background var(--ease),
+    box-shadow var(--ease),
+    transform var(--ease);
   text-decoration: none;
   height: 48px;
   padding: 0 24px;
@@ -135,6 +151,13 @@ a:hover {
 
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-secondary {
@@ -192,4 +215,29 @@ a:hover {
   color: var(--danger-text);
   font-size: 14px;
   font-weight: 500;
+}
+
+/* Kartat e aplikacionit: një hije e lehtë që i ngre nga sfondi (më parë ishin vetëm një kufi i hollë). */
+.report-card,
+.detail-card,
+.conversation,
+.chart-card,
+.stat-tile,
+.admin-filters,
+.auth-card {
+  box-shadow: var(--shadow-sm);
+}
+
+.page-title {
+  letter-spacing: -0.015em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: none;
+  }
 }

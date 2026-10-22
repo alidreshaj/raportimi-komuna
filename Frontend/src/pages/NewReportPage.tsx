@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Send } from 'lucide-react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { uploadImages } from '../api/images'
@@ -138,6 +139,7 @@ function NewReportPage() {
             className="btn btn-primary"
             disabled={submitting || (!reportCreated && !categories)}
           >
+            {!submitting && <Send size={17} aria-hidden="true" />}
             {submitting ? 'Duke dërguar...' : reportCreated ? 'Provo përsëri fotot' : 'Dërgo raportimin'}
           </button>
         </div>

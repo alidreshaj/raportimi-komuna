@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Plus } from 'lucide-react'
 import { Link } from 'react-router'
 import { getMyReports } from '../api/reports'
 import ReportCard from '../components/ReportCard'
@@ -48,6 +49,7 @@ function ReportsPage() {
           )}
         </div>
         <Link to="/raportet/i-ri" className="btn btn-primary">
+          <Plus size={18} aria-hidden="true" />
           Raporto një problem
         </Link>
       </div>

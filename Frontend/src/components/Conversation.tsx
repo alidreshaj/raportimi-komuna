@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Send } from 'lucide-react'
 import type { FormEvent } from 'react'
 import { addComment, getComments } from '../api/comments'
 import { useAuth } from '../context/useAuth'
@@ -145,6 +146,7 @@ function Conversation({ reportId }: { reportId: number }) {
 
         <div className="message-form-actions">
           <button type="submit" className="btn btn-primary" disabled={sending}>
+            {!sending && <Send size={16} aria-hidden="true" />}
             {sending ? 'Duke dërguar...' : 'Dërgo'}
           </button>
         </div>

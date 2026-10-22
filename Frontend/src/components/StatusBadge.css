@@ -1,7 +1,9 @@
 /* Etiketa e statusit (ngjyrat nga docs/design/). Sfond i çelët + tekst i errët për kontrast të mirë. */
 
 .status-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 13px;

@@ -1,3 +1,4 @@
+import { BarChart3, ClipboardList, Landmark, List, LogOut, PlusCircle } from 'lucide-react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import { homePathFor } from '../utils/roles'
@@ -19,21 +20,7 @@ function AppLayout() {
       <header className="app-header">
         <div className="app-header-inner">
           <NavLink to={homePathFor(user?.role ?? 'Citizen')} className="app-brand">
-            <svg
-              width="26"
-              height="26"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M3 21h18" />
-              <path d="M5 21V10l7-5 7 5v11" />
-              <path d="M9 21v-6h6v6" />
-            </svg>
+            <Landmark size={26} strokeWidth={1.8} aria-hidden="true" />
             <span>Raportimi në komunë</span>
           </NavLink>
 
@@ -41,9 +28,11 @@ function AppLayout() {
             {user?.role === 'Admin' ? (
               <>
                 <NavLink to="/admin/raportet" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+                  <List size={17} aria-hidden="true" />
                   Të gjitha raportet
                 </NavLink>
                 <NavLink to="/admin/statistika" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+                  <BarChart3 size={17} aria-hidden="true" />
                   Statistika
                 </NavLink>
               </>
@@ -54,9 +43,11 @@ function AppLayout() {
                   to="/raportet"
                   className={({ isActive }) => (isActive && !onNewReport ? 'active' : undefined)}
                 >
+                  <ClipboardList size={17} aria-hidden="true" />
                   Raportet e mia
                 </NavLink>
                 <NavLink to="/raportet/i-ri" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+                  <PlusCircle size={17} aria-hidden="true" />
                   Raporto një problem
                 </NavLink>
               </>
@@ -66,6 +57,7 @@ function AppLayout() {
           <div className="app-user">
             <span>{user?.name}</span>
             <button type="button" className="btn-outline" onClick={handleLogout}>
+              <LogOut size={16} aria-hidden="true" />
               Dil
             </button>
           </div>

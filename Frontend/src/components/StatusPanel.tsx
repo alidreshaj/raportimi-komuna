@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { CircleCheck, CircleX, Play } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { updateReportStatus } from '../api/reports'
 import type { Report, ReportStatus } from '../types'
 import ConfirmDialog from './ConfirmDialog'
@@ -19,6 +21,12 @@ const ACTION_LABELS: Partial<Record<ReportStatus, string>> = {
   InProgress: 'Merre në shqyrtim',
   Resolved: 'Shëno si të zgjidhur',
   Rejected: 'Refuzo raportin',
+}
+
+const ACTION_ICONS: Partial<Record<ReportStatus, LucideIcon>> = {
+  InProgress: Play,
+  Resolved: CircleCheck,
+  Rejected: CircleX,
 }
 
 interface StatusPanelProps {
@@ -86,17 +94,21 @@ function StatusPanel({ report, onChanged }: StatusPanelProps) {
 
       {nextSteps.length > 0 ? (
         <div className="detail-actions">
-          {nextSteps.map((step) => (
-            <button
-              key={step}
-              type="button"
-              className={step === 'Rejected' ? 'btn btn-danger-outline' : 'btn btn-primary'}
-              disabled={busy}
-              onClick={() => handleStep(step)}
-            >
-              {ACTION_LABELS[step]}
-            </button>
-          ))}
+          {nextSteps.map((step) => {
+            const Icon = ACTION_ICONS[step]
+            return (
+              <button
+                key={step}
+                type="button"
+                className={step === 'Rejected' ? 'btn btn-danger-outline' : 'btn btn-primary'}
+                disabled={busy}
+                onClick={() => handleStep(step)}
+              >
+                {Icon && <Icon size={17} aria-hidden="true" />}
+                {ACTION_LABELS[step]}
+              </button>
+            )
+          })}
         </div>
       ) : (
         <p className="detail-actions-note">

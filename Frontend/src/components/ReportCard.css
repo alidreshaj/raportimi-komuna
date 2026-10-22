@@ -1,6 +1,10 @@
 /* Karta e një raporti (docs/design/02-raportet-e-mia.png). */
 
 .report-card {
+  transition:
+    box-shadow var(--ease),
+    transform var(--ease),
+    border-color var(--ease);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -17,7 +21,14 @@
 .report-card:hover {
   color: var(--ink);
   border-color: var(--accent);
-  box-shadow: 0 2px 8px rgba(20, 32, 46, 0.08);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report-card:hover {
+    transform: none;
+  }
 }
 
 .report-card-main {
@@ -36,6 +47,9 @@
 }
 
 .report-card-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   color: var(--muted);
 }
@@ -49,9 +63,18 @@
 
 .report-card-location {
   margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   font-size: 15px;
   color: var(--muted);
   overflow-wrap: anywhere;
+}
+
+/* Ikona nuk zvogëlohet kur teksti është i gjatë, dhe rreshtohet me rreshtin e parë. */
+.report-card-location svg {
+  flex: none;
+  margin-top: 3px;
 }
 
 .report-card-meta {
@@ -60,4 +83,10 @@
   gap: 24px;
   font-size: 14px;
   color: var(--muted);
+}
+
+.report-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
