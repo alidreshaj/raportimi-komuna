@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Marker, useMap, useMapEvents } from 'react-leaflet'
 import type { GeoPoint } from '../../types'
+import { isInsideKosovo } from '../../utils/geo'
 import { DEFAULT_CENTER } from './mapDefaults'
 import MapView from './MapView'
 import './LocationPicker.css'
@@ -16,7 +17,7 @@ const GEO_ERRORS: Record<number, string> = {
 }
 
 // Dëgjon klikimet në hartë dhe e vendos pikën aty ku klikoi përdoruesi. Nuk vizaton asgjë vetë.
-function ClickToPlace({ onPick }: { onPick: (point: GeoPoint) => void }) {
+function ClickToPlace({ onPick }: { onPick: (point: GeoPoint) => boolean }) {
   useMapEvents({
     click(event) {
       onPick({ latitude: round(event.latlng.lat), longitude: round(event.latlng.lng) })
@@ -59,6 +60,16 @@ function LocationPicker({ value, onChange }: LocationPickerProps) {
     onChange(point)
   }
 
+  // Pranon vetëm pika brenda Kosovës. Jashtë saj nuk ndryshon asgjë dhe tregon një mesazh. Kthen true kur e pranoi.
+  function place(point: GeoPoint): boolean {
+    if (!isInsideKosovo(point.latitude, point.longitude)) {
+      setNotice({ text: 'Zgjidh një vend brenda Kosovës.', isError: true })
+      return false
+    }
+    change(point)
+    return true
+  }
+
   // Shfletuesi pyet përdoruesin për leje vetëm kur klikohet butoni, jo kur hapet faqja.
   function locateMe() {
     if (!('geolocation' in navigator)) {
@@ -72,9 +83,19 @@ function LocationPicker({ value, onChange }: LocationPickerProps) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const point = { latitude: round(position.coords.latitude), longitude: round(position.coords.longitude) }
+        setLocating(false)
+
+        // Kush është jashtë Kosovës (p.sh. në udhëtim) merr mesazh dhe zgjedh me dorë.
+        if (!isInsideKosovo(point.latitude, point.longitude)) {
+          setNotice({
+            text: 'Vendndodhja jote duket jashtë Kosovës. Kliko në hartë ku është problemi.',
+            isError: true,
+          })
+          return
+        }
+
         onChange(point)
         setFlyTo(point)
-        setLocating(false)
 
         // Laptopët japin vetëm një vend të përafërt (disa qindra metra): e themi, që të rregullohet shenja.
         if (position.coords.accuracy > 100) {
@@ -104,7 +125,7 @@ function LocationPicker({ value, onChange }: LocationPickerProps) {
           center={value ? [value.latitude, value.longitude] : DEFAULT_CENTER}
           zoom={value ? 16 : undefined}
         >
-          <ClickToPlace onPick={change} />
+          <ClickToPlace onPick={place} />
           <FlyToRequest request={flyTo} />
           {value && (
             <Marker
@@ -113,7 +134,10 @@ function LocationPicker({ value, onChange }: LocationPickerProps) {
               eventHandlers={{
                 dragend(event) {
                   const { lat, lng } = event.target.getLatLng()
-                  change({ latitude: round(lat), longitude: round(lng) })
+                  // Nëse e lëshove jashtë Kosovës, shenja kthehet aty ku ishte.
+                  if (!place({ latitude: round(lat), longitude: round(lng) })) {
+                    event.target.setLatLng([value.latitude, value.longitude])
+                  }
                 },
               }}
             />

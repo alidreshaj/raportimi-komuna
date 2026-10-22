@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
-import { LayerGroup, LayersControl, MapContainer, TileLayer } from 'react-leaflet'
+import { MapContainer, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import './leafletSetup'
-import { DEFAULT_CENTER, DEFAULT_ZOOM } from './mapDefaults'
+import KosovoMask from './KosovoMask'
+import { DEFAULT_CENTER, DEFAULT_ZOOM, KOSOVO_BOUNDS, MIN_ZOOM } from './mapDefaults'
 import './MapView.css'
 
 interface MapViewProps {
@@ -18,8 +19,9 @@ interface MapViewProps {
   className?: string
 }
 
-// Harta bazë me dy pamje që ndërrohen me çelësin lart djathtas: "Harta" (OpenStreetMap) dhe "Satelit" (foto nga lart).
-// Të dyja janë pa çelës API. Atribuimi poshtë djathtas është kusht i tyre, prandaj nuk hiqet.
+// Harta bazë: vetëm pamja satelitore (foto nga lart, Esri, pa çelës API). Atribuimi poshtë djathtas është kusht i tyre, prandaj nuk hiqet.
+// (Stilin e zakonshëm CARTO e hoqëm: kërkon çelës API dhe kthen pllakën "API KEY REQUIRED".)
+// Harta është e kufizuar te Kosova: nuk lëviz dhe nuk zmadhohet mbrapsht përtej saj, dhe gjithçka jashtë kufirit të saj është e errësuar.
 // Komponentët e tjerë (zgjedhja e pikës, harta e detajeve, harta e adminit) e përdorin këtë dhe shtojnë vetëm përmbajtjen e vet.
 function MapView({
   center = DEFAULT_CENTER,
@@ -33,30 +35,23 @@ function MapView({
     <MapContainer
       center={center}
       zoom={zoom}
+      minZoom={MIN_ZOOM}
       maxZoom={18}
+      maxBounds={KOSOVO_BOUNDS}
+      maxBoundsViscosity={1}
       scrollWheelZoom={scrollWheelZoom}
       className={className ? `map-view ${className}` : 'map-view'}
       aria-label={label}
     >
-      <LayersControl position="topright">
-        <LayersControl.BaseLayer checked name="Harta">
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-        </LayersControl.BaseLayer>
+      {/* Fotografia nga lart (Esri) dhe emrat e vendeve sipër, që të kuptohet ku je. */}
+      <TileLayer
+        attribution="Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community"
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+      />
+      <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}" />
 
-        <LayersControl.BaseLayer name="Satelit">
-          {/* Fotografia nga lart, plus emrat e vendeve sipër, që të kuptohet ku je. */}
-          <LayerGroup>
-            <TileLayer
-              attribution="Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community"
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-            <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}" />
-          </LayerGroup>
-        </LayersControl.BaseLayer>
-      </LayersControl>
+      {/* Errësimi jashtë Kosovës dhe vija e kufirit (te të gjitha hartat) */}
+      <KosovoMask />
 
       {children}
     </MapContainer>

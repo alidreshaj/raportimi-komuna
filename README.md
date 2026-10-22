@@ -16,7 +16,7 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 - Backend: ASP.NET Core Web API (C#, .NET 10)
 - Databaza: PostgreSQL + Entity Framework Core
 - Frontend: React 19 + TypeScript, Vite, React Router
-- Harta: Leaflet (react-leaflet), pllakat e OpenStreetMap dhe imazhet satelitore të Esri, pa çelës API
+- Harta: Leaflet (react-leaflet), imazhet satelitore të Esri, pa çelës API
 - Autentikimi: JWT
 
 ## Pamje të faqeve
@@ -122,7 +122,9 @@ Refuzimi kërkon arsye, që qytetari e shikon te biseda si koment.
 Çdo ndryshim statusi ruhet te tabela `StatusHistories` dhe shfaqet te detajet si afat kohor ("Historiku i statusit"). Raportet që kanë ndryshuar status para kësaj veçorie nuk kanë histori.
 
 ### Hartat
-Të gjitha hartat kanë një çelës lart djathtas për të ndërruar mes "Harta" (OpenStreetMap) dhe "Satelit" (Esri World Imagery me emrat e vendeve). Koordinatat ruhen te `Reports` (`Latitude`, `Longitude`), të dyja opsionale; raportet pa pikë nuk shfaqen në hartë, por numërohen poshtë saj. Atribuimi poshtë djathtas është kusht i ofruesve të pllakave dhe nuk hiqet.
+Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat e vendeve). Harta është e kufizuar te Kosova: nuk lëviz dhe nuk zmadhohet mbrapsht përtej saj, gjithçka jashtë kufirit është e errësuar, dhe pika e raportit mund të zgjidhet vetëm brenda Kosovës. Koordinatat ruhen te `Reports` (`Latitude`, `Longitude`), të dyja opsionale; raportet pa pikë nuk shfaqen në hartë, por numërohen poshtë saj. Atribuimi poshtë djathtas është kusht i ofruesve të pllakave dhe nuk hiqet.
+
+**Burimi i kufirit të Kosovës:** [geoBoundaries](https://www.geoboundaries.org) (gbOpen, ADM0, versioni i thjeshtuar), që e merr nga OpenStreetMap (© OpenStreetMap contributors, [openstreetmap.org/copyright](https://www.openstreetmap.org/copyright)); licenca që shënon geoBoundaries është CC BY-SA 2.0. Ruhet te `Frontend/src/data/kosovoBoundary.ts`.
 
 ## Endpoint-et deri tani
 | Metoda | Rruga | Qasja |
