@@ -60,6 +60,7 @@ export interface Report {
   categoryId: number
   categoryName: string
   reporterName: string
+  commentCount: number
   images: ImageInfo[]
 }
 

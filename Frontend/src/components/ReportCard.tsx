@@ -1,4 +1,4 @@
-import { CalendarDays, Image, MapPin, User } from 'lucide-react'
+import { CalendarDays, Image, MapPin, MessageSquare, User } from 'lucide-react'
 import { Link } from 'react-router'
 import { useInView } from '../hooks/useInView'
 import type { Report } from '../types'
@@ -55,6 +55,10 @@ function ReportCard({ report, to = `/raportet/${report.id}`, showReporter = fals
         <span>
           <Image size={15} aria-hidden="true" />
           {photoCount === 1 ? '1 foto' : `${photoCount} foto`}
+        </span>
+        <span>
+          <MessageSquare size={15} aria-hidden="true" />
+          {report.commentCount === 1 ? '1 mesazh' : `${report.commentCount} mesazhe`}
         </span>
         <span>
           <CalendarDays size={15} aria-hidden="true" />

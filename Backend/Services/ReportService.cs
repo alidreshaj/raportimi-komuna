@@ -34,6 +34,7 @@ public class ReportService
         CategoryId = r.CategoryId,
         CategoryName = r.Category.Name,
         ReporterName = r.User.Name,
+        CommentCount = r.Comments.Count(),
         Images = r.Images
             .OrderBy(i => i.UploadedAt)
             .ThenBy(i => i.Id)

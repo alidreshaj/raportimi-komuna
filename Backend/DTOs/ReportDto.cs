@@ -19,6 +19,9 @@ public class ReportDto
     // Vetëm emri i raportuesit, që admini të di kush e ka dërguar.
     public string ReporterName { get; set; } = string.Empty;
 
+    // Sa mesazhe ka biseda e raportit (për kartat e listës, që të mos duhet të hapet raporti për ta parë).
+    public int CommentCount { get; set; }
+
     // Fotot e raportit (nga më e vjetra), me adresën ku shihet secila.
     public List<ImageDto> Images { get; set; } = new();
 }

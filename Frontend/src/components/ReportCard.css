@@ -81,8 +81,9 @@
 
 .report-card-meta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 24px;
+  gap: 8px 20px;
   font-size: 14px;
   color: var(--muted);
 }
