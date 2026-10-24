@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using System.Text;
+using System.Text.RegularExpressions;
 using Backend.Data;
 using Backend.DTOs;
 using Backend.Models;
@@ -78,50 +80,176 @@ public class ReportService
             .FirstAsync();
     }
 
-    // Raportet e përdoruesit të loguar, më të rejat të parat.
-    public async Task<List<ReportDto>> GetMyAsync(int userId)
+    // Raportet e përdoruesit të loguar (një faqe), me kërkim, filtra dhe radhitje.
+    public Task<ReportPageDto> GetMyAsync(int userId, ReportQueryDto q)
     {
-        return await _db.Reports
-            .AsNoTracking()
-            .Where(r => r.UserId == userId)
+        // Qytetari është raportuesi i vetëm këtu, prandaj kërkimi nuk shikon emrin e raportuesit.
+        return BuildPageAsync(_db.Reports.AsNoTracking().Where(r => r.UserId == userId), q, includeReporter: false);
+    }
+
+    // Të gjitha raportet (për Admin), një faqe, me kërkim, filtra dhe radhitje.
+    public Task<ReportPageDto> GetAllAsync(ReportQueryDto q)
+    {
+        return BuildPageAsync(_db.Reports.AsNoTracking(), q, includeReporter: true);
+    }
+
+    // Pikat për hartën e adminit: vetëm raportet me koordinata, me të njëjtat filtra, pa faqosje (harta i do të gjitha).
+    public async Task<List<ReportPinDto>> GetPinsAsync(ReportQueryDto q)
+    {
+        var filtered = ApplyFilters(_db.Reports.AsNoTracking(), q, includeReporter: true);
+        if (q.Status.HasValue)
+        {
+            filtered = filtered.Where(r => r.Status == q.Status.Value);
+        }
+
+        return await filtered
+            .Where(r => r.Latitude != null && r.Longitude != null)
             .OrderByDescending(r => r.CreatedAt)
-            .Select(ToDto)
+            .Take(MaxPins)
+            .Select(r => new ReportPinDto
+            {
+                Id = r.Id,
+                Title = r.Title,
+                Location = r.Location,
+                Status = r.Status.ToString(),
+                CategoryName = r.Category.Name,
+                CreatedAt = r.CreatedAt,
+                Latitude = r.Latitude!.Value,
+                Longitude = r.Longitude!.Value
+            })
             .ToListAsync();
     }
 
-    // Të gjitha raportet (për Admin), me filtra opsionalë. Më të rejat të parat.
-    public async Task<List<ReportDto>> GetAllAsync(ReportStatus? status, int? categoryId, DateOnly? from, DateOnly? to)
+    // Kufiri i sigurisë: harta nuk merr më shumë se kaq pika.
+    private const int MaxPins = 5000;
+
+    // Pas sa ditësh një raport i ri quhet "i vonuar" (për statistikat dhe kartën "Kërkon vëmendje").
+    private const int LateAfterDays = 3;
+
+    // Ndërton një faqe: numëron statuset (për çipat), aplikon filtrin e statusit, radhit dhe merr vetëm faqen e kërkuar.
+    // Numërimi dhe faqosja bëhen nga databaza, kështu një listë me mijëra raporte mbetet e shpejtë.
+    private async Task<ReportPageDto> BuildPageAsync(IQueryable<Report> source, ReportQueryDto q, bool includeReporter)
     {
-        var query = _db.Reports.AsNoTracking().AsQueryable();
+        // Filtrat pa statusin: nga këta dalin numrat e çipave (që të tregojnë sa ka për secilin status).
+        var filtered = ApplyFilters(source, q, includeReporter);
 
-        // Shtojmë një kusht vetëm për filtrat që klienti i ka dhënë.
-        if (status.HasValue)
+        var grouped = await filtered
+            .GroupBy(r => r.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+        var statusCounts = Enum.GetValues<ReportStatus>()
+            .Select(s => new StatusCountDto
+            {
+                Status = s.ToString(),
+                Count = grouped.FirstOrDefault(x => x.Status == s)?.Count ?? 0
+            })
+            .ToList();
+
+        // Totali i listës pas filtrit të statusit del nga numrat që kemi tashmë (pa një COUNT të dytë).
+        var selected = q.Status.HasValue ? filtered.Where(r => r.Status == q.Status.Value) : filtered;
+        var totalCount = q.Status.HasValue
+            ? statusCounts.First(c => c.Status == q.Status.Value.ToString()).Count
+            : statusCounts.Sum(c => c.Count);
+
+        var items = await ApplySort(selected, q.Sort)
+            .Skip((q.Page - 1) * q.PageSize)
+            .Take(q.PageSize)
+            .Select(ToDto)
+            .ToListAsync();
+
+        return new ReportPageDto
         {
-            query = query.Where(r => r.Status == status.Value);
+            Items = items,
+            Page = q.Page,
+            PageSize = q.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)q.PageSize),
+            StatusCounts = statusCounts
+        };
+    }
+
+    // Filtrat që nuk lidhen me statusin: kategoria, datat dhe kërkimi.
+    private static IQueryable<Report> ApplyFilters(IQueryable<Report> query, ReportQueryDto q, bool includeReporter)
+    {
+        if (q.CategoryId.HasValue)
+        {
+            query = query.Where(r => r.CategoryId == q.CategoryId.Value);
         }
 
-        if (categoryId.HasValue)
+        if (q.From.HasValue)
         {
-            query = query.Where(r => r.CategoryId == categoryId.Value);
-        }
-
-        if (from.HasValue)
-        {
-            var start = from.Value.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+            var start = q.From.Value.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
             query = query.Where(r => r.CreatedAt >= start);
         }
 
-        if (to.HasValue)
+        if (q.To.HasValue)
         {
             // "to" përfshin gjithë ditën, prandaj marrim fillimin e ditës tjetër.
-            var endExclusive = to.Value.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+            var endExclusive = q.To.Value.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
             query = query.Where(r => r.CreatedAt < endExclusive);
         }
 
-        return await query
-            .OrderByDescending(r => r.CreatedAt)
-            .Select(ToDto)
-            .ToListAsync();
+        return ApplySearch(query, q.Search, includeReporter);
+    }
+
+    // Kërkimi: çdo fjalë duhet të gjendet diku (titulli, përshkrimi, vendi, kategoria, ose emri i raportuesit për Admin).
+    // E bëjmë me shprehje të rregullt te PostgreSQL (~*), që "peje" të gjejë edhe "Pejë" pa u ndryshuar databaza (pa shtesën unaccent).
+    private static IQueryable<Report> ApplySearch(IQueryable<Report> query, string? search, bool includeReporter)
+    {
+        var terms = (search ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        foreach (var term in terms.Take(5))
+        {
+            var pattern = SearchPattern(term);
+
+            query = includeReporter
+                ? query.Where(r =>
+                    Regex.IsMatch(r.Title, pattern, RegexOptions.IgnoreCase) ||
+                    Regex.IsMatch(r.Description, pattern, RegexOptions.IgnoreCase) ||
+                    Regex.IsMatch(r.Location, pattern, RegexOptions.IgnoreCase) ||
+                    Regex.IsMatch(r.Category.Name, pattern, RegexOptions.IgnoreCase) ||
+                    Regex.IsMatch(r.User.Name, pattern, RegexOptions.IgnoreCase))
+                : query.Where(r =>
+                    Regex.IsMatch(r.Title, pattern, RegexOptions.IgnoreCase) ||
+                    Regex.IsMatch(r.Description, pattern, RegexOptions.IgnoreCase) ||
+                    Regex.IsMatch(r.Location, pattern, RegexOptions.IgnoreCase) ||
+                    Regex.IsMatch(r.Category.Name, pattern, RegexOptions.IgnoreCase));
+        }
+
+        return query;
+    }
+
+    // Kthen një fjalë kërkimi në shprehje të rregullt: e/ë dhe c/ç quhen të njëjta, çdo karakter tjetër merret fjalë për fjalë.
+    // Shkronjat e mëdha shqipe i japim ne, sepse rregulli i madhësisë së shkronjave varet nga cilësimet e databazës.
+    private static string SearchPattern(string term)
+    {
+        var sb = new StringBuilder();
+        foreach (var ch in term)
+        {
+            sb.Append(ch switch
+            {
+                'e' or 'E' or 'ë' or 'Ë' => "[eEëË]",
+                'c' or 'C' or 'ç' or 'Ç' => "[cCçÇ]",
+                _ => Regex.Escape(ch.ToString())
+            });
+        }
+        return sb.ToString();
+    }
+
+    // Radhitja e kërkuar. Statusi radhitet sipas rrjedhës (E re, Në trajtim, U zgjidh, Refuzuar), jo sipas alfabetit.
+    private static IQueryable<Report> ApplySort(IQueryable<Report> query, string sort)
+    {
+        return sort switch
+        {
+            "oldest" => query.OrderBy(r => r.CreatedAt).ThenBy(r => r.Id),
+            "title" => query.OrderBy(r => r.Title).ThenBy(r => r.Id),
+            "status" => query
+                .OrderBy(r => r.Status == ReportStatus.New ? 0 : r.Status == ReportStatus.InProgress ? 1 : r.Status == ReportStatus.Resolved ? 2 : 3)
+                .ThenByDescending(r => r.CreatedAt)
+                .ThenBy(r => r.Id),
+            _ => query.OrderByDescending(r => r.CreatedAt).ThenByDescending(r => r.Id)
+        };
     }
 
     // Rrugët e lejuara të statusit (nga docs/plani.md): New → InProgress → Resolved, ose New → Rejected.
@@ -336,9 +464,13 @@ public class ReportService
             })
             .ToList();
 
+        var lateCutoff = DateTime.UtcNow.AddDays(-LateAfterDays);
+        var lateNew = await _db.Reports.CountAsync(r => r.Status == ReportStatus.New && r.CreatedAt <= lateCutoff);
+
         return new StatsDto
         {
             Total = byStatus.Sum(s => s.Count),
+            LateNew = lateNew,
             ByStatus = byStatus,
             ByCategory = byCategory,
             ByMonth = byMonth

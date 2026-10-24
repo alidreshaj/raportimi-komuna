@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Inbox, SearchX } from 'lucide-react'
 import { useSearchParams } from 'react-router'
-import { getAllReports } from '../api/reports'
+import { getAllReports, getReportPins } from '../api/reports'
+import type { ReportListQuery } from '../api/reports'
 import AttentionPanel from '../components/AttentionPanel'
 import EmptyState from '../components/EmptyState'
 import ReportsMap from '../components/maps/ReportsMap'
+import Pagination from '../components/Pagination'
 import ReportCard from '../components/ReportCard'
 import ReportListSkeleton from '../components/ReportListSkeleton'
 import ReportTable from '../components/ReportTable'
@@ -13,9 +15,10 @@ import SearchBox from '../components/SearchBox'
 import StatusChips from '../components/StatusChips'
 import ViewSwitch from '../components/ViewSwitch'
 import { useCategories } from '../hooks/useCategories'
-import type { Report, ReportStatus } from '../types'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
+import type { ReportPage, ReportPin, ReportStatus } from '../types'
 import { pluralize } from '../utils/format'
-import { SORT_OPTIONS, countByStatus, matchesSearch, sortReports } from '../utils/reportList'
+import { SORT_OPTIONS, toStatusCounts } from '../utils/reportList'
 import type { SortKey } from '../utils/reportList'
 import './ReportsPage.css'
 import './AdminReportsPage.css'
@@ -23,55 +26,73 @@ import './AdminReportsPage.css'
 type View = 'table' | 'cards' | 'map'
 
 const VIEWS: View[] = ['table', 'cards', 'map']
+const STATUSES: ReportStatus[] = ['New', 'InProgress', 'Resolved', 'Rejected']
 const SORTS = SORT_OPTIONS.map((o) => o.value)
+const PAGE_SIZE = 20
 
-// Lista e të gjitha raporteve për komunën. Kategoria dhe datat i filtron backend-i; statusi, kërkimi dhe radhitja bëhen këtu,
-// kështu çipat ndërrojnë menjëherë pa kërkesë të re dhe numrat tregojnë gjendjen e vërtetë. Të gjitha zgjedhjet ruhen te adresa
-// (?status=New&q=...), prandaj kur kthehesh nga detajet gjen listën saktësisht ashtu siç e ke lënë.
+// Lista e të gjitha raporteve për komunën. Filtrimin, kërkimin, radhitjen, numrat e çipave dhe faqosjen i bën serveri (databaza),
+// kështu lista mbetet e shpejtë edhe me shumë raporte: këtu kërkojmë vetëm faqen që duhet. Të gjitha zgjedhjet ruhen te adresa
+// (?status=New&q=...&page=2), prandaj kur kthehesh nga detajet gjen listën saktësisht ashtu siç e ke lënë.
 function AdminReportsPage() {
   const { categories } = useCategories()
   const [params, setParams] = useSearchParams()
 
-  const status = (['New', 'InProgress', 'Resolved', 'Rejected'].includes(params.get('status') ?? '') ? params.get('status') : '') as
-    | ReportStatus
-    | ''
+  const status = (STATUSES.includes(params.get('status') as ReportStatus) ? params.get('status') : '') as ReportStatus | ''
   const query = params.get('q') ?? ''
   const category = params.get('category') ?? ''
   const from = params.get('from') ?? ''
   const to = params.get('to') ?? ''
   const sort = (SORTS.includes(params.get('sort') as SortKey) ? params.get('sort') : 'newest') as SortKey
   const view = (VIEWS.includes(params.get('view') as View) ? params.get('view') : 'table') as View
+  const page = Math.max(1, Number(params.get('page')) || 1)
 
   // Ndryshon një parametër te adresa; vlera bosh (ose e paracaktuar) e heq fare që adresa të mbetet e shkurtër.
-  // replace: nuk shton një hap te historiku për çdo shkronjë të shkruar ose çdo çip.
+  // replace: nuk shton një hap te historiku për çdo shkronjë ose çdo çip. Çdo filtër i ri kthen faqen e parë.
   function setParam(key: string, value: string, fallback = '') {
     setParams(
       (prev) => {
         const next = new URLSearchParams(prev)
         if (value === fallback) next.delete(key)
         else next.set(key, value)
+        if (key !== 'page' && key !== 'view') next.delete('page')
         return next
       },
       { replace: true },
     )
   }
 
-  const [reports, setReports] = useState<Report[] | null>(null)
+  // Kutia e kërkimit: shkruhet menjëherë, por te adresa (dhe te serveri) shkon pas një vonese të shkurtër.
+  const [searchInput, setSearchInput] = useState(query)
+  const debouncedSearch = useDebouncedValue(searchInput.trim())
+  useEffect(() => {
+    if (debouncedSearch !== query) setParam('q', debouncedSearch)
+    // Vetëm kur ndryshon vlera e vonuar: ndryshimet e adresës nga jashtë (p.sh. "Pastro filtrat") nuk e rikthejnë vlerën e vjetër.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch])
+
+  // Filtrat për serverin (pa faqen, pa pamjen).
+  const filters: ReportListQuery = useMemo(
+    () => ({ status, search: query, categoryId: category ? Number(category) : '', from, to }),
+    [status, query, category, from, to],
+  )
+  const badRange = !!from && !!to && from > to
+  const requestKey = JSON.stringify([filters, sort, page])
+
+  // Rezultati ruhet bashkë me çelësin e kërkesës: nëse çelësi nuk përputhet, po ngarkohet një faqe e re dhe lista e vjetër
+  // mbetet e dukshme pak e zbehur (pa dritare boshe që "kërcen").
+  const [result, setResult] = useState<{ key: string; page: ReportPage } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
-
-  // Data "nga" pas datës "deri" nuk ka kuptim: backend-i kthen 400, prandaj nuk e dërgojmë fare.
-  const badRange = !!from && !!to && from > to
 
   useEffect(() => {
     if (badRange) return
 
     let cancelled = false
 
-    getAllReports({ categoryId: category ? Number(category) : '', from, to })
-      .then((list) => {
+    getAllReports({ ...filters, sort, page, pageSize: PAGE_SIZE })
+      .then((data) => {
         if (!cancelled) {
-          setReports(list)
+          setResult({ key: requestKey, page: data })
           setError(null)
         }
       })
@@ -82,15 +103,37 @@ function AdminReportsPage() {
     return () => {
       cancelled = true
     }
-  }, [category, from, to, attempt, badRange])
+  }, [filters, sort, page, attempt, badRange, requestKey])
+
+  // Pikat e hartës merren veç (të gjitha, pa faqosje) dhe vetëm kur është hapur harta.
+  const pinsKey = JSON.stringify(filters)
+  const [pins, setPins] = useState<{ key: string; list: ReportPin[] } | null>(null)
+  useEffect(() => {
+    if (view !== 'map' || badRange) return
+
+    let cancelled = false
+
+    getReportPins(filters)
+      .then((list) => {
+        if (!cancelled) setPins({ key: pinsKey, list })
+      })
+      .catch((e: Error) => {
+        if (!cancelled) setError(e.message)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [view, filters, badRange, pinsKey])
 
   function retry() {
     setError(null)
-    setReports(null)
+    setResult(null)
     setAttempt((n) => n + 1)
   }
 
   function clearFilters() {
+    setSearchInput('')
     setParams(
       (prev) => {
         const next = new URLSearchParams()
@@ -102,14 +145,14 @@ function AdminReportsPage() {
     )
   }
 
-  // Numrat te çipat vijnë nga raportet që përputhen me kërkimin; lista shfaq vetëm statusin e zgjedhur.
-  const searched = useMemo(() => (reports ?? []).filter((r) => matchesSearch(r, query)), [reports, query])
-  const counts = useMemo(() => countByStatus(searched), [searched])
-  const visible = useMemo(
-    () => sortReports(status ? searched.filter((r) => r.status === status) : searched, sort),
-    [searched, status, sort],
-  )
+  function goToPage(next: number) {
+    setParam('page', String(next), '1')
+    window.scrollTo({ top: 0 })
+  }
 
+  const data = result?.page ?? null
+  const loading = !!result && result.key !== requestKey
+  const counts = useMemo(() => toStatusCounts(data?.statusCounts ?? []), [data])
   const hasFilters = !!(status || query || category || from || to)
 
   return (
@@ -117,9 +160,9 @@ function AdminReportsPage() {
       <div className="reports-header">
         <div>
           <h1 className="page-title">Të gjitha raportet</h1>
-          {reports && !badRange && (
+          {data && !badRange && (
             <p className="page-subtitle">
-              {pluralize(visible.length, 'raport', 'raporte')}
+              {pluralize(data.totalCount, 'raport', 'raporte')}
               {hasFilters ? ' me këto filtra.' : '.'}
             </p>
           )}
@@ -147,8 +190,8 @@ function AdminReportsPage() {
             <label htmlFor="f-q">Kërko</label>
             <SearchBox
               id="f-q"
-              value={query}
-              onChange={(value) => setParam('q', value)}
+              value={searchInput}
+              onChange={setSearchInput}
               placeholder="Titulli, vendi, emri i raportuesit..."
               label="Kërko në raporte"
             />
@@ -199,8 +242,8 @@ function AdminReportsPage() {
         </p>
       )}
 
-      {/* Po ngarkohet */}
-      {!badRange && !reports && !error && <ReportListSkeleton />}
+      {/* Po ngarkohet për herë të parë */}
+      {!badRange && !data && !error && <ReportListSkeleton />}
 
       {/* Gabim */}
       {error && (
@@ -215,7 +258,7 @@ function AdminReportsPage() {
       )}
 
       {/* Bosh */}
-      {!badRange && reports && visible.length === 0 && (
+      {!badRange && data && data.totalCount === 0 && (
         <EmptyState
           icon={hasFilters ? SearchX : Inbox}
           title={hasFilters ? 'Asnjë raport nuk përputhet me filtrat' : 'Nuk ka raporte ende'}
@@ -227,21 +270,35 @@ function AdminReportsPage() {
         />
       )}
 
-      {/* Me të dhëna */}
-      {!badRange && visible.length > 0 && view === 'table' && <ReportTable reports={visible} basePath="/admin/raportet" />}
+      {/* Me të dhëna: faqja e re ngarkohet ndërsa e vjetra mbetet pak e zbehur */}
+      {!badRange && data && data.totalCount > 0 && view !== 'map' && (
+        <div className={loading ? 'list-loading' : undefined} aria-busy={loading}>
+          {view === 'table' ? (
+            <ReportTable reports={data.items} basePath="/admin/raportet" />
+          ) : (
+            <ul className="report-list">
+              {data.items.map((report, index) => (
+                <li key={report.id} style={{ '--i': Math.min(index, 8) } as CSSProperties}>
+                  <ReportCard report={report} to={`/admin/raportet/${report.id}`} showReporter />
+                </li>
+              ))}
+            </ul>
+          )}
 
-      {!badRange && visible.length > 0 && view === 'cards' && (
-        <ul className="report-list">
-          {visible.map((report, index) => (
-            <li key={report.id} style={{ '--i': Math.min(index, 8) } as CSSProperties}>
-              <ReportCard report={report} to={`/admin/raportet/${report.id}`} showReporter />
-            </li>
-          ))}
-        </ul>
+          <Pagination page={data.page} totalPages={data.totalPages} totalCount={data.totalCount} onChange={goToPage} />
+        </div>
       )}
 
-      {/* Harta përdor të njëjtat raporte dhe të njëjtat filtra si lista. */}
-      {!badRange && visible.length > 0 && view === 'map' && <ReportsMap reports={visible} />}
+      {!badRange && data && data.totalCount > 0 && view === 'map' && !pins && (
+        <p className="reports-message" role="status">
+          Po ngarkohet harta...
+        </p>
+      )}
+
+      {/* Harta: të gjitha pikat me të njëjtat filtra; "pa vendndodhje" = raportet që përputhen por nuk kanë pikë */}
+      {!badRange && data && data.totalCount > 0 && view === 'map' && pins && (
+        <ReportsMap pins={pins.list} missing={Math.max(0, data.totalCount - pins.list.length)} />
+      )}
     </>
   )
 }

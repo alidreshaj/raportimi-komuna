@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import { Marker, Popup, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
-import type { Report, ReportStatus } from '../../types'
+import type { ReportPin, ReportStatus } from '../../types'
 import { STATUS_LABELS, formatDate, pluralize } from '../../utils/format'
 import { STATUS_COLORS } from '../../utils/statusColors'
 import StatusBadge from '../StatusBadge'
@@ -37,24 +37,20 @@ function clusterIcon(cluster: { getChildCount: () => number }): L.DivIcon {
 }
 
 // Harta e adminit: të gjitha raportet që kanë pikë, me shenjën në ngjyrën e statusit. Shenjat e afërta grupohen dhe ndahen kur zmadhon.
-// Kliko një shenjë: del një kartë e vogël me lidhjen te detajet. Raportet pa pikë nuk shfaqen, por numërohen poshtë hartës.
-function ReportsMap({ reports }: { reports: Report[] }) {
-  const located = useMemo(
-    () => reports.filter((r) => r.latitude !== null && r.longitude !== null),
-    [reports],
-  )
-  const points = useMemo(() => located.map((r) => [r.latitude!, r.longitude!] as [number, number]), [located])
-  const missing = reports.length - located.length
+// Kliko një shenjë: del një kartë e vogël me lidhjen te detajet. Raportet pa pikë nuk shfaqen (serveri i kthen vetëm ato me pikë),
+// por numri i tyre jepet nga faqja (`missing`) dhe shfaqet poshtë hartës.
+function ReportsMap({ pins, missing }: { pins: ReportPin[]; missing: number }) {
+  const points = useMemo(() => pins.map((p) => [p.latitude, p.longitude] as [number, number]), [pins])
 
   return (
     <div className="reports-map">
       <MapView label="Harta me të gjitha raportet" className="reports-map-view">
         <FitToPoints points={points} />
         <MarkerClusterGroup chunkedLoading iconCreateFunction={clusterIcon} showCoverageOnHover={false}>
-          {located.map((report) => (
+          {pins.map((report) => (
             <Marker
               key={report.id}
-              position={[report.latitude!, report.longitude!]}
+              position={[report.latitude, report.longitude]}
               icon={statusIcon(report.status)}
               title={`${report.title} (${STATUS_LABELS[report.status]})`}
             >
@@ -87,7 +83,7 @@ function ReportsMap({ reports }: { reports: Report[] }) {
         </ul>
 
         <p className="reports-map-count" role="status">
-          {pluralize(located.length, 'raport', 'raporte')} në hartë
+          {pluralize(pins.length, 'raport', 'raporte')} në hartë
           {missing > 0 && ` · ${missing} pa vendndodhje (nuk shfaqen)`}
         </p>
       </div>

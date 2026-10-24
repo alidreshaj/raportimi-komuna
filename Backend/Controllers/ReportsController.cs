@@ -36,30 +36,44 @@ public class ReportsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = report.Id }, report);
     }
 
-    // GET /api/reports: të gjitha raportet, me filtra opsionalë (vetëm Admin).
+    // GET /api/reports: një faqe e të gjitha raporteve, me filtra, kërkim dhe radhitje (vetëm Admin).
+    // Shembull: /api/reports?status=New&search=peje&sort=oldest&page=2&pageSize=20
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    [ProducesResponseType(typeof(List<ReportDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ReportPageDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAll(ReportStatus? status, int? categoryId, DateOnly? from, DateOnly? to)
+    public async Task<IActionResult> GetAll([FromQuery] ReportQueryDto query)
     {
-        if (from.HasValue && to.HasValue && from > to)
+        if (query.From.HasValue && query.To.HasValue && query.From > query.To)
         {
             return BadRequest(new { message = "Data 'from' nuk mund të jetë pas datës 'to'." });
         }
 
-        var reports = await _reportService.GetAllAsync(status, categoryId, from, to);
-        return Ok(reports);
+        return Ok(await _reportService.GetAllAsync(query));
     }
 
-    // GET /api/reports/my: raportet e qytetarit të loguar.
+    // GET /api/reports/map: pikat për hartën e adminit, me të njëjtat filtra por pa faqosje (vetëm Admin).
+    [HttpGet("map")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(List<ReportPinDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetMap([FromQuery] ReportQueryDto query)
+    {
+        if (query.From.HasValue && query.To.HasValue && query.From > query.To)
+        {
+            return BadRequest(new { message = "Data 'from' nuk mund të jetë pas datës 'to'." });
+        }
+
+        return Ok(await _reportService.GetPinsAsync(query));
+    }
+
+    // GET /api/reports/my: një faqe e raporteve të qytetarit të loguar, me kërkim, statusin dhe radhitje.
     [HttpGet("my")]
     [Authorize(Roles = "Citizen")]
-    [ProducesResponseType(typeof(List<ReportDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMy()
+    [ProducesResponseType(typeof(ReportPageDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMy([FromQuery] ReportQueryDto query)
     {
-        var reports = await _reportService.GetMyAsync(User.GetUserId());
-        return Ok(reports);
+        return Ok(await _reportService.GetMyAsync(User.GetUserId(), query));
     }
 
     // PUT /api/reports/{id}: qytetari ndryshon raportin e vet (vetëm kur është New).

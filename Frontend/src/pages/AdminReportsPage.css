@@ -33,3 +33,10 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Gjatë ngarkimit të një faqeje të re, lista e vjetër mbetet por e zbehur (nuk zhduket e nuk kërcen). */
+.list-loading {
+  opacity: 0.55;
+  transition: opacity var(--ease);
+  pointer-events: none;
+}

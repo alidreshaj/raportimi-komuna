@@ -1,4 +1,5 @@
-import type { Report, ReportInput, ReportStatus, Stats, StatusHistoryItem } from '../types'
+import type { Report, ReportInput, ReportPage, ReportPin, ReportStatus, Stats, StatusHistoryItem } from '../types'
+import type { SortKey } from '../utils/reportList'
 import { apiFetch } from './client'
 
 // Detajet e një raporti (i zoti ose Admin). Kthen 404 nëse nuk ekziston ose nuk është i yti.
@@ -21,29 +22,42 @@ export function createReport(input: ReportInput): Promise<Report> {
   return apiFetch<Report>('/api/reports', { method: 'POST', body: input })
 }
 
-// Raportet e qytetarit të loguar, më të rejat të parat (backend-i e filtron sipas tokenit).
-export function getMyReports(): Promise<Report[]> {
-  return apiFetch<Report[]>('/api/reports/my')
-}
-
-// Filtrat e listës së adminit. Fushat bosh nuk dërgohen fare. Datat janë "yyyy-MM-dd" (siç i jep <input type="date">).
-export interface ReportFilters {
+// Parametrat e listave: filtra, kërkim, radhitje dhe faqosje. Fushat bosh nuk dërgohen fare.
+// Datat janë "yyyy-MM-dd" (siç i jep <input type="date">).
+export interface ReportListQuery {
   status?: ReportStatus | ''
   categoryId?: number | ''
   from?: string
   to?: string
+  search?: string
+  sort?: SortKey
+  page?: number
+  pageSize?: number
 }
 
-// Të gjitha raportet (vetëm Admin), më të rejat të parat. Filtrimin e bën backend-i.
-export function getAllReports(filters: ReportFilters = {}): Promise<Report[]> {
+function toQueryString(query: ReportListQuery): string {
   const params = new URLSearchParams()
-  if (filters.status) params.set('status', filters.status)
-  if (filters.categoryId) params.set('categoryId', String(filters.categoryId))
-  if (filters.from) params.set('from', filters.from)
-  if (filters.to) params.set('to', filters.to)
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined && value !== '') params.set(key, String(value))
+  }
+  const text = params.toString()
+  return text ? `?${text}` : ''
+}
 
-  const query = params.toString()
-  return apiFetch<Report[]>(`/api/reports${query ? `?${query}` : ''}`)
+// Një faqe e raporteve të qytetarit të loguar (backend-i e filtron sipas tokenit).
+export function getMyReports(query: ReportListQuery = {}): Promise<ReportPage> {
+  return apiFetch<ReportPage>(`/api/reports/my${toQueryString(query)}`)
+}
+
+// Një faqe e të gjitha raporteve (vetëm Admin), me filtra, kërkim dhe radhitje. Faqosjen, kërkimin dhe numrat e bën databaza.
+export function getAllReports(query: ReportListQuery = {}): Promise<ReportPage> {
+  return apiFetch<ReportPage>(`/api/reports${toQueryString(query)}`)
+}
+
+// Pikat për hartën e adminit: vetëm raportet me koordinata, me të njëjtat filtra, pa faqosje.
+export function getReportPins(query: ReportListQuery = {}): Promise<ReportPin[]> {
+  const { page: _page, pageSize: _pageSize, sort: _sort, ...filters } = query
+  return apiFetch<ReportPin[]>(`/api/reports/map${toQueryString(filters)}`)
 }
 
 // Ndryshon statusin (vetëm Admin). `reason` është e detyrueshme për Rejected dhe ruhet si koment.

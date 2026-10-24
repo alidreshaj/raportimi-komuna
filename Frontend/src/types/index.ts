@@ -102,10 +102,36 @@ export interface MonthCount {
 
 export interface Stats {
   total: number
+  // Raporte të reja që presin mbi 3 ditë
+  lateNew: number
   byStatus: StatusCount[]
   byCategory: CategoryCount[]
   // 6 muajt e fundit, nga më i vjetri
   byMonth: MonthCount[]
+}
+
+// Një faqe e listës së raporteve (GET /api/reports dhe /api/reports/my).
+export interface ReportPage {
+  items: Report[]
+  page: number
+  pageSize: number
+  // Sa raporte ka gjithsej me filtrat (jo vetëm në këtë faqe)
+  totalCount: number
+  totalPages: number
+  // Sa raporte ka për secilin status sipas filtrave të tjerë (pa statusin): për çipat
+  statusCounts: StatusCount[]
+}
+
+// Një raport për hartën (GET /api/reports/map): vetëm ç'i duhet shenjës dhe kartës së saj.
+export interface ReportPin {
+  id: number
+  title: string
+  location: string
+  status: ReportStatus
+  categoryName: string
+  createdAt: string
+  latitude: number
+  longitude: number
 }
 
 // Çfarë dërgohet për të krijuar ose ndryshuar një raport (POST dhe PUT /api/reports).

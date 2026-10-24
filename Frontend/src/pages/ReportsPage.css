@@ -135,3 +135,10 @@
   gap: 12px;
   margin-bottom: 16px;
 }
+
+/* Butoni "Shfaq më shumë" poshtë listës së qytetarit. */
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}

@@ -6,6 +6,9 @@ public class StatsDto
     // Të gjitha raportet.
     public int Total { get; set; }
 
+    // Sa raporte të reja (New) presin më shumë se 3 ditë. Për kartën "Kërkon vëmendje" te admini.
+    public int LateNew { get; set; }
+
     // Gjithmonë të katër statuset, edhe me 0, që frontend-i të mos plotësojë asgjë vetë.
     public List<StatusCountDto> ByStatus { get; set; } = new();
 

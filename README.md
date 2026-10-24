@@ -137,9 +137,10 @@ Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat 
 | GET | `/api/auth/admin-only` | vetëm Admin (endpoint prove) |
 | GET | `/api/categories` | publike (lista e kategorive) |
 | POST | `/api/reports` | Qytetari (krijon raport me status `New`; `latitude` dhe `longitude` janë opsionale) |
-| GET | `/api/reports/my` | Qytetari (raportet e veta) |
+| GET | `/api/reports/my` | Qytetari (një faqe e raporteve të veta). Parametra: `status`, `search`, `sort`, `page`, `pageSize` (shih më poshtë) |
 | GET | `/api/reports/{id}` | I zoti ose Admin (të tjerët marrin 404) |
-| GET | `/api/reports` | vetëm Admin, filtra: `status`, `categoryId`, `from`, `to` |
+| GET | `/api/reports` | vetëm Admin (një faqe). Parametra: `status`, `categoryId`, `from`, `to`, `search`, `sort`, `page`, `pageSize` (shih më poshtë) |
+| GET | `/api/reports/map` | vetëm Admin (pikat për hartën: vetëm raportet me koordinata, me të njëjtat filtra, pa faqosje, deri në 5000) |
 | PUT | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | DELETE | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | PATCH | `/api/reports/{id}/status` | vetëm Admin (New → InProgress → Resolved, ose New → Rejected). Fusha `reason` është e detyrueshme për `Rejected`, opsionale për të tjerat, dhe ruhet si koment |
@@ -150,6 +151,19 @@ Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat 
 | POST | `/api/reports/{id}/images` | Qytetari, raportin e vet, vetëm kur është `New` (`multipart/form-data`, fusha `files`) |
 | GET | `/api/reports/{id}/images/{imageId}` | I zoti ose Admin (kthen vetë foton) |
 | DELETE | `/api/reports/{id}/images/{imageId}` | Qytetari, raportin e vet, vetëm kur është `New` |
+
+### Listat: faqosja, kërkimi dhe radhitja
+`GET /api/reports` dhe `/api/reports/my` kthejnë një faqe, jo të gjitha raportet:
+
+    GET /api/reports?status=New&search=peje&sort=oldest&page=2&pageSize=20
+
+    { "items": [...], "page": 2, "pageSize": 20, "totalCount": 40, "totalPages": 2,
+      "statusCounts": [ { "status": "New", "count": 26 }, ... ] }
+
+- `search`: çdo fjalë duhet të gjendet te titulli, përshkrimi, vendi, kategoria ose (vetëm Admin) emri i raportuesit; `peje` gjen edhe "Pejë" (e/ë dhe c/ç quhen të njëjta).
+- `sort`: `newest` (paracaktuar), `oldest`, `title`, `status` (sipas rrjedhës, jo alfabetit).
+- `pageSize`: 1-100 (paracaktuar 20). `statusCounts` jep sa ka për secilin status sipas filtrave të tjerë (pa statusin), për çipat.
+- Numërimi, kërkimi, radhitja dhe faqosja bëhen te databaza.
 
 ### Kodet e përgjigjes
 - **401**: nuk je i identifikuar (pa token, token i prishur ose i skaduar).
