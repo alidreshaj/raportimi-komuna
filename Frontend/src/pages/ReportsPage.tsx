@@ -1,17 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { ClipboardList, Plus } from 'lucide-react'
+import { ClipboardList, Plus, SearchX } from 'lucide-react'
 import { Link } from 'react-router'
 import { getMyReports } from '../api/reports'
 import StatTile from '../components/charts/StatTile'
 import EmptyState from '../components/EmptyState'
 import ReportCard from '../components/ReportCard'
 import ReportListSkeleton from '../components/ReportListSkeleton'
+import SearchBox from '../components/SearchBox'
+import StatusChips from '../components/StatusChips'
 import { useAuth } from '../context/useAuth'
 import type { Report, ReportStatus } from '../types'
 import { pluralize } from '../utils/format'
+import { countByStatus, matchesSearch } from '../utils/reportList'
 import { STATUS_COLORS } from '../utils/statusColors'
 import './ReportsPage.css'
+
+// Mbi këtë numër raportesh shfaqen çipat e statusit dhe kutia e kërkimit.
+const FILTER_FROM = 5
 
 // Një fjali që përmbledh gjendjen e raporteve të mia, p.sh. "2 presin shqyrtim, 1 është në trajtim."
 function summarize(reports: Report[]): string {
@@ -41,6 +47,14 @@ function ReportsPage() {
   const [error, setError] = useState<string | null>(null)
   // Rritet kur shtypet "Provo përsëri", që efekti të ngarkojë përsëri.
   const [attempt, setAttempt] = useState(0)
+
+  // Çipat dhe kërkimi shfaqen vetëm kur ka mjaft raporte (mbi 5) që ia vlen t'i filtrosh.
+  const [status, setStatus] = useState<ReportStatus | ''>('')
+  const [query, setQuery] = useState('')
+  const searched = useMemo(() => (reports ?? []).filter((r) => matchesSearch(r, query)), [reports, query])
+  const counts = useMemo(() => countByStatus(searched), [searched])
+  const visible = status ? searched.filter((r) => r.status === status) : searched
+  const filterable = (reports?.length ?? 0) > FILTER_FROM
 
   useEffect(() => {
     let cancelled = false
@@ -104,6 +118,13 @@ function ReportsPage() {
 
       <h2 className="section-title">Raportet e mia</h2>
 
+      {filterable && (
+        <div className="my-filters">
+          <StatusChips value={status} onChange={setStatus} counts={counts} />
+          <SearchBox value={query} onChange={setQuery} placeholder="Kërko në raportet e mia..." label="Kërko në raportet e mia" />
+        </div>
+      )}
+
       {/* Po ngarkohet */}
       {!reports && !error && <ReportListSkeleton />}
 
@@ -132,10 +153,19 @@ function ReportsPage() {
         </EmptyState>
       )}
 
+      {/* Asnjë përputhje me çipin ose kërkimin */}
+      {reports && reports.length > 0 && visible.length === 0 && (
+        <EmptyState
+          icon={SearchX}
+          title="Asnjë raport nuk përputhet"
+          text="Provo një status tjetër ose ndrysho kërkimin."
+        />
+      )}
+
       {/* Me të dhëna */}
-      {reports && reports.length > 0 && (
+      {reports && visible.length > 0 && (
         <ul className="report-list">
-          {reports.map((report, index) => (
+          {visible.map((report, index) => (
             <li key={report.id} style={{ '--i': Math.min(index, 8) } as CSSProperties}>
               <ReportCard report={report} />
             </li>

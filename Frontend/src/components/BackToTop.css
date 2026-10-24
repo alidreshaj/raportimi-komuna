@@ -1,0 +1,36 @@
+/* Poshtë majtas, që të mos përplaset me njoftimet e vogla (poshtë djathtas). */
+.back-to-top {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  animation: back-to-top-in 0.2s ease-out;
+}
+
+.back-to-top:hover {
+  background: var(--accent-soft);
+}
+
+@keyframes back-to-top-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top {
+    animation: none;
+  }
+}

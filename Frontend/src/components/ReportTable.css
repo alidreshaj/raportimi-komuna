@@ -1,0 +1,113 @@
+.report-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+}
+
+.report-table th {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.report-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: middle;
+}
+
+.report-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.report-table-num {
+  text-align: right !important;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-row {
+  cursor: pointer;
+  transition: background var(--ease);
+}
+
+.report-row:hover {
+  background: var(--accent-soft);
+}
+
+/* Vija e statusit në anë të majtë të rreshtit (njësoj si te kartat). */
+.report-row td:first-child {
+  box-shadow: inset 4px 0 0 var(--line);
+}
+
+.report-row--New td:first-child {
+  box-shadow: inset 4px 0 0 var(--chart-new);
+}
+
+.report-row--InProgress td:first-child {
+  box-shadow: inset 4px 0 0 var(--chart-inprogress);
+}
+
+.report-row--Resolved td:first-child {
+  box-shadow: inset 4px 0 0 var(--chart-resolved);
+}
+
+.report-row--Rejected td:first-child {
+  box-shadow: inset 4px 0 0 var(--chart-rejected);
+}
+
+.report-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 220px;
+}
+
+.report-row-title {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.report-row-title:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.report-row-location {
+  max-width: 340px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report-row-category,
+.report-row-messages {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+/* Në ekran të ngushtë fshihen kolonat dytësore dhe tabela mbetet e lexueshme. */
+@media (max-width: 760px) {
+  .hide-sm {
+    display: none;
+  }
+}

@@ -127,3 +127,11 @@
     animation: none;
   }
 }
+
+/* Çipat e statusit dhe kutia e kërkimit mbi listën e qytetarit. */
+.my-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}

@@ -2,8 +2,7 @@
 
 .admin-filters {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  flex-direction: column;
   gap: 16px;
   margin-bottom: 24px;
   padding: 20px 24px;
@@ -12,9 +11,22 @@
   border-radius: 12px;
 }
 
+/* Rreshti i dytë: kërkimi, kategoria, datat, radhitja dhe "Pastro filtrat". */
+.admin-filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+}
+
 .admin-filters .field {
-  flex: 1 1 160px;
+  flex: 1 1 150px;
   min-width: 0;
+}
+
+/* Kërkimi merr më shumë vend se fushat e tjera. */
+.admin-filters .admin-search {
+  flex: 3 1 260px;
 }
 
 .admin-filters .btn-outline:disabled {

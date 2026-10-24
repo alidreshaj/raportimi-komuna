@@ -1,44 +1,74 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Inbox, SearchX } from 'lucide-react'
+import { useSearchParams } from 'react-router'
 import { getAllReports } from '../api/reports'
-import type { ReportFilters } from '../api/reports'
 import AttentionPanel from '../components/AttentionPanel'
 import EmptyState from '../components/EmptyState'
 import ReportsMap from '../components/maps/ReportsMap'
 import ReportCard from '../components/ReportCard'
 import ReportListSkeleton from '../components/ReportListSkeleton'
+import ReportTable from '../components/ReportTable'
+import SearchBox from '../components/SearchBox'
+import StatusChips from '../components/StatusChips'
 import ViewSwitch from '../components/ViewSwitch'
 import { useCategories } from '../hooks/useCategories'
 import type { Report, ReportStatus } from '../types'
-import { STATUS_LABELS, pluralize } from '../utils/format'
+import { pluralize } from '../utils/format'
+import { SORT_OPTIONS, countByStatus, matchesSearch, sortReports } from '../utils/reportList'
+import type { SortKey } from '../utils/reportList'
 import './ReportsPage.css'
 import './AdminReportsPage.css'
 
-const STATUSES = Object.keys(STATUS_LABELS) as ReportStatus[]
+type View = 'table' | 'cards' | 'map'
 
-const NO_FILTERS: ReportFilters = { status: '', categoryId: '', from: '', to: '' }
+const VIEWS: View[] = ['table', 'cards', 'map']
+const SORTS = SORT_OPTIONS.map((o) => o.value)
 
-// Lista e të gjitha raporteve për komunën, me filtra. Filtrimin e bën backend-i: çdo ndryshim i filtrit
-// e kërkon listën përsëri me parametrat e rinj. Katër gjendje si te lista e qytetarit.
+// Lista e të gjitha raporteve për komunën. Kategoria dhe datat i filtron backend-i; statusi, kërkimi dhe radhitja bëhen këtu,
+// kështu çipat ndërrojnë menjëherë pa kërkesë të re dhe numrat tregojnë gjendjen e vërtetë. Të gjitha zgjedhjet ruhen te adresa
+// (?status=New&q=...), prandaj kur kthehesh nga detajet gjen listën saktësisht ashtu siç e ke lënë.
 function AdminReportsPage() {
   const { categories } = useCategories()
+  const [params, setParams] = useSearchParams()
 
-  const [view, setView] = useState<'list' | 'map'>('list')
-  const [filters, setFilters] = useState<ReportFilters>(NO_FILTERS)
+  const status = (['New', 'InProgress', 'Resolved', 'Rejected'].includes(params.get('status') ?? '') ? params.get('status') : '') as
+    | ReportStatus
+    | ''
+  const query = params.get('q') ?? ''
+  const category = params.get('category') ?? ''
+  const from = params.get('from') ?? ''
+  const to = params.get('to') ?? ''
+  const sort = (SORTS.includes(params.get('sort') as SortKey) ? params.get('sort') : 'newest') as SortKey
+  const view = (VIEWS.includes(params.get('view') as View) ? params.get('view') : 'table') as View
+
+  // Ndryshon një parametër te adresa; vlera bosh (ose e paracaktuar) e heq fare që adresa të mbetet e shkurtër.
+  // replace: nuk shton një hap te historiku për çdo shkronjë të shkruar ose çdo çip.
+  function setParam(key: string, value: string, fallback = '') {
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (value === fallback) next.delete(key)
+        else next.set(key, value)
+        return next
+      },
+      { replace: true },
+    )
+  }
+
   const [reports, setReports] = useState<Report[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
 
   // Data "nga" pas datës "deri" nuk ka kuptim: backend-i kthen 400, prandaj nuk e dërgojmë fare.
-  const badRange = !!filters.from && !!filters.to && filters.from > filters.to
+  const badRange = !!from && !!to && from > to
 
   useEffect(() => {
     if (badRange) return
 
     let cancelled = false
 
-    getAllReports(filters)
+    getAllReports({ categoryId: category ? Number(category) : '', from, to })
       .then((list) => {
         if (!cancelled) {
           setReports(list)
@@ -52,11 +82,7 @@ function AdminReportsPage() {
     return () => {
       cancelled = true
     }
-  }, [filters, attempt, badRange])
-
-  function change(patch: Partial<ReportFilters>) {
-    setFilters((prev) => ({ ...prev, ...patch }))
-  }
+  }, [category, from, to, attempt, badRange])
 
   function retry() {
     setError(null)
@@ -64,7 +90,27 @@ function AdminReportsPage() {
     setAttempt((n) => n + 1)
   }
 
-  const hasFilters = Object.values(filters).some((v) => v !== '')
+  function clearFilters() {
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams()
+        // Pamja dhe radhitja mbeten: nuk janë filtra.
+        for (const key of ['view', 'sort']) if (prev.get(key)) next.set(key, prev.get(key)!)
+        return next
+      },
+      { replace: true },
+    )
+  }
+
+  // Numrat te çipat vijnë nga raportet që përputhen me kërkimin; lista shfaq vetëm statusin e zgjedhur.
+  const searched = useMemo(() => (reports ?? []).filter((r) => matchesSearch(r, query)), [reports, query])
+  const counts = useMemo(() => countByStatus(searched), [searched])
+  const visible = useMemo(
+    () => sortReports(status ? searched.filter((r) => r.status === status) : searched, sort),
+    [searched, status, sort],
+  )
+
+  const hasFilters = !!(status || query || category || from || to)
 
   return (
     <>
@@ -73,7 +119,7 @@ function AdminReportsPage() {
           <h1 className="page-title">Të gjitha raportet</h1>
           {reports && !badRange && (
             <p className="page-subtitle">
-              {pluralize(reports.length, 'raport', 'raporte')}
+              {pluralize(visible.length, 'raport', 'raporte')}
               {hasFilters ? ' me këto filtra.' : '.'}
             </p>
           )}
@@ -82,63 +128,70 @@ function AdminReportsPage() {
         <ViewSwitch
           label="Pamja"
           options={[
-            { value: 'list', label: 'Listë' },
+            { value: 'table', label: 'Tabelë' },
+            { value: 'cards', label: 'Kartë' },
             { value: 'map', label: 'Hartë' },
           ]}
           value={view}
-          onChange={setView}
+          onChange={(value) => setParam('view', value, 'table')}
         />
       </div>
 
       <AttentionPanel />
 
-      <form className="admin-filters" onSubmit={(e) => e.preventDefault()}>
-        <div className="field">
-          <label htmlFor="f-status">Statusi</label>
-          <select
-            id="f-status"
-            value={filters.status}
-            onChange={(e) => change({ status: e.target.value as ReportStatus | '' })}
-          >
-            <option value="">Të gjitha</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="admin-filters">
+        <StatusChips value={status} onChange={(value) => setParam('status', value)} counts={counts} />
 
-        <div className="field">
-          <label htmlFor="f-category">Kategoria</label>
-          <select
-            id="f-category"
-            value={filters.categoryId}
-            onChange={(e) => change({ categoryId: e.target.value ? Number(e.target.value) : '' })}
-          >
-            <option value="">Të gjitha</option>
-            {categories?.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <form className="admin-filters-row" onSubmit={(e) => e.preventDefault()}>
+          <div className="field admin-search">
+            <label htmlFor="f-q">Kërko</label>
+            <SearchBox
+              id="f-q"
+              value={query}
+              onChange={(value) => setParam('q', value)}
+              placeholder="Titulli, vendi, emri i raportuesit..."
+              label="Kërko në raporte"
+            />
+          </div>
 
-        <div className="field">
-          <label htmlFor="f-from">Nga data</label>
-          <input id="f-from" type="date" value={filters.from} max={filters.to || undefined} onChange={(e) => change({ from: e.target.value })} />
-        </div>
+          <div className="field">
+            <label htmlFor="f-category">Kategoria</label>
+            <select id="f-category" value={category} onChange={(e) => setParam('category', e.target.value)}>
+              <option value="">Të gjitha</option>
+              {categories?.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="field">
-          <label htmlFor="f-to">Deri më</label>
-          <input id="f-to" type="date" value={filters.to} min={filters.from || undefined} onChange={(e) => change({ to: e.target.value })} />
-        </div>
+          <div className="field">
+            <label htmlFor="f-from">Nga data</label>
+            <input id="f-from" type="date" value={from} max={to || undefined} onChange={(e) => setParam('from', e.target.value)} />
+          </div>
 
-        <button type="button" className="btn-outline" disabled={!hasFilters} onClick={() => setFilters(NO_FILTERS)}>
-          Pastro filtrat
-        </button>
-      </form>
+          <div className="field">
+            <label htmlFor="f-to">Deri më</label>
+            <input id="f-to" type="date" value={to} min={from || undefined} onChange={(e) => setParam('to', e.target.value)} />
+          </div>
+
+          <div className="field">
+            <label htmlFor="f-sort">Radhit</label>
+            <select id="f-sort" value={sort} onChange={(e) => setParam('sort', e.target.value, 'newest')}>
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button type="button" className="btn-outline" disabled={!hasFilters} onClick={clearFilters}>
+            Pastro filtrat
+          </button>
+        </form>
+      </div>
 
       {badRange && (
         <p className="form-error" role="alert">
@@ -162,7 +215,7 @@ function AdminReportsPage() {
       )}
 
       {/* Bosh */}
-      {!badRange && reports && reports.length === 0 && (
+      {!badRange && reports && visible.length === 0 && (
         <EmptyState
           icon={hasFilters ? SearchX : Inbox}
           title={hasFilters ? 'Asnjë raport nuk përputhet me filtrat' : 'Nuk ka raporte ende'}
@@ -175,9 +228,11 @@ function AdminReportsPage() {
       )}
 
       {/* Me të dhëna */}
-      {!badRange && reports && reports.length > 0 && view === 'list' && (
+      {!badRange && visible.length > 0 && view === 'table' && <ReportTable reports={visible} basePath="/admin/raportet" />}
+
+      {!badRange && visible.length > 0 && view === 'cards' && (
         <ul className="report-list">
-          {reports.map((report, index) => (
+          {visible.map((report, index) => (
             <li key={report.id} style={{ '--i': Math.min(index, 8) } as CSSProperties}>
               <ReportCard report={report} to={`/admin/raportet/${report.id}`} showReporter />
             </li>
@@ -186,7 +241,7 @@ function AdminReportsPage() {
       )}
 
       {/* Harta përdor të njëjtat raporte dhe të njëjtat filtra si lista. */}
-      {!badRange && reports && reports.length > 0 && view === 'map' && <ReportsMap reports={reports} />}
+      {!badRange && visible.length > 0 && view === 'map' && <ReportsMap reports={visible} />}
     </>
   )
 }

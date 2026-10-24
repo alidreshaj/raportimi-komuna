@@ -1,6 +1,7 @@
 import { BarChart3, ClipboardList, Landmark, List, LogOut, PlusCircle } from 'lucide-react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
+import BackToTop from './BackToTop'
 import ThemeToggle from './ThemeToggle'
 import { initialsOf } from '../utils/format'
 import { homePathFor } from '../utils/roles'
@@ -82,6 +83,8 @@ function AppLayout() {
           <Outlet />
         </div>
       </main>
+
+      <BackToTop />
     </>
   )
 }
