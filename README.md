@@ -101,6 +101,8 @@ Kontrollet para commit-it:
 |---|---|
 | `/login` | Hyrja |
 | `/regjistrohu` | Regjistrimi i qytetarit |
+| `/harrova-fjalekalimin`, `/rivendos-fjalekalimin` | "Harrova fjalëkalimin" dhe vendosja e fjalëkalimit të ri (publike) |
+| `/llogaria` | Llogaria ime: ndrysho emrin dhe fjalëkalimin (qytetar dhe admin) |
 | `/raportet` | Raportet e mia (lista) |
 | `/raportet/i-ri` | Forma e raportit të ri, me deri në 5 foto dhe pikë opsionale në hartë (klikim, tërheqje e shenjës, ose "Përdor vendndodhjen time") |
 | `/raportet/:id` | Detajet, fotot, harta (kur raporti ka pikë), historiku i statusit dhe biseda me komunën |
@@ -134,6 +136,10 @@ Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat 
 | POST | `/api/auth/register` | publike (krijon Citizen) |
 | POST | `/api/auth/login` | publike (kthen JWT) |
 | GET | `/api/auth/me` | çdo përdorues i loguar |
+| PUT | `/api/auth/me` | çdo përdorues i loguar (ndryshon emrin; kthen token të ri, sepse emri është brenda tokenit) |
+| POST | `/api/auth/change-password` | çdo përdorues i loguar (kërkon fjalëkalimin aktual; i gabuar kthen 400, jo 401) |
+| POST | `/api/auth/forgot-password` | publike (kërkon lidhjen e rivendosjes; gjithmonë 204, edhe kur email-i nuk ekziston) |
+| POST | `/api/auth/reset-password` | publike (kodi nga lidhja + fjalëkalimi i ri; kodi vlen 30 minuta dhe përdoret një herë) |
 | GET | `/api/auth/admin-only` | vetëm Admin (endpoint prove) |
 | GET | `/api/categories` | publike (lista e kategorive) |
 | POST | `/api/reports` | Qytetari (krijon raport me status `New`; `latitude` dhe `longitude` janë opsionale) |
@@ -168,6 +174,9 @@ Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat 
 - `sort`: `newest` (paracaktuar), `oldest`, `title`, `status` (sipas rrjedhës, jo alfabetit).
 - `pageSize`: 1-100 (paracaktuar 20). `statusCounts` jep sa ka për secilin status sipas filtrave të tjerë (pa statusin), për çipat.
 - Numërimi, kërkimi, radhitja dhe faqosja bëhen te databaza.
+
+### Rivendosja e fjalëkalimit
+Nuk ka ende shërbim emaili, kështu lidhja e rivendosjes **shkruhet te terminali i backend-it** (rresht `warn:` me `Rivendosja e fjalëkalimit për ...`), jo në një email. Kopjoje nga aty dhe hapeje te shfletuesi. Për të dërguar email të vërtetë mjafton të zëvendësohet klasa `LogResetLinkSender` (ndërfaqja `IResetLinkSender`). Adresa e lidhjes merret nga `App:FrontendUrl` te `appsettings.json`. Kodi ruhet i hash-uar (SHA-256), skadon pas 30 minutash, përdoret një herë, dhe lejohet vetëm një kërkesë në minutë për të njëjtin përdorues. Tokenat JWT që dalin para ndryshimit të fjalëkalimit vazhdojnë të vlejnë deri sa të skadojnë (120 minuta).
 
 ### Njoftimet
 Krijohen vetë, në të njëjtën ruajtje me veprimin (ose ruhen të dyja, ose asnjëra): admini ndryshon statusin → njoftohet qytetari (me arsyen kur refuzohet); admini shkruan koment → njoftohet qytetari; qytetari shkruan koment → njoftohen adminët; qytetari dërgon raport të ri → njoftohen adminët. Çdo njoftim ka `type`, `message`, `reportId`, `createdAt` dhe `isRead`, dhe shihet vetëm nga i zoti i tij.

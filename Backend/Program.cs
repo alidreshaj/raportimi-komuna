@@ -21,6 +21,7 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<IResetLinkSender, LogResetLinkSender>();
 builder.Services.AddScoped<ImageService>();
 
 // Autentikimi: si verifikohet tokeni që vjen me çdo kërkesë.

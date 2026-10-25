@@ -76,6 +76,10 @@ function LoginPage() {
           />
         </div>
 
+        <p className="auth-forgot">
+          <Link to="/harrova-fjalekalimin">Harrove fjalëkalimin?</Link>
+        </p>
+
         {error && (
           <p className="form-error" role="alert">
             {error}

@@ -64,13 +64,16 @@ function AppLayout() {
           <div className="app-user">
             <NotificationBell />
             <ThemeToggle />
-            <span className="app-avatar" aria-hidden="true">
-              {initialsOf(user?.name ?? '')}
-            </span>
-            <span className="app-user-text">
-              <span className="app-user-name">{user?.name}</span>
-              <span className="app-user-role">{user?.role === 'Admin' ? 'Administrator' : 'Qytetar'}</span>
-            </span>
+            {/* Avatari dhe emri çojnë te "Llogaria ime" */}
+            <NavLink to="/llogaria" className="app-account" aria-label="Llogaria ime" title="Llogaria ime">
+              <span className="app-avatar" aria-hidden="true">
+                {initialsOf(user?.name ?? '')}
+              </span>
+              <span className="app-user-text">
+                <span className="app-user-name">{user?.name}</span>
+                <span className="app-user-role">{user?.role === 'Admin' ? 'Administrator' : 'Qytetar'}</span>
+              </span>
+            </NavLink>
             <button type="button" className="btn-outline" onClick={handleLogout}>
               <LogOut size={16} aria-hidden="true" />
               Dil

@@ -49,6 +49,56 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    // PUT /api/auth/me: ndryshon emrin e llogarisë sime. Kthen një token të ri (emri është brenda tokenit).
+    [HttpPut("me")]
+    [Authorize]
+    [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateMe(UpdateProfileDto dto)
+    {
+        var result = await _authService.UpdateProfileAsync(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), dto);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    // POST /api/auth/change-password: ndryshon fjalëkalimin kur je i loguar (kërkon fjalëkalimin aktual).
+    // Fjalëkalimi aktual i gabuar kthen 400, jo 401: frontend-i te 401 e mbyll sesionin, dhe këtu përdoruesi është ende i loguar.
+    [HttpPost("change-password")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+    {
+        var result = await _authService.ChangePasswordAsync(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), dto);
+
+        return result switch
+        {
+            AuthService.ChangePasswordResult.Success => NoContent(),
+            AuthService.ChangePasswordResult.WrongCurrentPassword => BadRequest(new { message = "Fjalëkalimi aktual është i gabuar." }),
+            AuthService.ChangePasswordResult.SameAsCurrent => BadRequest(new { message = "Fjalëkalimi i ri duhet të jetë ndryshe nga ai aktual." }),
+            _ => NotFound()
+        };
+    }
+
+    // POST /api/auth/forgot-password: dërgon lidhjen e rivendosjes. Gjithmonë kthen 204, edhe kur email-i nuk ekziston.
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+    {
+        await _authService.ForgotPasswordAsync(dto);
+        return NoContent();
+    }
+
+    // POST /api/auth/reset-password: vendos fjalëkalimin e ri me kodin nga lidhja.
+    [HttpPost("reset-password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+    {
+        return await _authService.ResetPasswordAsync(dto)
+            ? NoContent()
+            : BadRequest(new { message = "Lidhja nuk është e vlefshme ose ka skaduar. Kërko një të re." });
+    }
+
     // GET /api/auth/me: kthen të dhënat e përdoruesit të loguar, të lexuara nga tokeni.
     [HttpGet("me")]
     [Authorize]

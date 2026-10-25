@@ -9,6 +9,8 @@ export interface AuthContextValue {
   loading: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => void
+  // Përditëson të dhënat e përdoruesit pa dalë (p.sh. pas ndryshimit të emrit).
+  updateUser: (user: SessionUser) => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

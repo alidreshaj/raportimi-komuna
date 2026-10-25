@@ -27,6 +27,28 @@ export async function getMe(): Promise<SessionUser> {
   return { name: me.name, email: me.email, role: me.role }
 }
 
+// Ndryshon emrin e llogarisë sime. Serveri kthen një token të ri (emri është brenda tokenit), që e ruajmë menjëherë.
+export async function updateProfile(name: string): Promise<AuthResponse> {
+  const result = await apiFetch<AuthResponse>('/api/auth/me', { method: 'PUT', body: { name } })
+  saveToken(result.token)
+  return result
+}
+
+// Ndryshon fjalëkalimin kur je i loguar. Fjalëkalimi aktual i gabuar kthen ApiError 400 me mesazh (jo 401, që të mos mbyllet sesioni).
+export function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  return apiFetch<void>('/api/auth/change-password', { method: 'POST', body: { currentPassword, newPassword } })
+}
+
+// "Harrova fjalëkalimin": kërkon lidhjen e rivendosjes. Serveri përgjigjet njësoj edhe kur email-i nuk ekziston.
+export function forgotPassword(email: string): Promise<void> {
+  return apiFetch<void>('/api/auth/forgot-password', { method: 'POST', body: { email } })
+}
+
+// Vendos fjalëkalimin e ri me kodin nga lidhja.
+export function resetPassword(token: string, newPassword: string): Promise<void> {
+  return apiFetch<void>('/api/auth/reset-password', { method: 'POST', body: { token, newPassword } })
+}
+
 // Dalja: heq tokenin (nuk ka endpoint në backend, sepse tokenat nuk ruhen te serveri).
 export function logout(): void {
   clearToken()

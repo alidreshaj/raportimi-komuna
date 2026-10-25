@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<Image> Images => Set<Image>();
     public DbSet<StatusHistory> StatusHistories => Set<StatusHistory>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -83,6 +84,19 @@ public class AppDbContext : DbContext
             e.HasOne(i => i.Report)
                 .WithMany(r => r.Images)
                 .HasForeignKey(i => i.ReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PasswordResetToken>(e =>
+        {
+            e.Property(t => t.TokenHash).IsRequired().HasMaxLength(64);
+
+            // Kërkohet sipas hash-it kur përdoruesi hap lidhjen; i vetëm për çdo kod.
+            e.HasIndex(t => t.TokenHash).IsUnique();
+
+            e.HasOne(t => t.User)
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

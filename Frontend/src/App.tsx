@@ -3,15 +3,18 @@ import AppLayout from './components/AppLayout'
 import HomeRedirect from './components/HomeRedirect'
 import ProtectedRoute from './components/ProtectedRoute'
 import ScrollToTop from './components/ScrollToTop'
+import AccountPage from './pages/AccountPage'
 import AdminReportDetailPage from './pages/AdminReportDetailPage'
 import AdminReportsPage from './pages/AdminReportsPage'
 import AdminStatsPage from './pages/AdminStatsPage'
 import EditReportPage from './pages/EditReportPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import LoginPage from './pages/LoginPage'
 import NewReportPage from './pages/NewReportPage'
 import RegisterPage from './pages/RegisterPage'
 import ReportDetailPage from './pages/ReportDetailPage'
 import ReportsPage from './pages/ReportsPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 
 // Rrugët e aplikacionit: cila adresë shfaq cilën faqe.
 function App() {
@@ -22,6 +25,15 @@ function App() {
         {/* Faqe publike */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/regjistrohu" element={<RegisterPage />} />
+        <Route path="/harrova-fjalekalimin" element={<ForgotPasswordPage />} />
+        <Route path="/rivendos-fjalekalimin" element={<ResetPasswordPage />} />
+
+        {/* Llogaria ime: për çdo përdorues të loguar (qytetar ose admin) */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path="/llogaria" element={<AccountPage />} />
+          </Route>
+        </Route>
 
         {/* Faqet e qytetarit: ProtectedRoute kontrollon sesionin dhe rolin, AppLayout shton menynë lart */}
         <Route element={<ProtectedRoute role="Citizen" />}>
