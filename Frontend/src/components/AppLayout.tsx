@@ -2,6 +2,7 @@ import { BarChart3, ClipboardList, Landmark, List, LogOut, PlusCircle } from 'lu
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import BackToTop from './BackToTop'
+import NotificationBell from './NotificationBell'
 import ThemeToggle from './ThemeToggle'
 import { initialsOf } from '../utils/format'
 import { homePathFor } from '../utils/roles'
@@ -61,6 +62,7 @@ function AppLayout() {
           </nav>
 
           <div className="app-user">
+            <NotificationBell />
             <ThemeToggle />
             <span className="app-avatar" aria-hidden="true">
               {initialsOf(user?.name ?? '')}

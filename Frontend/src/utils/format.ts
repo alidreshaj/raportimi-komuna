@@ -69,3 +69,20 @@ export function initialsOf(name: string): string {
 export function daysSince(iso: string): number {
   return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000))
 }
+
+// "para 5 minutash", "para 2 orësh", "para 3 ditësh"; më e vjetër se një javë: data e plotë. Për njoftimet.
+export function timeAgo(iso: string): string {
+  const seconds = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000))
+  if (seconds < 60) return 'tani'
+
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `para ${minutes === 1 ? '1 minute' : `${minutes} minutash`}`
+
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `para ${hours === 1 ? '1 ore' : `${hours} orësh`}`
+
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `para ${days === 1 ? '1 dite' : `${days} ditësh`}`
+
+  return formatDate(iso)
+}

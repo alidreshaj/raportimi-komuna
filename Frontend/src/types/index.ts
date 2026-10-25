@@ -134,6 +134,24 @@ export interface ReportPin {
   longitude: number
 }
 
+// Një njoftim (GET /api/notifications). Shihet vetëm nga i zoti.
+export type NotificationType = 'StatusChanged' | 'NewComment' | 'NewReport'
+
+export interface NotificationItem {
+  id: number
+  type: NotificationType
+  message: string
+  reportId: number
+  createdAt: string
+  isRead: boolean
+}
+
+export interface NotificationList {
+  items: NotificationItem[]
+  // Sa janë të palexuara gjithsej (jo vetëm në këtë listë)
+  unreadCount: number
+}
+
 // Çfarë dërgohet për të krijuar ose ndryshuar një raport (POST dhe PUT /api/reports).
 export interface ReportInput {
   title: string
