@@ -145,6 +145,10 @@ Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat 
 | DELETE | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | PATCH | `/api/reports/{id}/status` | vetëm Admin (New → InProgress → Resolved, ose New → Rejected). Fusha `reason` është e detyrueshme për `Rejected`, opsionale për të tjerat, dhe ruhet si koment |
 | GET | `/api/reports/stats` | vetëm Admin (vetëm numra: `total`, `byStatus` me të katër statuset, `byCategory` me të gjitha kategoritë, `byMonth` me 6 muajt e fundit; muajt me 0 përfshihen) |
+| GET | `/api/notifications` | Çdo përdorues (njoftimet e veta, më të rejat të parat, plus `unreadCount`; parametri `limit` 1-50) |
+| GET | `/api/notifications/unread-count` | Çdo përdorues (vetëm numri i të palexuarave, për zilën) |
+| POST | `/api/notifications/{id}/read` | I zoti i njoftimit (të tjerët marrin 404) |
+| POST | `/api/notifications/read-all` | Çdo përdorues (i shënon të gjitha të lexuara) |
 | GET | `/api/reports/{id}/history` | I zoti ose Admin (ndryshimet e statusit nga më i vjetri: nga, te, kush e ndryshoi, kur; lista bosh nëse s'ka ndryshuar ende) |
 | GET | `/api/reports/{id}/comments` | I zoti ose Admin (komentet, nga më i vjetri) |
 | POST | `/api/reports/{id}/comments` | I zoti ose Admin (edhe kur raporti është i mbyllur) |
@@ -164,6 +168,9 @@ Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat 
 - `sort`: `newest` (paracaktuar), `oldest`, `title`, `status` (sipas rrjedhës, jo alfabetit).
 - `pageSize`: 1-100 (paracaktuar 20). `statusCounts` jep sa ka për secilin status sipas filtrave të tjerë (pa statusin), për çipat.
 - Numërimi, kërkimi, radhitja dhe faqosja bëhen te databaza.
+
+### Njoftimet
+Krijohen vetë, në të njëjtën ruajtje me veprimin (ose ruhen të dyja, ose asnjëra): admini ndryshon statusin → njoftohet qytetari (me arsyen kur refuzohet); admini shkruan koment → njoftohet qytetari; qytetari shkruan koment → njoftohen adminët; qytetari dërgon raport të ri → njoftohen adminët. Çdo njoftim ka `type`, `message`, `reportId`, `createdAt` dhe `isRead`, dhe shihet vetëm nga i zoti i tij.
 
 ### Kodet e përgjigjes
 - **401**: nuk je i identifikuar (pa token, token i prishur ose i skaduar).

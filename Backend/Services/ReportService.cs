@@ -13,12 +13,14 @@ public class ReportService
     private readonly AppDbContext _db;
     private readonly ImageFileService _files;
     private readonly ILogger<ReportService> _logger;
+    private readonly NotificationService _notifications;
 
-    public ReportService(AppDbContext db, ImageFileService files, ILogger<ReportService> logger)
+    public ReportService(AppDbContext db, ImageFileService files, ILogger<ReportService> logger, NotificationService notifications)
     {
         _db = db;
         _files = files;
         _logger = logger;
+        _notifications = notifications;
     }
 
     // Si kthehet një Report në ReportDto. E shkruajmë një herë dhe e ripërdorim te çdo lexim.
@@ -71,6 +73,14 @@ public class ReportService
         };
 
         _db.Reports.Add(report);
+
+        // Adminët njoftohen për raportin e ri. Ruhet në të njëjtën ruajtje me raportin.
+        var authorName = await _db.Users.Where(u => u.Id == userId).Select(u => u.Name).FirstAsync();
+        await _notifications.QueueForAdminsAsync(
+            report,
+            NotificationType.NewReport,
+            $"Raport i ri nga {authorName}: \"{NotificationService.Short(report.Title)}\".");
+
         await _db.SaveChangesAsync();
 
         return await _db.Reports
@@ -306,7 +316,17 @@ public class ReportService
             });
         }
 
-        // Një ruajtje e vetme: ose ruhen të gjitha (statusi, historiku dhe komenti), ose asnjëra.
+        // Qytetari njoftohet për ndryshimin (me arsyen kur refuzohet). Nuk krijojmë njoftim të veçantë për komentin e arsyes: është i njëjti informacion.
+        var title = NotificationService.Short(report.Title);
+        var message = newStatus switch
+        {
+            ReportStatus.InProgress => $"Raporti yt \"{title}\" u mor në trajtim.",
+            ReportStatus.Resolved => $"Raporti yt \"{title}\" u zgjidh.",
+            _ => $"Raporti yt \"{title}\" u refuzua. Arsyeja: {NotificationService.Short(reason!, 140)}"
+        };
+        _notifications.Queue(report.UserId, report.Id, NotificationType.StatusChanged, message);
+
+        // Një ruajtje e vetme: ose ruhen të gjitha (statusi, historiku, komenti dhe njoftimi), ose asnjëra.
         await _db.SaveChangesAsync();
 
         var updated = await _db.Reports

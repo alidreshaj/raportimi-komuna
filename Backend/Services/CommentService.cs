@@ -9,10 +9,12 @@ namespace Backend.Services;
 public class CommentService
 {
     private readonly AppDbContext _db;
+    private readonly NotificationService _notifications;
 
-    public CommentService(AppDbContext db)
+    public CommentService(AppDbContext db, NotificationService notifications)
     {
         _db = db;
+        _notifications = notifications;
     }
 
     // Si kthehet një Comment në CommentDto (pa email, pa UserId).
@@ -65,6 +67,20 @@ public class CommentService
         };
 
         _db.Comments.Add(comment);
+
+        // Pala tjetër njoftohet: nëse shkruan admini, qytetari i zoti; nëse shkruan qytetari, adminët. Ruhet bashkë me komentin.
+        var report = await _db.Reports.Where(r => r.Id == reportId).Select(r => new { r.Title, r.UserId }).FirstAsync();
+        var title = NotificationService.Short(report.Title);
+        if (isAdmin)
+        {
+            _notifications.Queue(report.UserId, reportId, NotificationType.NewComment, $"Komuna iu përgjigj te raporti yt \"{title}\".");
+        }
+        else
+        {
+            var authorName = await _db.Users.Where(u => u.Id == userId).Select(u => u.Name).FirstAsync();
+            await _notifications.QueueForAdminsAsync(reportId, NotificationType.NewComment, $"{authorName} shkroi një mesazh te raporti \"{title}\".");
+        }
+
         await _db.SaveChangesAsync();
 
         return await _db.Comments

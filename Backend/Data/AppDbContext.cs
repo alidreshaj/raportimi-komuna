@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<Image> Images => Set<Image>();
     public DbSet<StatusHistory> StatusHistories => Set<StatusHistory>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -82,6 +83,26 @@ public class AppDbContext : DbContext
             e.HasOne(i => i.Report)
                 .WithMany(r => r.Images)
                 .HasForeignKey(i => i.ReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Notification>(e =>
+        {
+            e.Property(n => n.Type).HasConversion<string>().HasMaxLength(20);
+            e.Property(n => n.Message).IsRequired().HasMaxLength(300);
+
+            // Lista e njoftimeve të një përdoruesi (më të rejat të parat) dhe numërimi i të palexuarave përdorin këtë indeks.
+            e.HasIndex(n => new { n.UserId, n.ReadAt });
+
+            // Kur fshihet përdoruesi ose raporti, fshihen edhe njoftimet e tyre.
+            e.HasOne(n => n.User)
+                .WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(n => n.Report)
+                .WithMany()
+                .HasForeignKey(n => n.ReportId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
