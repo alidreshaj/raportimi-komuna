@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { getUnreadCount } from '../api/notifications'
 
 // Numri i njoftimeve të palexuara. Pyet serverin sapo hapet, çdo 30 sekonda (vetëm kur faqja është e dukshme) dhe sa herë
@@ -6,10 +6,17 @@ import { getUnreadCount } from '../api/notifications'
 // Gabimet i injorojmë në heshtje: zilja është dytësore dhe pyetja e radhës e provon përsëri.
 export function useUnreadCount(intervalMs = 30_000) {
   const [count, setCount] = useState<number | null>(null)
+  // Sa herë ka ardhur njoftim i ri që nga hapja (zilja e përdor për ta bërë të dridhet).
+  const [bumps, setBumps] = useState(0)
+  const last = useRef<number | null>(null)
 
   const refresh = useCallback(() => {
     getUnreadCount()
-      .then((result) => setCount(result.count))
+      .then((result) => {
+        if (last.current !== null && result.count > last.current) setBumps((n) => n + 1)
+        last.current = result.count
+        setCount(result.count)
+      })
       .catch(() => {})
   }, [])
 
@@ -30,5 +37,5 @@ export function useUnreadCount(intervalMs = 30_000) {
     }
   }, [refresh, intervalMs])
 
-  return { count, setCount }
+  return { count, setCount, bumps }
 }

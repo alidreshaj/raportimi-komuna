@@ -20,7 +20,7 @@ function BackToTop() {
   if (!visible) return null
 
   return (
-    <button type="button" className="back-to-top" onClick={goUp} aria-label="Kthehu lart" title="Kthehu lart">
+    <button type="button" className="back-to-top" onClick={goUp} aria-label="Kthehu lart" data-tooltip="Kthehu lart">
       <ArrowUp size={20} aria-hidden="true" />
     </button>
   )

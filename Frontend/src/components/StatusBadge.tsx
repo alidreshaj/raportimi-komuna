@@ -13,11 +13,11 @@ const ICONS: Record<ReportStatus, LucideIcon> = {
 }
 
 // Etiketa e statusit të një raporti, me ngjyrën dhe ikonën e duhur. E ripërdorim te lista, detajet, harta dhe paneli i adminit.
-function StatusBadge({ status }: { status: ReportStatus }) {
+function StatusBadge({ status, animate = false }: { status: ReportStatus; animate?: boolean }) {
   const Icon = ICONS[status]
 
   return (
-    <span className={`status-badge status-badge--${status}`}>
+    <span className={`status-badge status-badge--${status}${animate ? ' status-badge--pop' : ''}`}>
       <Icon size={14} strokeWidth={2.4} aria-hidden="true" />
       {STATUS_LABELS[status]}
     </span>

@@ -38,9 +38,19 @@ function ConfirmDialog({
     if (!dialog) return
 
     if (open && !dialog.open) {
+      delete dialog.dataset.closing
       dialog.showModal() // fokusi shkon te butoni i parë: "Anulo" (kështu një Enter aksidental nuk fshin)
-    } else if (!open && dialog.open) {
-      dialog.close()
+      return
+    }
+
+    if (!open && dialog.open) {
+      // Mbyllja luan një animacion të shkurtër (data-closing) para se dialogu të mbyllet vërtet.
+      dialog.dataset.closing = 'true'
+      const timer = window.setTimeout(() => {
+        dialog.close()
+        delete dialog.dataset.closing
+      }, 150)
+      return () => window.clearTimeout(timer)
     }
   }, [open])
 

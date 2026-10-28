@@ -11,6 +11,7 @@ import SearchBox from '../components/SearchBox'
 import StatusChips from '../components/StatusChips'
 import { useAuth } from '../context/useAuth'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
+import { useEnterOnce } from '../hooks/useEnterOnce'
 import type { Report, ReportStatus } from '../types'
 import { pluralize } from '../utils/format'
 import { toStatusCounts } from '../utils/reportList'
@@ -133,6 +134,7 @@ function ReportsPage() {
   const current = loaded && loaded.key === filtersKey ? loaded : null
   const loadingMore = !!current && current.loadedPage < page
   const hasMore = !!current && current.items.length < current.totalCount
+  const enter = useEnterOnce(!!current && current.items.length > 0)
 
   return (
     <>
@@ -141,7 +143,7 @@ function ReportsPage() {
           <h1 className="welcome-title">Mirësevjen, {firstName}</h1>
           <p className="welcome-summary">{overall ? summarize(overall) : 'Po ngarkohen raportet e tua...'}</p>
         </div>
-        <Link to="/raportet/i-ri" className="btn btn-light welcome-button">
+        <Link viewTransition to="/raportet/i-ri" className="btn btn-light welcome-button">
           <Plus size={18} aria-hidden="true" />
           Raporto një problem
         </Link>
@@ -188,7 +190,7 @@ function ReportsPage() {
           title="Nuk ke dërguar asnjë raport ende"
           text="Kur dërgon një raport, do ta shohësh këtu me statusin e tij."
         >
-          <Link to="/raportet/i-ri" className="btn btn-primary">
+          <Link viewTransition to="/raportet/i-ri" className="btn btn-primary">
             Dërgo raportin e parë
           </Link>
         </EmptyState>
@@ -202,7 +204,7 @@ function ReportsPage() {
       {/* Me të dhëna */}
       {current && current.items.length > 0 && (
         <>
-          <ul className="report-list">
+          <ul className={`report-list${enter ? ' report-list--enter' : ''}`}>
             {current.items.map((report, index) => (
               <li key={report.id} style={{ '--i': Math.min(index % PAGE_SIZE, 8) } as CSSProperties}>
                 <ReportCard report={report} />

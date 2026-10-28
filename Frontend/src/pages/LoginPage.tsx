@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router'
 import AuthShell from '../components/AuthShell'
+import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
 import { homePathFor } from '../utils/roles'
 
@@ -36,7 +37,7 @@ function LoginPage() {
 
     try {
       await login(email.trim(), password)
-      navigate(from, { replace: true })
+      navigate(from, { replace: true, viewTransition: true })
     } catch (e) {
       // Mesazhi vjen nga serveri (p.sh. "Email ose password i gabuar.") ose nga apiFetch.
       setError(e instanceof Error ? e.message : 'Ndodhi një gabim. Provo përsëri.')
@@ -77,7 +78,7 @@ function LoginPage() {
         </div>
 
         <p className="auth-forgot">
-          <Link to="/harrova-fjalekalimin">Harrove fjalëkalimin?</Link>
+          <Link viewTransition to="/harrova-fjalekalimin">Harrove fjalëkalimin?</Link>
         </p>
 
         {error && (
@@ -86,14 +87,14 @@ function LoginPage() {
           </p>
         )}
 
-        <button type="submit" className="btn btn-primary" disabled={submitting}>
-          {submitting ? 'Duke hyrë...' : 'Hyr'}
-        </button>
+        <LoadingButton type="submit" loading={submitting} loadingLabel="Duke hyrë...">
+          Hyr
+        </LoadingButton>
 
         <div className="auth-divider" />
 
         <p className="auth-alt">
-          Nuk ke llogari? <Link to="/regjistrohu">Regjistrohu</Link>
+          Nuk ke llogari? <Link viewTransition to="/regjistrohu">Regjistrohu</Link>
         </p>
       </form>
     </AuthShell>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Ngjyra e shiritit te telefoni; ndërrohet vetë me temën (utils/theme.ts). -->
+    <meta name="theme-color" content="#ffffff" />
     <title>Raportimi në komunë</title>
     <!-- Tema vendoset para se faqja të pikturohet (ruajtja e përdoruesit, përndryshe sistemi), që të mos ketë dritë të bardhë për një çast. -->
     <script>
@@ -13,6 +15,7 @@
           theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
         }
         document.documentElement.dataset.theme = theme
+        if ('startViewTransition' in document) document.documentElement.classList.add('has-vt')
       } catch (e) {}
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />

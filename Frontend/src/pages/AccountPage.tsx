@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { KeyRound, UserRound } from 'lucide-react'
 import { changePassword, updateProfile } from '../api/auth'
+import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
 import { useToast } from '../context/useToast'
 import './AccountPage.css'
@@ -18,6 +19,8 @@ function AccountPage() {
   const [name, setName] = useState(user?.name ?? '')
   const [nameError, setNameError] = useState<string | null>(null)
   const [savingName, setSavingName] = useState(false)
+  // Pas ruajtjes butoni tregon një shenjë kontrolli për një çast.
+  const [nameSaved, setNameSaved] = useState(false)
 
   async function handleName(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -37,6 +40,8 @@ function AccountPage() {
       updateUser({ name: result.name, email: result.email, role: result.role })
       setName(result.name)
       toast.show('Emri u ruajt.')
+      setNameSaved(true)
+      window.setTimeout(() => setNameSaved(false), 1800)
     } catch (e) {
       setNameError(e instanceof Error ? e.message : 'Ndodhi një gabim. Provo përsëri.')
     } finally {
@@ -50,6 +55,7 @@ function AccountPage() {
   const [confirm, setConfirm] = useState('')
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [savingPassword, setSavingPassword] = useState(false)
+  const [passwordSaved, setPasswordSaved] = useState(false)
 
   async function handlePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -76,6 +82,8 @@ function AccountPage() {
       setNext('')
       setConfirm('')
       toast.show('Fjalëkalimi u ndryshua.')
+      setPasswordSaved(true)
+      window.setTimeout(() => setPasswordSaved(false), 1800)
     } catch (e) {
       // P.sh. "Fjalëkalimi aktual është i gabuar." (400, kështu sesioni nuk mbyllet).
       setPasswordError(e instanceof Error ? e.message : 'Ndodhi një gabim. Provo përsëri.')
@@ -93,7 +101,7 @@ function AccountPage() {
         </div>
       </div>
 
-      <div className="account-grid">
+      <div className="account-grid fade-in">
         <form className="account-card" onSubmit={handleName} noValidate>
           <h2 className="account-card-title">
             <UserRound size={20} aria-hidden="true" />
@@ -123,9 +131,9 @@ function AccountPage() {
           )}
 
           <div className="account-actions">
-            <button type="submit" className="btn btn-primary" disabled={savingName || name.trim() === user?.name}>
-              {savingName ? 'Duke ruajtur...' : 'Ruaj emrin'}
-            </button>
+            <LoadingButton type="submit" loading={savingName} loadingLabel="Duke ruajtur..." success={nameSaved} disabled={name.trim() === user?.name}>
+              Ruaj emrin
+            </LoadingButton>
           </div>
         </form>
 
@@ -164,9 +172,9 @@ function AccountPage() {
           )}
 
           <div className="account-actions">
-            <button type="submit" className="btn btn-primary" disabled={savingPassword}>
-              {savingPassword ? 'Duke ruajtur...' : 'Ndrysho fjalëkalimin'}
-            </button>
+            <LoadingButton type="submit" loading={savingPassword} loadingLabel="Duke ruajtur..." success={passwordSaved}>
+              Ndrysho fjalëkalimin
+            </LoadingButton>
           </div>
         </form>
       </div>

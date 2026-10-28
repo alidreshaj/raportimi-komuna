@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router'
 import { register } from '../api/auth'
 import AuthShell from '../components/AuthShell'
+import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -53,7 +54,7 @@ function RegisterPage() {
     // Llogaria u krijua. Hyjmë automatikisht, që përdoruesi të mos shkruajë gjithçka përsëri.
     try {
       await login(email.trim(), password)
-      navigate('/', { replace: true })
+      navigate('/', { replace: true, viewTransition: true })
     } catch {
       navigate('/login', { replace: true })
     }
@@ -112,14 +113,14 @@ function RegisterPage() {
           </p>
         )}
 
-        <button type="submit" className="btn btn-primary" disabled={submitting}>
-          {submitting ? 'Duke krijuar llogarinë...' : 'Regjistrohu'}
-        </button>
+        <LoadingButton type="submit" loading={submitting} loadingLabel="Duke krijuar llogarinë...">
+          Regjistrohu
+        </LoadingButton>
 
         <div className="auth-divider" />
 
         <p className="auth-alt">
-          Ke llogari? <Link to="/login">Hyr</Link>
+          Ke llogari? <Link viewTransition to="/login">Hyr</Link>
         </p>
       </form>
     </AuthShell>

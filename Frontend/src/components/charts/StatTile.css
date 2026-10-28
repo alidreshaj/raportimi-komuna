@@ -25,6 +25,7 @@
 
 /* Numrat e mëdhenj me shifra proporcionale (jo "tabular"): "121" duket i shtrënguar, jo i hapur. */
 .stat-tile-value {
+  font-variant-numeric: tabular-nums; /* shifrat e njëjtë në gjerësi: numri nuk dridhet kur numërohet */
   font-size: 36px;
   font-weight: 700;
   line-height: 1.1;

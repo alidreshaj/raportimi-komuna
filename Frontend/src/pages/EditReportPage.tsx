@@ -2,6 +2,8 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { updateReport } from '../api/reports'
+import Breadcrumbs from '../components/Breadcrumbs'
+import LoadingButton from '../components/LoadingButton'
 import ReportFields from '../components/ReportFields'
 import { useAuth } from '../context/useAuth'
 import { useCategories } from '../hooks/useCategories'
@@ -48,7 +50,7 @@ function EditReportForm({ report }: { report: Report }) {
       await updateReport(report.id, toReportInput(form))
       // Kthehemi te detajet, ku shihet ndryshimi.
       toast.show('Ndryshimet u ruajtën.')
-      navigate(`/raportet/${report.id}`)
+      navigate(`/raportet/${report.id}`, { viewTransition: true })
     } catch (e) {
       // P.sh. 409 nëse komuna e mori raportin në shqyrtim ndërkohë.
       setError(e instanceof Error ? e.message : 'Ndodhi një gabim. Provo përsëri.')
@@ -76,12 +78,12 @@ function EditReportForm({ report }: { report: Report }) {
       )}
 
       <div className="form-actions">
-        <Link to={`/raportet/${report.id}`} className="btn btn-secondary">
+        <Link viewTransition to={`/raportet/${report.id}`} className="btn btn-secondary">
           Anulo
         </Link>
-        <button type="submit" className="btn btn-primary" disabled={submitting || !categories}>
-          {submitting ? 'Duke ruajtur...' : 'Ruaj ndryshimet'}
-        </button>
+        <LoadingButton type="submit" loading={submitting} loadingLabel="Duke ruajtur..." disabled={!categories}>
+          Ruaj ndryshimet
+        </LoadingButton>
       </div>
     </form>
   )
@@ -94,9 +96,13 @@ function EditReportPage() {
 
   return (
     <div className="new-report">
-      <p className="detail-back">
-        <Link to={`/raportet/${id}`}>← Kthehu te raporti</Link>
-      </p>
+      <Breadcrumbs
+        items={[
+          { label: 'Raportet e mia', to: '/raportet' },
+          { label: 'Raporti', to: `/raportet/${id}` },
+          { label: 'Ndrysho' },
+        ]}
+      />
 
       <div className="new-report-header">
         <h1 className="page-title">Ndrysho raportin</h1>

@@ -100,3 +100,60 @@
   cursor: pointer;
   padding: 4px;
 }
+
+/* Kur tërheq foto mbi zonë: kufi dhe sfond blu, ikona kërcen lart e poshtë (vetëm transform). */
+.photo-picker-zone {
+  transition:
+    border-color var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out);
+}
+
+.photo-picker-zone--active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.photo-picker-zone--active .photo-picker-icon {
+  animation: drop-bounce 0.8s var(--ease-out) infinite;
+}
+
+.photo-picker-drop {
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+@keyframes drop-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Progresi i ngarkimit të fotove (shiriti zgjerohet me scaleX, vetëm transform). */
+.upload-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.upload-progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.upload-progress-fill {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent-solid);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left center;
+  transition: transform var(--dur) var(--ease-out);
+}

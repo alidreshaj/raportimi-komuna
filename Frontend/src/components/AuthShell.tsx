@@ -7,7 +7,7 @@ import './AuthShell.css'
 // Karta (forma) vendoset si "children".
 function AuthShell({ children }: { children: ReactNode }) {
   return (
-    <main className="auth">
+    <main id="main" className="auth">
       <section className="auth-brand">
         {/* Stoli: silueta e Kosovës me pika në qytetet kryesore */}
         <div className="auth-art">

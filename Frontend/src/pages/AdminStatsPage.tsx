@@ -8,6 +8,7 @@ import LineChart from '../components/charts/LineChart'
 import StatsSkeleton from '../components/charts/StatsSkeleton'
 import StatTile from '../components/charts/StatTile'
 import EmptyState from '../components/EmptyState'
+import Reveal from '../components/Reveal'
 import type { Stats, ReportStatus } from '../types'
 import { MONTHS, MONTHS_SHORT, STATUS_LABELS, percentOf } from '../utils/format'
 import { STATUS_COLORS } from '../utils/statusColors'
@@ -101,14 +102,15 @@ function StatsContent({ stats }: { stats: Stats }) {
         <StatTile label="Në trajtim" value={count('InProgress')} hint="po zgjidhen tani" color={STATUS_COLORS.InProgress} />
         <StatTile
           label="Të zgjidhura"
-          value={`${percentOf(resolved, stats.total)}%`}
+          value={percentOf(resolved, stats.total)}
+          suffix="%"
           hint={`${resolved} nga ${stats.total}`}
           color={STATUS_COLORS.Resolved}
         />
       </div>
 
       <div className="stats-grid">
-        <ChartCard
+        <Reveal delay={0}><ChartCard
           title="Raportet sipas statusit"
           subtitle="Ku ndodhen tani të gjitha raportet"
           table={{
@@ -117,9 +119,9 @@ function StatsContent({ stats }: { stats: Stats }) {
           }}
         >
           <DonutChart slices={slices} total={stats.total} totalCaption="raporte gjithsej" />
-        </ChartCard>
+        </ChartCard></Reveal>
 
-        <ChartCard
+        <Reveal delay={80}><ChartCard
           title="Raportet sipas kategorisë"
           subtitle="Cilat probleme dërgohen më shpesh"
           table={{
@@ -128,10 +130,10 @@ function StatsContent({ stats }: { stats: Stats }) {
           }}
         >
           <BarChart items={bars} total={stats.total} />
-        </ChartCard>
+        </ChartCard></Reveal>
 
         <div className="stats-wide">
-          <ChartCard
+          <Reveal delay={160}><ChartCard
             title="Raportet e dërguara çdo muaj"
             subtitle="6 muajt e fundit"
             table={{ head: ['Muaji', 'Raporte'], rows: months.map((m) => [m.fullLabel, m.value]) }}
@@ -140,7 +142,7 @@ function StatsContent({ stats }: { stats: Stats }) {
               points={months}
               ariaLabel={`Raporte të dërguara çdo muaj: ${months.map((m) => `${m.fullLabel} ${m.value}`).join(', ')}`}
             />
-          </ChartCard>
+          </ChartCard></Reveal>
         </div>
       </div>
     </div>

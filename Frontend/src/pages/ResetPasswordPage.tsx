@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
 import { resetPassword } from '../api/auth'
 import AuthShell from '../components/AuthShell'
+import LoadingButton from '../components/LoadingButton'
 import { useToast } from '../context/useToast'
 
 const MIN_PASSWORD = 8
@@ -51,7 +52,7 @@ function ResetPasswordPage() {
         <div className="auth-card auth-notice">
           <h2>Lidhje e pavlefshme</h2>
           <p>Kjo lidhje nuk ka kod rivendosjeje. Kërko një të re.</p>
-          <Link to="/harrova-fjalekalimin">Kërko lidhje të re</Link>
+          <Link viewTransition to="/harrova-fjalekalimin">Kërko lidhje të re</Link>
         </div>
       </AuthShell>
     )
@@ -91,13 +92,13 @@ function ResetPasswordPage() {
         {error && (
           <p className="form-error" role="alert">
             {error}{' '}
-            {error.includes('Lidhja') && <Link to="/harrova-fjalekalimin">Kërko një të re.</Link>}
+            {error.includes('Lidhja') && <Link viewTransition to="/harrova-fjalekalimin">Kërko një të re.</Link>}
           </p>
         )}
 
-        <button type="submit" className="btn btn-primary" disabled={submitting}>
-          {submitting ? 'Duke ruajtur...' : 'Ruaj fjalëkalimin'}
-        </button>
+        <LoadingButton type="submit" loading={submitting} loadingLabel="Duke ruajtur...">
+          Ruaj fjalëkalimin
+        </LoadingButton>
       </form>
     </AuthShell>
   )

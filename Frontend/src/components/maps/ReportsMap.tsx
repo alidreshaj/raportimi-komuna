@@ -64,7 +64,7 @@ function ReportsMap({ pins, missing }: { pins: ReportPin[]; missing: number }) {
                   <span className="map-popup-meta">
                     {report.location} · {formatDate(report.createdAt)}
                   </span>
-                  <Link to={`/admin/raportet/${report.id}`}>Hap raportin →</Link>
+                  <Link viewTransition to={`/admin/raportet/${report.id}`}>Hap raportin →</Link>
                 </div>
               </Popup>
             </Marker>

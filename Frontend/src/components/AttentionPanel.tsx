@@ -74,7 +74,7 @@ function AttentionPanel() {
           const days = daysSince(report.createdAt)
           return (
             <li key={report.id}>
-              <Link to={`/admin/raportet/${report.id}`} className="attention-item">
+              <Link viewTransition to={`/admin/raportet/${report.id}`} className="attention-item">
                 <span className="attention-item-icon">
                   <CategoryIcon name={report.categoryName} size={18} />
                 </span>

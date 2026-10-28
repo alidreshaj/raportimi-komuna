@@ -16,7 +16,7 @@ function ThemeToggle() {
   const label = next === 'dark' ? 'Kalo te tema e errët' : 'Kalo te tema e çelët'
 
   return (
-    <button type="button" className="theme-toggle" onClick={toggle} aria-label={label} title={label}>
+    <button type="button" className="theme-toggle" onClick={toggle} aria-label={label} data-tooltip={label} data-tooltip-pos="bottom">
       {next === 'dark' ? <Moon size={18} aria-hidden="true" /> : <Sun size={18} aria-hidden="true" />}
     </button>
   )

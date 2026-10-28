@@ -3,6 +3,7 @@ import { Send } from 'lucide-react'
 import type { FormEvent } from 'react'
 import { addComment, getComments } from '../api/comments'
 import { useAuth } from '../context/useAuth'
+import LoadingButton from './LoadingButton'
 import type { CommentItem } from '../types'
 import { formatDateTime } from '../utils/format'
 import './Conversation.css'
@@ -145,10 +146,9 @@ function Conversation({ reportId }: { reportId: number }) {
         )}
 
         <div className="message-form-actions">
-          <button type="submit" className="btn btn-primary" disabled={sending}>
-            {!sending && <Send size={16} aria-hidden="true" />}
-            {sending ? 'Duke dërguar...' : 'Dërgo'}
-          </button>
+          <LoadingButton type="submit" loading={sending} loadingLabel="Duke dërguar..." icon={<Send size={16} aria-hidden="true" />}>
+            Dërgo
+          </LoadingButton>
         </div>
       </form>
     </section>

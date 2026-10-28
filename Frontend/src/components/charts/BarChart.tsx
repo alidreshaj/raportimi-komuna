@@ -51,7 +51,7 @@ function BarChart({ items, total }: BarChartProps) {
             onBlur={() => setTip(null)}
           >
             <span className="bar-label">{item.label}</span>
-            <span className="bar-track" style={{ '--pct': item.value / max } as CSSProperties}>
+            <span className="bar-track" style={{ '--pct': item.value / max, '--i': Math.min(items.indexOf(item), 10) } as CSSProperties}>
               <span className="bar-fill" style={{ minWidth: item.value > 0 ? 4 : 0 }} />
               <span className="bar-value">{item.value}</span>
             </span>

@@ -1,16 +1,19 @@
 import { Route, Routes } from 'react-router'
 import AppLayout from './components/AppLayout'
-import HomeRedirect from './components/HomeRedirect'
+import ErrorBoundary from './components/ErrorBoundary'
 import ProtectedRoute from './components/ProtectedRoute'
 import ScrollToTop from './components/ScrollToTop'
+import TopProgress from './components/TopProgress'
 import AccountPage from './pages/AccountPage'
 import AdminReportDetailPage from './pages/AdminReportDetailPage'
 import AdminReportsPage from './pages/AdminReportsPage'
 import AdminStatsPage from './pages/AdminStatsPage'
 import EditReportPage from './pages/EditReportPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import NewReportPage from './pages/NewReportPage'
+import NotFoundPage from './pages/NotFoundPage'
 import RegisterPage from './pages/RegisterPage'
 import ReportDetailPage from './pages/ReportDetailPage'
 import ReportsPage from './pages/ReportsPage'
@@ -19,10 +22,15 @@ import ResetPasswordPage from './pages/ResetPasswordPage'
 // Rrugët e aplikacionit: cila adresë shfaq cilën faqe.
 function App() {
   return (
-    <>
+    <ErrorBoundary>
+      <a href="#main" className="skip-link">
+        Kalo te përmbajtja
+      </a>
       <ScrollToTop />
+      <TopProgress />
       <Routes>
         {/* Faqe publike */}
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/regjistrohu" element={<RegisterPage />} />
         <Route path="/harrova-fjalekalimin" element={<ForgotPasswordPage />} />
@@ -55,10 +63,10 @@ function App() {
           </Route>
         </Route>
 
-        {/* Çdo adresë tjetër të çon te faqja kryesore e rolit tënd (pa hyrje, te login) */}
-        <Route path="*" element={<HomeRedirect />} />
+        {/* Çdo adresë tjetër: faqja 404 */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
-    </>
+    </ErrorBoundary>
   )
 }
 

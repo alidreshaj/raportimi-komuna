@@ -18,8 +18,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
+  min-width: 44px;
+  height: 44px;
   padding: 0 10px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
@@ -59,4 +59,17 @@
   margin: 0;
   font-size: 13.5px;
   color: var(--muted);
+}
+
+/* Shigjetat e faqosjes lëvizin pak drejt drejtimit të tyre në hover. */
+.pagination-btn svg {
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.pagination-btn[aria-label='Faqja e mëparshme']:hover:not(:disabled) svg {
+  transform: translateX(-3px);
+}
+
+.pagination-btn[aria-label='Faqja tjetër']:hover:not(:disabled) svg {
+  transform: translateX(3px);
 }

@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import type { CSSProperties } from 'react'
 import { percentOf, pluralize } from '../../utils/format'
+import AnimatedNumber from '../AnimatedNumber'
 import './DonutChart.css'
 
 export interface DonutSlice {
@@ -47,7 +49,7 @@ function DonutChart({ slices, total, totalCaption }: DonutChartProps) {
         <circle cx={CENTER} cy={CENTER} r={RADIUS} fill="none" strokeWidth={THICKNESS} className="donut-track" />
 
         <g transform={`rotate(-90 ${CENTER} ${CENTER})`}>
-          {arcs.map(({ slice, length, start }) => {
+          {arcs.map(({ slice, length, start }, arcIndex) => {
             const dash = single ? CIRCUMFERENCE : Math.max(length - GAP, 0.5)
             const isActive = slice.key === activeKey
             return (
@@ -57,8 +59,8 @@ function DonutChart({ slices, total, totalCaption }: DonutChartProps) {
                 cy={CENTER}
                 r={RADIUS}
                 fill="none"
-                style={{ stroke: slice.color }}
-                strokeWidth={isActive ? THICKNESS + 6 : THICKNESS}
+                style={{ stroke: slice.color, '--circ': CIRCUMFERENCE, '--i': arcIndex } as CSSProperties}
+                strokeWidth={THICKNESS}
                 strokeDasharray={`${dash} ${CIRCUMFERENCE - dash}`}
                 strokeDashoffset={-(start + (single ? 0 : GAP / 2))}
                 className={`donut-slice${activeKey && !isActive ? ' donut-slice--dim' : ''}`}
@@ -74,7 +76,7 @@ function DonutChart({ slices, total, totalCaption }: DonutChartProps) {
         </g>
 
         <text x={CENTER} y={CENTER + 2} textAnchor="middle" className="donut-number">
-          {active ? active.value : total}
+          {active ? active.value : <AnimatedNumber value={total} />}
         </text>
         <text x={CENTER} y={CENTER + 26} textAnchor="middle" className="donut-caption">
           {active ? `${active.label} · ${percentOf(active.value, total)}%` : totalCaption}

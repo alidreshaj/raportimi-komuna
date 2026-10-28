@@ -24,7 +24,7 @@ function ReportCard({ report, to = `/raportet/${report.id}`, showReporter = fals
   const { ref: thumbRef, seen } = useInView<HTMLDivElement>()
 
   return (
-    <Link to={to} className={`report-card report-card--${report.status}`}>
+    <Link viewTransition to={to} className={`report-card report-card--${report.status}`}>
       {/* Miniatura e fotos së parë; pa foto, një ikonë e kategorisë. Fotoja ngarkohet vetëm kur karta afrohet te ekrani. */}
       <div ref={thumbRef} className={`report-card-thumb${firstPhoto ? '' : ' report-card-thumb--empty'}`}>
         {firstPhoto ? seen && <AuthImage url={firstPhoto.url} alt="" /> : <CategoryIcon name={report.categoryName} size={30} />}

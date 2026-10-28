@@ -111,3 +111,16 @@
     display: none;
   }
 }
+
+/* Rreshtat hyjnë njëri pas tjetrit herën e parë (vetëm opacity dhe një ngritje e vogël). */
+.report-table--enter .report-row {
+  animation: row-in var(--dur-enter) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 30ms);
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}

@@ -47,7 +47,8 @@
   border-radius: 0 5px 5px 0;
   background: var(--accent);
   transform-origin: left center;
-  animation: bar-grow 0.6s ease-out;
+  animation: bar-grow 0.6s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
   transition: filter 0.15s ease;
 }
 

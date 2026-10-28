@@ -52,8 +52,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border: 0;
   border-radius: 6px;
   background: transparent;
@@ -86,4 +86,9 @@
   .toast {
     animation: none;
   }
+}
+
+/* Ikona e njoftimit "kërcen" kur del. */
+.toast > svg:first-child {
+  animation: pop 0.45s var(--ease-spring) 0.1s both;
 }

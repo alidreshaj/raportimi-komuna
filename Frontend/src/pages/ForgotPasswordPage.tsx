@@ -4,6 +4,7 @@ import { MailCheck } from 'lucide-react'
 import { Link, Navigate } from 'react-router'
 import { forgotPassword } from '../api/auth'
 import AuthShell from '../components/AuthShell'
+import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
 import { homePathFor } from '../utils/roles'
 
@@ -50,7 +51,7 @@ function ForgotPasswordPage() {
           <p>
             Nëse ekziston një llogari me këtë email, do të marrësh një lidhje për të vendosur fjalëkalimin e ri. Lidhja vlen 30 minuta.
           </p>
-          <Link to="/login">Kthehu te hyrja</Link>
+          <Link viewTransition to="/login">Kthehu te hyrja</Link>
         </div>
       ) : (
         <form className="auth-card" onSubmit={handleSubmit} noValidate>
@@ -77,14 +78,14 @@ function ForgotPasswordPage() {
             </p>
           )}
 
-          <button type="submit" className="btn btn-primary" disabled={submitting}>
-            {submitting ? 'Duke dërguar...' : 'Dërgo lidhjen'}
-          </button>
+          <LoadingButton type="submit" loading={submitting} loadingLabel="Duke dërguar...">
+            Dërgo lidhjen
+          </LoadingButton>
 
           <div className="auth-divider" />
 
           <p className="auth-alt">
-            E mbajte mend? <Link to="/login">Hyr</Link>
+            E mbajte mend? <Link viewTransition to="/login">Hyr</Link>
           </p>
         </form>
       )}

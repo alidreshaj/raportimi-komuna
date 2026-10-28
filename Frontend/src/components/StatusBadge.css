@@ -30,3 +30,15 @@
   background: var(--badge-rejected-bg);
   color: var(--badge-rejected-fg);
 }
+
+/* Kur statusi ndryshon (komponenti rikrijohet me key), etiketa "kërcen" një herë. */
+.status-badge--pop {
+  animation: badge-pop 0.45s var(--ease-spring) both;
+}
+
+@keyframes badge-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}

@@ -17,6 +17,8 @@
   /* Sfondet: faqja, kartat dhe sipërfaqet dytësore (kuti të lehta brenda kartave). */
   --ground: #f3f5f8;
   --ground-top: #e6edf6;
+  --mesh-1: rgb(45 106 166 / 0.14);
+  --mesh-2: rgb(240 198 117 / 0.12);
   --surface: #ffffff;
   --surface-2: #eef2f6;
 
@@ -66,6 +68,23 @@
   --shadow-lg: 0 16px 36px rgba(20, 32, 46, 0.16);
   --ease: 0.18s ease;
 
+  /* Lëvizja: kohëzgjatje dhe lakore të përbashkëta. Ndërveprimet nuk kalojnë 300 ms; hyrjet e mëdha deri në 600 ms. */
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 300ms;
+  --dur-enter: 480ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.64, 0, 0.78, 0);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Shkalla e vetme e hapësirave (4 / 8 / 12 / 16 / 24 / 32). */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
   /* Ngjyrat e statuseve te grafikët dhe harta: të njëjtat nuanca si etiketat, më të forta, që të dallohen si shenja grafiku.
      Të kontrolluara me validatorin (kontrast 3:1, dallueshmëri edhe për daltonizëm), veç për secilën temë. */
   --chart-new: #2b6cb0;
@@ -91,6 +110,8 @@
 
   --ground: #0e1621;
   --ground-top: #142033;
+  --mesh-1: rgb(61 128 196 / 0.16);
+  --mesh-2: rgb(127 216 168 / 0.06);
   --surface: #172231;
   --surface-2: #202d3f;
 
@@ -148,7 +169,11 @@
 body {
   margin: 0;
   /* Një ton i lehtë blu lart që zbehet te gri: faqja ka thellësi, jo një sfond i sheshtë. */
-  background: linear-gradient(180deg, var(--ground-top) 0, var(--ground) 320px) no-repeat, var(--ground);
+  background:
+    radial-gradient(60% 420px at 85% -80px, var(--mesh-1), transparent),
+    radial-gradient(50% 360px at 5% -60px, var(--mesh-2), transparent),
+    linear-gradient(180deg, var(--ground-top) 0, var(--ground) 320px) no-repeat,
+    var(--ground);
 }
 
 /* Fokusi i dukshëm për përdoruesit e tastierës. */
@@ -361,4 +386,238 @@ a:hover {
   .btn-primary:hover:not(:disabled) {
     transform: none;
   }
+}
+
+/* =====================================================================
+   LËVIZJA: rregullat e përbashkëta (Faza 20.1)
+   ===================================================================== */
+
+/* Kush ka "reduce motion" te sistemi: asnjë animacion ose tranzicion i dukshëm; gjendja përfundimtare shfaqet menjëherë. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Kalimi i temës: sa herë ndërrohet, për 300 ms ngjyrat kalojnë butë (klasën e vendos utils/theme.ts). */
+:root.theme-switching *,
+:root.theme-switching *::before,
+:root.theme-switching *::after {
+  transition:
+    background-color var(--dur-slow) var(--ease-out),
+    border-color var(--dur-slow) var(--ease-out),
+    color var(--dur-slow) var(--ease-out),
+    fill var(--dur-slow) var(--ease-out),
+    stroke var(--dur-slow) var(--ease-out),
+    box-shadow var(--dur-slow) var(--ease-out) !important;
+}
+
+/* Efekti i shtypjes: elementet e klikueshme tkurren pak sa i shtyp. */
+.btn:active:not(:disabled),
+.btn-outline:active:not(:disabled),
+.status-chip:active,
+.pagination-btn:active:not(:disabled),
+.theme-toggle:active,
+.notif-bell:active,
+.view-switch button:active,
+.back-to-top:active {
+  transform: scale(0.98);
+}
+
+/* Lidhjet brenda paragrafëve (pa klasë): nënvizim i hollë që trashet butë kur kalon mausin. Menyja dhe butonat nuk preken. */
+p a:not([class]) {
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size var(--dur) var(--ease-out);
+}
+
+p a:not([class]):hover {
+  background-size: 100% 2px;
+}
+
+/* Gabimi i formës shkundet lehtë kur shfaqet (vetëm transform). */
+.form-error {
+  animation: shake 0.4s var(--ease-out);
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  20% {
+    transform: translateX(-6px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-3px);
+  }
+
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+/* Përmbajtja që shfaqet pasi skeleti ikën: zbehet butë (nuk ndërrohet menjëherë). */
+.fade-in {
+  animation: fade-in var(--dur-enter) var(--ease-out) both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Seksionet që hyjnë kur futen te ekrani (shih components/Reveal.tsx). */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-enter) var(--ease-out),
+    transform var(--dur-enter) var(--ease-out);
+}
+
+.reveal--in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Rrotulluesi i vogël te butonat që po ngarkojnë. */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Butoni me sukses: shenja e kontrollit del me një kërcim të vogël. */
+.btn-check {
+  animation: pop 0.35s var(--ease-spring);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/* Panelet që hapen nga një buton (zile, meny, paleta): shfaqen me zmadhim dhe zbehje nga cepi i butonit, dhe mbyllen me animacion
+   (data-phase vendoset nga hooks/usePopover.ts). Vetëm transform dhe opacity. */
+.popover-panel {
+  transform-origin: top right;
+  animation: popover-in var(--dur) var(--ease-out) both;
+}
+
+.popover-panel[data-phase='closing'] {
+  animation: popover-out var(--dur-fast) var(--ease-in) both;
+}
+
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+}
+
+@keyframes popover-out {
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+}
+
+/* Tooltip i përbashkët për butonat vetëm me ikonë: <button data-tooltip="Teksti">. Shfaqet pas 300 ms (hover ose fokus tastiere). */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 90;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--toast-bg);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+[data-tooltip][data-tooltip-pos='bottom']::after {
+  top: calc(100% + 8px);
+  bottom: auto;
+  transform: translate(-50%, -4px);
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 300ms;
+}
+
+/* Lidhja "Kalo te përmbajtja": e fshehur deri sa merr fokusin me tastierë. */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--accent-solid);
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+main:focus {
+  outline: none;
 }

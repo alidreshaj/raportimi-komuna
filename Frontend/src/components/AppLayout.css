@@ -1,13 +1,23 @@
 /* Menyja lart dhe kontejneri i faqeve të brendshme (docs/design/02-raportet-e-mia.png). */
 
 .app-header {
-  /* Mbetet lart kur zbret faqja, me sfond gati të tejdukshëm dhe një hije të lehtë poshtë. */
+  /* Mbetet lart kur zbret faqja. Lart është e pastër; pasi zbret, merr kufi, hije dhe zbehje më të fortë (data-scrolled). */
   position: sticky;
   top: 0;
   z-index: 20;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid transparent;
+  transition:
+    box-shadow var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out);
+}
+
+.app-header[data-scrolled='true'] {
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom-color: var(--line);
   box-shadow: var(--shadow-sm);
 }
 
@@ -85,27 +95,6 @@
   color: var(--ink);
 }
 
-/* Avatari dhe emri janë lidhje te "Llogaria ime": një "pilulë" që ndriçohet kur kalon mausin ose kur je atje. */
-.app-account {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 4px 14px 4px 4px;
-  border-radius: 999px;
-  color: inherit;
-  text-decoration: none;
-  transition: background var(--ease);
-}
-
-.app-account:hover {
-  background: var(--ground);
-  color: inherit;
-}
-
-.app-account.active {
-  background: var(--accent-soft);
-}
-
 /* Avatari: rrethi me inicialet e përdoruesit. */
 .app-avatar {
   display: inline-flex;
@@ -141,7 +130,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 38px;
+  height: 44px;
   padding: 0 16px;
   border: 1px solid var(--field-border);
   border-radius: 8px;
@@ -186,7 +175,45 @@
   }
 
   .app-main {
-    padding: 28px 16px 48px;
+    padding: 28px 16px calc(96px + env(safe-area-inset-bottom));
+  }
+
+  /* Menyja kryesore bëhet shirit poshtë ekranit (më afër gishtit). backdrop-filter hiqet nga header-i,
+     sepse e bën kontejner të vetin për elementët me position: fixed. */
+  .app-header,
+  .app-header[data-scrolled='true'] {
+    backdrop-filter: none;
+    background: var(--surface);
+  }
+
+  .app-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    justify-content: space-around;
+    gap: 4px;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -4px 16px rgb(0 0 0 / 0.06);
+  }
+
+  .app-nav a {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-height: 48px;
+    padding: 6px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .back-to-top {
+    bottom: calc(88px + env(safe-area-inset-bottom));
   }
 }
 
@@ -205,5 +232,46 @@
 @media (prefers-reduced-motion: reduce) {
   .page-enter {
     animation: none;
+  }
+}
+
+/* ---- Tranzicionet e faqeve (View Transitions API; shfletuesit pa të mbeten me animacionin e vjetër `page-in`) ---- */
+.app-header {
+  view-transition-name: app-header;
+}
+
+.page-enter {
+  view-transition-name: page;
+}
+
+/* Kur View Transitions punon, animacionin e faqes e bën ai; animacioni i vjetër fiket që të mos dyfishohet. */
+.has-vt .page-enter {
+  animation: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-old(page) {
+  animation: vt-out var(--dur-fast) var(--ease-in) both;
+}
+
+::view-transition-new(page) {
+  animation: vt-in var(--dur-slow) var(--ease-out) both;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
 }

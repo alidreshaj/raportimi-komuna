@@ -7,8 +7,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--line);
   border-radius: 50%;
   background: var(--surface);
@@ -55,7 +55,6 @@
   border-radius: var(--radius-md);
   background: var(--surface);
   box-shadow: var(--shadow-lg);
-  animation: notif-in 0.18s ease-out;
 }
 
 .notif-head {
@@ -77,6 +76,8 @@
 }
 
 .notif-readall {
+  min-height: 44px;
+  padding: 0 8px;
   border: 0;
   background: transparent;
   color: var(--accent);
@@ -196,12 +197,6 @@
   background: var(--accent-solid);
 }
 
-@keyframes notif-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-}
 
 /* Në telefon paneli zë gjerësinë e ekranit, poshtë menysë. */
 @media (max-width: 560px) {
@@ -218,8 +213,39 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .notif-panel {
-    animation: none;
+
+/* Zilja dridhet kur vjen njoftim i ri (rrotullim rreth pikës së sipërme, vetëm transform). */
+.notif-bell-icon--ring {
+  transform-origin: 50% 0;
+  animation: bell-ring 0.9s var(--ease-out);
+}
+
+@keyframes bell-ring {
+  0% {
+    transform: rotate(0);
+  }
+
+  15% {
+    transform: rotate(16deg);
+  }
+
+  30% {
+    transform: rotate(-14deg);
+  }
+
+  45% {
+    transform: rotate(10deg);
+  }
+
+  60% {
+    transform: rotate(-6deg);
+  }
+
+  75% {
+    transform: rotate(3deg);
+  }
+
+  100% {
+    transform: rotate(0);
   }
 }

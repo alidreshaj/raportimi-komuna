@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { deleteReport } from '../api/reports'
-import AuthImage from '../components/AuthImage'
+import Breadcrumbs from '../components/Breadcrumbs'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Conversation from '../components/Conversation'
 import DetailSkeleton from '../components/DetailSkeleton'
 import ReportMap from '../components/maps/ReportMap'
+import PhotoGallery from '../components/PhotoGallery'
+import Reveal from '../components/Reveal'
 import StatusBadge from '../components/StatusBadge'
 import StatusTimeline from '../components/StatusTimeline'
 import { useAuth } from '../context/useAuth'
@@ -44,7 +46,7 @@ function ReportDetailPage() {
       await deleteReport(report.id)
       // replace: butoni "mbrapa" të mos të kthejë te një raport që nuk ekziston më.
       toast.show('Raporti u fshi.')
-      navigate('/raportet', { replace: true })
+      navigate('/raportet', { replace: true, viewTransition: true })
     } catch (e) {
       // P.sh. 409 nëse komuna e mori raportin në shqyrtim ndërkohë. Dritarja mbetet e hapur me gabimin.
       setDeleteError(e instanceof Error ? e.message : 'Ndodhi një gabim. Provo përsëri.')
@@ -54,9 +56,7 @@ function ReportDetailPage() {
 
   return (
     <>
-      <p className="detail-back">
-        <Link to="/raportet">← Kthehu te raportet e mia</Link>
-      </p>
+      <Breadcrumbs items={[{ label: 'Raportet e mia', to: '/raportet' }, { label: report?.title ?? 'Raporti' }]} />
 
       {error && (
         <p className="form-error" role="alert">
@@ -67,11 +67,11 @@ function ReportDetailPage() {
       {!report && !error && <DetailSkeleton />}
 
       {report && (
-        <div className="detail-layout">
+        <div className="detail-layout fade-in">
           <div className="detail-main">
             <article className="detail-card">
               <div className="detail-top">
-                <StatusBadge status={report.status} />
+                <StatusBadge key={report.status} status={report.status} animate />
                 <span className="detail-category">{report.categoryName}</span>
               </div>
 
@@ -79,22 +79,14 @@ function ReportDetailPage() {
               <p className="detail-description">{report.description}</p>
               <p className="detail-location">{report.location}</p>
 
-              {report.images.length > 0 && (
-                <ul className="detail-photos" aria-label="Fotot e raportit">
-                  {report.images.map((image, index) => (
-                    <li key={image.id} className="detail-photo">
-                      <AuthImage url={image.url} alt={`Foto ${index + 1} e raportit "${report.title}"`} />
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <PhotoGallery images={report.images} title={report.title} />
             </article>
 
             {report.latitude !== null && report.longitude !== null && (
-              <ReportMap latitude={report.latitude} longitude={report.longitude} title={report.title} />
+              <Reveal><ReportMap latitude={report.latitude} longitude={report.longitude} title={report.title} /></Reveal>
             )}
 
-            <Conversation reportId={report.id} />
+            <Reveal><Conversation reportId={report.id} /></Reveal>
           </div>
 
           <aside className="detail-side">
@@ -120,7 +112,7 @@ function ReportDetailPage() {
               </dl>
             </section>
 
-            <StatusTimeline reportId={report.id} />
+            <Reveal><StatusTimeline reportId={report.id} /></Reveal>
 
             {/* Rregulli i planit: qytetari ndryshon ose fshin raportin vetëm kur është New. */}
             {user?.role === 'Citizen' && (
@@ -129,7 +121,7 @@ function ReportDetailPage() {
 
                 {report.status === 'New' ? (
                   <div className="detail-actions">
-                    <Link to={`/raportet/${report.id}/ndrysho`} className="btn btn-secondary">
+                    <Link viewTransition to={`/raportet/${report.id}/ndrysho`} className="btn btn-secondary">
                       Ndrysho raportin
                     </Link>
                     <button type="button" className="btn btn-danger-outline" onClick={openConfirm}>

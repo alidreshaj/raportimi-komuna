@@ -93,7 +93,7 @@ function StatusPanel({ report, onChanged }: StatusPanelProps) {
     <section className="detail-card">
       <h2 className="detail-side-title">Ndrysho statusin</h2>
       <div>
-        <StatusBadge status={report.status} />
+        <StatusBadge key={report.status} status={report.status} animate />
       </div>
 
       {nextSteps.length > 0 ? (

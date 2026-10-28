@@ -8,7 +8,7 @@ function ReportListSkeleton() {
       <p className="visually-hidden" role="status">
         Po ngarkohen raportet...
       </p>
-      <ul className="report-list" aria-hidden="true">
+      <ul className="report-list report-list--enter" aria-hidden="true">
         {[0, 1, 2].map((i) => (
           <li key={i} style={{ '--i': i } as CSSProperties}>
             <div className="report-card report-card--skeleton">

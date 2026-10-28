@@ -123,3 +123,12 @@
 .attention--ok .attention-text {
   margin-top: 0;
 }
+
+/* Shigjeta rrëshqet djathtas kur kalon mausin mbi rresht. */
+.attention-item svg:last-child {
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.attention-item:hover svg:last-child {
+  transform: translateX(4px);
+}

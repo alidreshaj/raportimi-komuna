@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router'
 import { getNotifications, markAllNotificationsRead, markNotificationRead } from '../api/notifications'
 import { useAuth } from '../context/useAuth'
 import { useToast } from '../context/useToast'
+import { usePopover } from '../hooks/usePopover'
 import { useUnreadCount } from '../hooks/useUnreadCount'
 import type { NotificationItem, NotificationType } from '../types'
 import { timeAgo } from '../utils/format'
@@ -23,12 +24,13 @@ function NotificationBell() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const toast = useToast()
-  const { count, setCount } = useUnreadCount()
+  const { count, setCount, bumps } = useUnreadCount()
 
-  const [open, setOpen] = useState(false)
+  // Paneli hapet dhe mbyllet me animacion; Esc dhe klikimi jashtë e mbyllin (hook-u i përbashkët).
+  const { phase, isOpen, close, toggle, ref: wrapRef } = usePopover()
+  const open = phase === 'open'
   const [items, setItems] = useState<NotificationItem[] | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const wrapRef = useRef<HTMLDivElement>(null)
 
   // Kur numri rritet (vjen njoftim i ri), shfaqim një njoftim të vogël. Hapja e parë e aplikacionit nuk llogaritet si "e re".
   const previous = useRef<number | null>(null)
@@ -63,27 +65,8 @@ function NotificationBell() {
     }
   }, [open, setCount])
 
-  // Paneli mbyllet me Esc ose kur klikon jashtë tij.
-  useEffect(() => {
-    if (!open) return
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    const onPointer = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('keydown', onKey)
-    document.addEventListener('mousedown', onPointer)
-
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.removeEventListener('mousedown', onPointer)
-    }
-  }, [open])
-
   function openItem(item: NotificationItem) {
-    setOpen(false)
+    close()
 
     if (!item.isRead) {
       // E shënojmë menjëherë te ekrani; kërkesa te serveri vazhdon në sfond (nëse dështon, pyetja e radhës e korrigjon numrin).
@@ -92,7 +75,7 @@ function NotificationBell() {
       markNotificationRead(item.id).catch(() => {})
     }
 
-    if (user) navigate(reportPathFor(user.role, item.reportId))
+    if (user) navigate(reportPathFor(user.role, item.reportId), { viewTransition: true })
   }
 
   async function readAll() {
@@ -114,16 +97,18 @@ function NotificationBell() {
         className="notif-bell"
         aria-haspopup="true"
         aria-expanded={open}
+        data-tooltip="Njoftimet"
+        data-tooltip-pos="bottom"
         aria-label={unread > 0 ? `Njoftimet (${unread} të palexuara)` : 'Njoftimet'}
-        title="Njoftimet"
-        onClick={() => setOpen((o) => !o)}
+        onClick={toggle}
       >
-        <Bell size={18} aria-hidden="true" />
+        {/* key = numri i rritjeve: sa herë vjen njoftim i ri, zilja rikrijohet dhe luan dridhjen */}
+        <Bell key={bumps} size={18} aria-hidden="true" className={bumps > 0 ? 'notif-bell-icon--ring' : undefined} />
         {unread > 0 && <span className="notif-badge">{unread > 9 ? '9+' : unread}</span>}
       </button>
 
-      {open && (
-        <div className="notif-panel" role="dialog" aria-label="Njoftimet">
+      {isOpen && (
+        <div className="notif-panel popover-panel" data-phase={phase} role="dialog" aria-label="Njoftimet">
           <div className="notif-head">
             <h2 className="notif-title">Njoftimet</h2>
             <button type="button" className="notif-readall" disabled={unread === 0} onClick={readAll}>

@@ -16,6 +16,7 @@ import StatusChips from '../components/StatusChips'
 import ViewSwitch from '../components/ViewSwitch'
 import { useCategories } from '../hooks/useCategories'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
+import { useEnterOnce } from '../hooks/useEnterOnce'
 import type { ReportPage, ReportPin, ReportStatus } from '../types'
 import { pluralize } from '../utils/format'
 import { SORT_OPTIONS, toStatusCounts } from '../utils/reportList'
@@ -154,6 +155,7 @@ function AdminReportsPage() {
   const loading = !!result && result.key !== requestKey
   const counts = useMemo(() => toStatusCounts(data?.statusCounts ?? []), [data])
   const hasFilters = !!(status || query || category || from || to)
+  const enter = useEnterOnce(!!data && data.items.length > 0)
 
   return (
     <>
@@ -274,9 +276,9 @@ function AdminReportsPage() {
       {!badRange && data && data.totalCount > 0 && view !== 'map' && (
         <div className={loading ? 'list-loading' : undefined} aria-busy={loading}>
           {view === 'table' ? (
-            <ReportTable reports={data.items} basePath="/admin/raportet" />
+            <ReportTable reports={data.items} basePath="/admin/raportet" enter={enter} />
           ) : (
-            <ul className="report-list">
+            <ul className={`report-list${enter ? ' report-list--enter' : ''}`}>
               {data.items.map((report, index) => (
                 <li key={report.id} style={{ '--i': Math.min(index, 8) } as CSSProperties}>
                   <ReportCard report={report} to={`/admin/raportet/${report.id}`} showReporter />

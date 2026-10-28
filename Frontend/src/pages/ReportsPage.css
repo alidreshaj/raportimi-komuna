@@ -110,8 +110,8 @@
 }
 
 /* Kartat hyjnë njëra pas tjetrës: secila vonohet pak sipas radhës (--i vendoset nga faqja). */
-.report-list > li {
-  animation: rise 0.4s ease both;
+.report-list--enter > li {
+  animation: rise 0.4s var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 45ms);
 }
 
@@ -123,7 +123,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .report-list > li {
+  .report-list--enter > li {
     animation: none;
   }
 }

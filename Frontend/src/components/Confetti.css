@@ -1,0 +1,34 @@
+.confetti {
+  position: fixed;
+  top: 38%;
+  left: 50%;
+  z-index: 90;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  border-radius: 2px;
+  opacity: 0;
+  animation: confetti-burst 1s var(--ease-out) forwards;
+}
+
+/* Shpërthim lart e anash, pastaj bie pak dhe zbehet (vetëm transform dhe opacity). */
+@keyframes confetti-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0) scale(1);
+  }
+
+  65% {
+    opacity: 1;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), calc(var(--dy) + 90px)) rotate(calc(var(--rot) * 1.6)) scale(0.7);
+  }
+}

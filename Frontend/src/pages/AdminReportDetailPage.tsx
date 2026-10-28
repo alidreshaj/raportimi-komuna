@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router'
-import AuthImage from '../components/AuthImage'
+import { useParams } from 'react-router'
+import Breadcrumbs from '../components/Breadcrumbs'
+import Confetti from '../components/Confetti'
 import Conversation from '../components/Conversation'
 import DetailSkeleton from '../components/DetailSkeleton'
 import ReportMap from '../components/maps/ReportMap'
+import PhotoGallery from '../components/PhotoGallery'
+import Reveal from '../components/Reveal'
 import StatusBadge from '../components/StatusBadge'
 import StatusPanel from '../components/StatusPanel'
 import StatusTimeline from '../components/StatusTimeline'
@@ -25,16 +28,20 @@ function AdminReportDetailPage() {
 
   const report = updated && updated.id === loaded?.id ? updated : loaded
 
+  // Konfeti kur admini e shënon raportin "U zgjidh" (numri ndryshon sa herë, që të luhet çdo herë).
+  const [confetti, setConfetti] = useState(0)
+
   function handleChanged(next: Report) {
     setUpdated(next)
     setChatVersion((n) => n + 1)
+    if (next.status === 'Resolved') setConfetti((n) => n + 1)
   }
 
   return (
     <>
-      <p className="detail-back">
-        <Link to="/admin/raportet">← Kthehu te të gjitha raportet</Link>
-      </p>
+      {confetti > 0 && <Confetti key={confetti} onDone={() => setConfetti(0)} />}
+
+      <Breadcrumbs items={[{ label: 'Të gjitha raportet', to: '/admin/raportet' }, { label: report?.title ?? 'Raporti' }]} />
 
       {error && (
         <p className="form-error" role="alert">
@@ -45,11 +52,11 @@ function AdminReportDetailPage() {
       {!report && !error && <DetailSkeleton />}
 
       {report && (
-        <div className="detail-layout">
+        <div className="detail-layout fade-in">
           <div className="detail-main">
             <article className="detail-card">
               <div className="detail-top">
-                <StatusBadge status={report.status} />
+                <StatusBadge key={report.status} status={report.status} animate />
                 <span className="detail-category">{report.categoryName}</span>
               </div>
 
@@ -57,22 +64,14 @@ function AdminReportDetailPage() {
               <p className="detail-description">{report.description}</p>
               <p className="detail-location">{report.location}</p>
 
-              {report.images.length > 0 && (
-                <ul className="detail-photos" aria-label="Fotot e raportit">
-                  {report.images.map((image, index) => (
-                    <li key={image.id} className="detail-photo">
-                      <AuthImage url={image.url} alt={`Foto ${index + 1} e raportit "${report.title}"`} />
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <PhotoGallery images={report.images} title={report.title} />
             </article>
 
             {report.latitude !== null && report.longitude !== null && (
-              <ReportMap latitude={report.latitude} longitude={report.longitude} title={report.title} />
+              <Reveal><ReportMap latitude={report.latitude} longitude={report.longitude} title={report.title} /></Reveal>
             )}
 
-            <Conversation key={chatVersion} reportId={report.id} />
+            <Reveal><Conversation key={chatVersion} reportId={report.id} /></Reveal>
           </div>
 
           <aside className="detail-side">
@@ -104,7 +103,7 @@ function AdminReportDetailPage() {
               </dl>
             </section>
 
-            <StatusTimeline key={chatVersion} reportId={report.id} />
+            <Reveal><StatusTimeline key={chatVersion} reportId={report.id} /></Reveal>
           </aside>
         </div>
       )}
