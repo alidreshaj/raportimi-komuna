@@ -6,6 +6,7 @@ import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
 import { useToast } from '../context/useToast'
 import './AccountPage.css'
+import PasswordInput from '../components/PasswordInput'
 
 const MIN_PASSWORD = 8
 const MAX_NAME = 100
@@ -145,14 +146,13 @@ function AccountPage() {
 
           <div className="field">
             <label htmlFor="current">Fjalëkalimi aktual</label>
-            <input id="current" type="password" autoComplete="current-password" value={current} onChange={(e) => setCurrent(e.target.value)} />
+            <PasswordInput id="current" autoComplete="current-password" value={current} onChange={(e) => setCurrent(e.target.value)} />
           </div>
 
           <div className="field">
             <label htmlFor="new">Fjalëkalimi i ri</label>
-            <input
+            <PasswordInput
               id="new"
-              type="password"
               autoComplete="new-password"
               placeholder="Të paktën 8 karaktere"
               value={next}
@@ -162,7 +162,7 @@ function AccountPage() {
 
           <div className="field">
             <label htmlFor="confirm">Përsërite fjalëkalimin e ri</label>
-            <input id="confirm" type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+            <PasswordInput id="confirm" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
           </div>
 
           {passwordError && (

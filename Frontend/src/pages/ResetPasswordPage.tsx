@@ -5,6 +5,7 @@ import { resetPassword } from '../api/auth'
 import AuthShell from '../components/AuthShell'
 import LoadingButton from '../components/LoadingButton'
 import { useToast } from '../context/useToast'
+import PasswordInput from '../components/PasswordInput'
 
 const MIN_PASSWORD = 8
 
@@ -68,9 +69,8 @@ function ResetPasswordPage() {
 
         <div className="field">
           <label htmlFor="password">Fjalëkalimi i ri</label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="new-password"
             placeholder="Të paktën 8 karaktere"
             value={password}
@@ -80,9 +80,8 @@ function ResetPasswordPage() {
 
         <div className="field">
           <label htmlFor="confirm">Përsërite fjalëkalimin</label>
-          <input
+          <PasswordInput
             id="confirm"
-            type="password"
             autoComplete="new-password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}

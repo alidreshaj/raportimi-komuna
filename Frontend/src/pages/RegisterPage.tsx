@@ -5,6 +5,7 @@ import { register } from '../api/auth'
 import AuthShell from '../components/AuthShell'
 import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
+import PasswordInput from '../components/PasswordInput'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -96,9 +97,8 @@ function RegisterPage() {
 
         <div className="field">
           <label htmlFor="password">Fjalëkalimi</label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="new-password"
             maxLength={100}
             placeholder="Të paktën 8 karaktere"

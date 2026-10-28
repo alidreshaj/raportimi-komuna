@@ -5,6 +5,7 @@ import AuthShell from '../components/AuthShell'
 import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
 import { homePathFor } from '../utils/roles'
+import PasswordInput from '../components/PasswordInput'
 
 function LoginPage() {
   const { user, login } = useAuth()
@@ -67,9 +68,8 @@ function LoginPage() {
 
         <div className="field">
           <label htmlFor="password">Fjalëkalimi</label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="current-password"
             placeholder="Të paktën 8 karaktere"
             value={password}
