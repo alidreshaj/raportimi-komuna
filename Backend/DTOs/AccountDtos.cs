@@ -14,7 +14,7 @@ public class UpdateProfileDto
 public class ChangePasswordDto
 {
     [Required(ErrorMessage = "Shkruaj fjalëkalimin aktual.")]
-    [MaxLength(100)]
+    [MaxLength(100, ErrorMessage = "Fjalëkalimi aktual nuk mund të ketë më shumë se 100 karaktere.")]
     public string CurrentPassword { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Shkruaj fjalëkalimin e ri.")]
@@ -28,7 +28,7 @@ public class ForgotPasswordDto
 {
     [Required(ErrorMessage = "Shkruaj email-in.")]
     [EmailAddress(ErrorMessage = "Email-i nuk është i vlefshëm.")]
-    [MaxLength(200)]
+    [MaxLength(200, ErrorMessage = "Email-i nuk mund të ketë më shumë se 200 karaktere.")]
     public string Email { get; set; } = string.Empty;
 }
 
@@ -36,7 +36,7 @@ public class ForgotPasswordDto
 public class ResetPasswordDto
 {
     [Required(ErrorMessage = "Mungon kodi i rivendosjes.")]
-    [MaxLength(200)]
+    [MaxLength(200, ErrorMessage = "Kodi nuk mund të ketë më shumë se 200 karaktere.")]
     public string Token { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Shkruaj fjalëkalimin e ri.")]
