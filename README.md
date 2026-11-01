@@ -11,6 +11,9 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 - Paneli i adminit për menaxhimin e raportimeve
 - Statistika për komunën: totali, sipas statusit, sipas kategorisë dhe sipas muajit, me grafikë
 - Pamja: tema e çelët dhe e errët (çelës lart, ruhet te shfletuesi), njoftime të vogla pas veprimeve, skeletone ngarkimi, pult për qytetarin dhe kartë "Kërkon vëmendje" për adminin
+- Njoftime brenda aplikacionit (zilja lart) për ndryshimet e statusit, komentet dhe raportet e reja; faqosje, kërkim dhe radhitje te listat
+- Llogaria ime (ndrysho emrin dhe fjalëkalimin) dhe rivendosja e fjalëkalimit
+- Pamje premium: lëvizje të buta, paleta e komandave për kërkim të shpejtë, galeri fotosh me zmadhim, faqe hyrëse për vizitorët, faqe 404 dhe menyja poshtë ekranit në celular
 - Harta: qytetari zgjedh vendin e problemit në hartë (me klikim ose me vendndodhjen e tij), dhe admini i sheh të gjitha raportet në hartë
 
 ## Teknologjitë
@@ -99,7 +102,8 @@ Kontrollet para commit-it:
 ### Faqet e qytetarit
 | Rruga | Çfarë bën |
 |---|---|
-| `/login` | Hyrja |
+| `/` | Faqja hyrëse për vizitorët (të loguarit shkojnë te faqja e rolit të tyre); çdo adresë e panjohur shfaq faqen 404 |
+| `/login` | Hyrja, me syrin për të shfaqur fjalëkalimin |
 | `/regjistrohu` | Regjistrimi i qytetarit |
 | `/harrova-fjalekalimin`, `/rivendos-fjalekalimin` | "Harrova fjalëkalimin" dhe vendosja e fjalëkalimit të ri (publike) |
 | `/llogaria` | Llogaria ime: ndrysho emrin dhe fjalëkalimin (qytetar dhe admin) |
@@ -199,6 +203,6 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 - Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.
 
 ## Statusi
-✅ I përfunduar. Fazat 1-14: backend-i i plotë, frontend-i i qytetarit, paneli i adminit, historiku i statuseve, statistikat për komunën dhe hartat, i lidhur me API-n dhe i provuar.
+✅ I përfunduar. Fazat 1-20: backend-i i plotë, frontend-i i qytetarit, paneli i adminit, historiku i statuseve, statistikat për komunën, hartat, faqosja dhe kërkimi, njoftimet, llogaria dhe rivendosja e fjalëkalimit, dhe ngritja premium e pamjes, i lidhur me API-n dhe i provuar.
 
 Ide për më vonë: njoftim me email; hartë e komunave të Kosovës e ngjyrosur sipas numrit të raporteve.
