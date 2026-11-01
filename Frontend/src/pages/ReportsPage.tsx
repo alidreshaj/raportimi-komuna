@@ -17,6 +17,7 @@ import { pluralize } from '../utils/format'
 import { toStatusCounts } from '../utils/reportList'
 import type { StatusCounts } from '../utils/reportList'
 import { STATUS_COLORS } from '../utils/statusColors'
+import { usePageTitle } from '../hooks/usePageTitle'
 import './ReportsPage.css'
 
 // Mbi këtë numër raportesh shfaqen çipat e statusit dhe kutia e kërkimit.
@@ -49,6 +50,7 @@ interface Loaded {
 // Faqja e parë e qytetarit: mirëseardhje, numrat e mi dhe lista e raporteve. Raportet vijnë 10 për herë nga serveri
 // (butoni "Shfaq më shumë"), dhe çipat e statusit dhe kërkimi bëhen te serveri.
 function ReportsPage() {
+  usePageTitle('Raportet e mia')
   const { user } = useAuth()
   const firstName = user?.name.trim().split(/\s+/)[0] ?? ''
 

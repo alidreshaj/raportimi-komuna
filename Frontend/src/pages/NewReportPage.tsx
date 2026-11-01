@@ -14,9 +14,11 @@ import type { GeoPoint } from '../types'
 import { useToast } from '../context/useToast'
 import { EMPTY_REPORT_FORM, toReportInput, validateReportForm } from '../utils/reportForm'
 import type { ReportFormState } from '../utils/reportForm'
+import { usePageTitle } from '../hooks/usePageTitle'
 import './NewReportPage.css'
 
 function NewReportPage() {
+  usePageTitle('Raport i ri')
   const navigate = useNavigate()
   const toast = useToast()
   const { categories, error: categoriesError, retry: retryCategories } = useCategories()

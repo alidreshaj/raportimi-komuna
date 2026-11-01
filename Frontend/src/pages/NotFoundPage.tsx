@@ -2,10 +2,12 @@ import { Compass } from 'lucide-react'
 import { Link } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import { homePathFor } from '../utils/roles'
+import { usePageTitle } from '../hooks/usePageTitle'
 import './NotFoundPage.css'
 
 // Adresa nuk ekziston: mesazh i qartë dhe rrugë kthimi.
 function NotFoundPage() {
+  usePageTitle('Faqja nuk u gjet')
   const { user } = useAuth()
 
   return (

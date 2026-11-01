@@ -14,10 +14,12 @@ import { useAuth } from '../context/useAuth'
 import { useToast } from '../context/useToast'
 import { useReport } from '../hooks/useReport'
 import { STATUS_LABELS, formatDate } from '../utils/format'
+import { usePageTitle } from '../hooks/usePageTitle'
 import './ReportDetailPage.css'
 
 // Detajet e një raporti: përshkrimi, fotot, informacioni anash, veprimet, dhe biseda me komunën.
 function ReportDetailPage() {
+  usePageTitle('Detajet e raportit')
   const { user } = useAuth()
   const navigate = useNavigate()
   const toast = useToast()

@@ -6,8 +6,10 @@ import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
 import { homePathFor } from '../utils/roles'
 import PasswordInput from '../components/PasswordInput'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 function LoginPage() {
+  usePageTitle('Hyrja')
   const { user, login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()

@@ -7,10 +7,12 @@ import AuthShell from '../components/AuthShell'
 import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
 import { homePathFor } from '../utils/roles'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 // "Harrova fjalëkalimin": shkruan email-in dhe merr një lidhje për ta vendosur të riun. Përgjigjja është gjithmonë e njëjtë,
 // edhe kur email-i nuk ekziston, që askush të mos zbulojë cilat email-e janë të regjistruara.
 function ForgotPasswordPage() {
+  usePageTitle('Harrova fjalëkalimin')
   const { user } = useAuth()
 
   const [email, setEmail] = useState('')

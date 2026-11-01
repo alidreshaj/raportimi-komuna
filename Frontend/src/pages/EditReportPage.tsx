@@ -12,6 +12,7 @@ import type { GeoPoint, Report } from '../types'
 import { useToast } from '../context/useToast'
 import { formFromReport, toReportInput, validateReportForm } from '../utils/reportForm'
 import type { ReportFormState } from '../utils/reportForm'
+import { usePageTitle } from '../hooks/usePageTitle'
 // Përdor të njëjtat stile si forma e krijimit (.new-report, .report-form, .form-actions).
 import './NewReportPage.css'
 
@@ -90,6 +91,7 @@ function EditReportForm({ report }: { report: Report }) {
 }
 
 function EditReportPage() {
+  usePageTitle('Ndrysho raportin')
   const { user } = useAuth()
   const { id } = useParams()
   const { report, error } = useReport(Number(id))

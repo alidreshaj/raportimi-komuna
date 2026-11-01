@@ -7,12 +7,14 @@ import { useAuth } from '../context/useAuth'
 import { useToast } from '../context/useToast'
 import './AccountPage.css'
 import PasswordInput from '../components/PasswordInput'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const MIN_PASSWORD = 8
 const MAX_NAME = 100
 
 // "Llogaria ime": ndrysho emrin dhe fjalëkalimin. Email-i dhe roli shihen por nuk ndryshohen.
 function AccountPage() {
+  usePageTitle('Llogaria ime')
   const { user, updateUser } = useAuth()
   const toast = useToast()
 

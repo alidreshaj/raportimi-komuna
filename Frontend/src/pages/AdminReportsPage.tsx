@@ -21,6 +21,7 @@ import type { ReportPage, ReportPin, ReportStatus } from '../types'
 import { pluralize } from '../utils/format'
 import { SORT_OPTIONS, toStatusCounts } from '../utils/reportList'
 import type { SortKey } from '../utils/reportList'
+import { usePageTitle } from '../hooks/usePageTitle'
 import './ReportsPage.css'
 import './AdminReportsPage.css'
 
@@ -35,6 +36,7 @@ const PAGE_SIZE = 20
 // kështu lista mbetet e shpejtë edhe me shumë raporte: këtu kërkojmë vetëm faqen që duhet. Të gjitha zgjedhjet ruhen te adresa
 // (?status=New&q=...&page=2), prandaj kur kthehesh nga detajet gjen listën saktësisht ashtu siç e ke lënë.
 function AdminReportsPage() {
+  usePageTitle('Të gjitha raportet')
   const { categories } = useCategories()
   const [params, setParams] = useSearchParams()
 

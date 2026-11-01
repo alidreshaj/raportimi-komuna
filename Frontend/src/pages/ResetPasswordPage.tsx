@@ -6,11 +6,13 @@ import AuthShell from '../components/AuthShell'
 import LoadingButton from '../components/LoadingButton'
 import { useToast } from '../context/useToast'
 import PasswordInput from '../components/PasswordInput'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const MIN_PASSWORD = 8
 
 // Faqja ku të çon lidhja e rivendosjes (/rivendos-fjalekalimin?token=...): vendos fjalëkalimin e ri dhe të kthen te hyrja.
 function ResetPasswordPage() {
+  usePageTitle('Fjalëkalimi i ri')
   const [params] = useSearchParams()
   const token = params.get('token') ?? ''
   const navigate = useNavigate()

@@ -6,6 +6,7 @@ import AuthShell from '../components/AuthShell'
 import LoadingButton from '../components/LoadingButton'
 import { useAuth } from '../context/useAuth'
 import PasswordInput from '../components/PasswordInput'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -18,6 +19,7 @@ function validate(name: string, email: string, password: string): string | null 
 }
 
 function RegisterPage() {
+  usePageTitle('Regjistrimi')
   const { user, login } = useAuth()
   const navigate = useNavigate()
 

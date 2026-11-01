@@ -12,10 +12,12 @@ import Reveal from '../components/Reveal'
 import type { Stats, ReportStatus } from '../types'
 import { MONTHS, MONTHS_SHORT, STATUS_LABELS, percentOf } from '../utils/format'
 import { STATUS_COLORS } from '../utils/statusColors'
+import { usePageTitle } from '../hooks/usePageTitle'
 import './AdminStatsPage.css'
 
 // Statistikat për komunën. Backend-i i numëron; këtu vetëm shfaqen. Katër gjendje: po ngarkohet, gabim, bosh, me të dhëna.
 function AdminStatsPage() {
+  usePageTitle('Statistikat')
   const [stats, setStats] = useState<Stats | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)

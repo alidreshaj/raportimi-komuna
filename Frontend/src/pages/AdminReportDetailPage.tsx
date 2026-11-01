@@ -13,11 +13,13 @@ import StatusTimeline from '../components/StatusTimeline'
 import { useReport } from '../hooks/useReport'
 import type { Report } from '../types'
 import { STATUS_LABELS, formatDate } from '../utils/format'
+import { usePageTitle } from '../hooks/usePageTitle'
 import './ReportDetailPage.css'
 
 // Detajet e një raporti për adminin: i njëjti dizajn si te qytetari, por pa Ndrysho/Fshi,
 // me emrin e raportuesit dhe me panelin për ndryshimin e statusit.
 function AdminReportDetailPage() {
+  usePageTitle('Detajet e raportit')
   const { id } = useParams()
   const { report: loaded, error } = useReport(Number(id))
 
