@@ -3,6 +3,7 @@ using Backend.DTOs;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Backend.Controllers;
 
@@ -19,6 +20,7 @@ public class AuthController : ControllerBase
 
     // POST /api/auth/register: regjistrim i qytetarit.
     [HttpPost("register")]
+    [EnableRateLimiting("auth")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Register(RegisterDto dto)
@@ -35,6 +37,7 @@ public class AuthController : ControllerBase
 
     // POST /api/auth/login: hyrje në sistem, kthen JWT token.
     [HttpPost("login")]
+    [EnableRateLimiting("auth")]
     [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login(LoginDto dto)
@@ -81,6 +84,7 @@ public class AuthController : ControllerBase
 
     // POST /api/auth/forgot-password: dërgon lidhjen e rivendosjes. Gjithmonë kthen 204, edhe kur email-i nuk ekziston.
     [HttpPost("forgot-password")]
+    [EnableRateLimiting("auth")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
     {
@@ -90,6 +94,7 @@ public class AuthController : ControllerBase
 
     // POST /api/auth/reset-password: vendos fjalëkalimin e ri me kodin nga lidhja.
     [HttpPost("reset-password")]
+    [EnableRateLimiting("auth")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)

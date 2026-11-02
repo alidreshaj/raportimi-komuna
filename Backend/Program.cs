@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Backend.Data;
 using Backend.Services;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -77,6 +78,21 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod());
 });
 
+// Kufizimi i kërkesave: hyrja, regjistrimi dhe rivendosja lejojnë 10 kërkesa në minutë për çdo adresë IP.
+// Pa këtë, dikush mund të provonte mijëra fjalëkalime radhazi. Kur kalohet, API kthen 429.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+        httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        }));
+});
+
 var app = builder.Build();
 
 // Të dhënat fillestare në nisje: admin-i dhe kategoritë (vetëm nëse mungojnë).
@@ -94,6 +110,7 @@ app.UseHttpsRedirection();
 
 // CORS vjen para autentikimit: kërkesa "pyetëse" e shfletuesit (OPTIONS) nuk ka token.
 app.UseCors("Frontend");
+app.UseRateLimiter();
 
 // Rendi ka rëndësi: fillimisht "kush je?", pastaj "çfarë të lejohet?".
 app.UseAuthentication();
