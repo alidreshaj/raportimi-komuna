@@ -9,6 +9,7 @@ import { formatDateTime } from '../utils/format'
 import './Conversation.css'
 
 const MAX_LENGTH = 1000 // njësoj si te backend-i (CreateCommentDto)
+const REFRESH_MS = 30_000 // sa shpesh rifreskohet biseda vetë
 
 // Biseda e një raporti: mesazhet mes qytetarit dhe komunës, dhe forma për të shkruar një mesazh të ri.
 // Merr vetëm numrin e raportit dhe e ngarkon vetë bisedën, kështu e ripërdorim edhe te paneli i adminit.
@@ -35,8 +36,19 @@ function Conversation({ reportId }: { reportId: number }) {
         if (!cancelled) setLoadError(e.message)
       })
 
+    // Çdo 30 sekonda, vetëm kur faqja është e dukshme, merr mesazhet e reja në heshtje (pa shfaqur gabim nëse dështon).
+    const timer = setInterval(() => {
+      if (document.visibilityState !== 'visible') return
+      getComments(reportId)
+        .then((list) => {
+          if (!cancelled) setComments(list)
+        })
+        .catch(() => {})
+    }, REFRESH_MS)
+
     return () => {
       cancelled = true
+      clearInterval(timer)
     }
   }, [reportId, attempt])
 
