@@ -52,6 +52,8 @@ function messageFor(status: number, data: unknown): string {
       return 'Nuk ke të drejtë për këtë veprim.'
     case 404:
       return 'Nuk u gjet.'
+    case 429:
+      return 'Shumë përpjekje. Prit një minutë dhe provo përsëri.'
     default:
       return 'Ndodhi një gabim. Provo përsëri.'
   }

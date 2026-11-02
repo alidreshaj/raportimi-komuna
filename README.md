@@ -189,6 +189,7 @@ Krijohen vetë, në të njëjtën ruajtje me veprimin (ose ruhen të dyja, ose a
 - **401**: nuk je i identifikuar (pa token, token i prishur ose i skaduar).
 - **403**: je i identifikuar, por roli nuk e lejon veprimin.
 - **404**: raporti (ose fotoja) nuk ekziston ose nuk është i yti.
+- **429**: shumë kërkesa: hyrja, regjistrimi dhe rivendosja e fjalëkalimit lejojnë 10 kërkesa në minutë për çdo adresë IP (mbrojtje nga provat e shumta të fjalëkalimit).
 - **409**: veprimi nuk lejohet për gjendjen aktuale të raportit (p.sh. ndryshim kur nuk është `New`).
 - **400**: të dhëna të pavlefshme (fushë e munguar, file i pavlefshëm, kufi i kaluar).
 
