@@ -99,11 +99,31 @@ var app = builder.Build();
 await DbSeeder.SeedAdminAsync(app.Services);
 await DbSeeder.SeedCategoriesAsync(app.Services);
 
+// Header-a bazë të sigurisë për çdo përgjigje: shfletuesi nuk "hamendëson" llojin e file-it (rëndësi për fotot),
+// faqja nuk futet brenda iframe të tjera, dhe adresa nuk dërgohet te faqet e tjera.
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["Referrer-Policy"] = "no-referrer";
+    await next();
+});
+
 // Pipeline i kërkesave: çdo kërkesë kalon nëpër këto hapa sipas radhës.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    // Gabim i papritur: kthen JSON me mesazh në shqip (frontend-i e shfaq si të gjitha gabimet e tjera)
+    // në vend të një përgjigjeje boshe, dhe nuk zbulon detaje të brendshme. Gabimi shkruhet te log-u.
+    app.UseExceptionHandler(errorApp => errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        await context.Response.WriteAsJsonAsync(new { message = "Ndodhi një gabim te serveri. Provo përsëri." });
+    }));
 }
 
 app.UseHttpsRedirection();
