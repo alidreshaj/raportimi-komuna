@@ -29,6 +29,12 @@ builder.Services.AddScoped<ImageService>();
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Mungon Jwt:Key. Vendose me: dotnet user-secrets set \"Jwt:Key\" \"...\"");
 
+// HMAC-SHA256 kërkon çelës të paktën 32 bajt. Pa këtë kontroll aplikacioni niset, por dështon kur dikush hyn për herë të parë.
+if (Encoding.UTF8.GetByteCount(jwtKey) < 32)
+{
+    throw new InvalidOperationException("Jwt:Key është shumë i shkurtër: duhet të ketë të paktën 32 karaktere.");
+}
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
