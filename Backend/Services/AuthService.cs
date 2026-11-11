@@ -152,6 +152,12 @@ public class AuthService
         var old = await _db.PasswordResetTokens.Where(t => t.UserId == user.Id && t.UsedAt == null).ToListAsync();
         _db.PasswordResetTokens.RemoveRange(old);
 
+        // Pastrim: kodet e përdorura ose të skaduara prej më shumë se një dite nuk i duhen më askujt, prandaj tabela nuk rritet pa fund.
+        var cutoff = DateTime.UtcNow.AddDays(-1);
+        await _db.PasswordResetTokens
+            .Where(t => t.ExpiresAt < cutoff)
+            .ExecuteDeleteAsync();
+
         var token = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
         _db.PasswordResetTokens.Add(new PasswordResetToken
         {
