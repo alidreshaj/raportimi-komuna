@@ -621,3 +621,10 @@ p a:not([class]):hover {
 main:focus {
   outline: none;
 }
+
+/* Teksti që shfaqet çast kur po ngarkohet një faqe e re (code splitting). */
+.page-loading {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+}
