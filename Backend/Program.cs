@@ -24,6 +24,7 @@ builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IResetLinkSender, LogResetLinkSender>();
 builder.Services.AddScoped<ImageService>();
+builder.Services.AddHostedService<CleanupService>();
 
 // Autentikimi: si verifikohet tokeni që vjen me çdo kërkesë.
 var jwtKey = builder.Configuration["Jwt:Key"]
