@@ -5,6 +5,7 @@ import { useAuth } from '../context/useAuth'
 import BackToTop from './BackToTop'
 import CommandPalette from './CommandPalette'
 import NotificationBell from './NotificationBell'
+import OfflineBanner from './OfflineBanner'
 import UserMenu from './UserMenu'
 import { homePathFor } from '../utils/roles'
 import './AppLayout.css'
@@ -26,6 +27,7 @@ function AppLayout() {
 
   return (
     <>
+      <OfflineBanner />
       <header className="app-header" data-scrolled={scrolled}>
         <div className="app-header-inner">
           <NavLink viewTransition to={homePathFor(user?.role ?? 'Citizen')} className="app-brand">
