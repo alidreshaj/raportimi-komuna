@@ -223,6 +223,8 @@ namespace Backend.Migrations
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("Status", "CreatedAt");
+
                     b.ToTable("Reports");
                 });
 

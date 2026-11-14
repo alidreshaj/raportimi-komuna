@@ -48,6 +48,9 @@ public class AppDbContext : DbContext
             e.Property(r => r.Location).IsRequired().HasMaxLength(300);
             e.Property(r => r.Status).HasConversion<string>().HasMaxLength(20);
 
+            // Lista e adminit filtron sipas statusit dhe radhitet sipas datës; indeksi e shmang leximin e gjithë tabelës.
+            e.HasIndex(r => new { r.Status, r.CreatedAt });
+
             // Nuk lejohet të fshihet përdoruesi ose kategoria nëse ka raporte.
             e.HasOne(r => r.User)
                 .WithMany(u => u.Reports)
