@@ -98,6 +98,7 @@ Kontrollet para commit-it:
 
     npm run build
     npm run lint
+    npm test
 
 ### Faqet e qytetarit
 | Rruga | Çfarë bën |
@@ -202,6 +203,13 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 - `Backend/uploads/` është te `.gitignore`: fotot e qytetarëve nuk shkojnë kurrë në Git.
 - Fotot shihen vetëm përmes endpoint-it të mbrojtur (kërkon token). Nuk mund të hapen direkt nga shfletuesi pa token.
 - Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.
+
+## Testet
+Backend (xUnit, databazë në memorie, pa PostgreSQL):
+
+    dotnet test Backend.Tests
+
+Frontend (Vitest): `npm test` te folderi `Frontend`. GitHub Actions (`.github/workflows/ci.yml`) i ekzekuton të dyja me çdo push.
 
 ## Statusi
 ✅ I përfunduar. Fazat 1-20: backend-i i plotë, frontend-i i qytetarit, paneli i adminit, historiku i statuseve, statistikat për komunën, hartat, faqosja dhe kërkimi, njoftimet, llogaria dhe rivendosja e fjalëkalimit, dhe ngritja premium e pamjes, i lidhur me API-n dhe i provuar.
