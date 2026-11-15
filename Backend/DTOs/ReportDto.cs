@@ -22,6 +22,9 @@ public class ReportDto
     // Sa mesazhe ka biseda e raportit (për kartat e listës, që të mos duhet të hapet raporti për ta parë).
     public int CommentCount { get; set; }
 
+    // Sa qytetarë e mbështesin raportin ("edhe unë e kam këtë problem").
+    public int VoteCount { get; set; }
+
     // Fotot e raportit (nga më e vjetra), me adresën ku shihet secila.
     public List<ImageDto> Images { get; set; } = new();
 }

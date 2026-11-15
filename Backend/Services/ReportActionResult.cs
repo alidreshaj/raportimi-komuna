@@ -9,5 +9,7 @@ public enum ReportActionResult
     NotEditable,     // statusi nuk është New → 409
     InvalidCategory, // kategoria e re nuk ekziston → 400
     InvalidTransition, // kalimi i statusit nuk lejohet (p.sh. nga Resolved) → 409
-    ReasonRequired    // Rejected kërkon arsye, por mungon → 400
+    ReasonRequired,   // Rejected kërkon arsye, por mungon → 400
+    OwnReport,        // qytetari nuk mund të votojë raportin e vet → 409
+    VotingClosed      // raporti është zgjidhur (Resolved), nuk pranon më vota → 409
 }

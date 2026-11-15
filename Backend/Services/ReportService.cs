@@ -39,6 +39,7 @@ public class ReportService
         CategoryName = r.Category.Name,
         ReporterName = r.User.Name,
         CommentCount = r.Comments.Count(),
+        VoteCount = r.Votes.Count(),
         Images = r.Images
             .OrderBy(i => i.UploadedAt)
             .ThenBy(i => i.Id)
@@ -102,6 +103,51 @@ public class ReportService
     {
         return BuildPageAsync(_db.Reports.AsNoTracking(), q, includeReporter: true);
     }
+
+    // Raportet e komunës ashtu siç i sheh një qytetar (për "edhe unë e kam këtë problem"): të gjitha përveç të refuzuarave,
+    // me përshkrim të shkurtuar dhe pa emrin e raportuesit. Kërkimi ka të njëjtat rregulla, por pa emrin e raportuesit.
+    public async Task<CommunityPageDto> GetCommunityAsync(int userId, ReportQueryDto q)
+    {
+        var filtered = ApplyFilters(_db.Reports.AsNoTracking().Where(r => r.Status != ReportStatus.Rejected), q, includeReporter: false);
+        if (q.Status.HasValue)
+        {
+            filtered = filtered.Where(r => r.Status == q.Status.Value);
+        }
+
+        var totalCount = await filtered.CountAsync();
+
+        var items = await ApplySort(filtered, q.Sort)
+            .Skip((q.Page - 1) * q.PageSize)
+            .Take(q.PageSize)
+            .Select(r => new CommunityReportDto
+            {
+                Id = r.Id,
+                Title = r.Title,
+                Description = r.Description.Length > CommunityDescriptionLength
+                    ? r.Description.Substring(0, CommunityDescriptionLength)
+                    : r.Description,
+                Location = r.Location,
+                Status = r.Status.ToString(),
+                CreatedAt = r.CreatedAt,
+                CategoryName = r.Category.Name,
+                VoteCount = r.Votes.Count(),
+                HasVoted = r.Votes.Any(v => v.UserId == userId),
+                IsMine = r.UserId == userId
+            })
+            .ToListAsync();
+
+        return new CommunityPageDto
+        {
+            Items = items,
+            Page = q.Page,
+            PageSize = q.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)q.PageSize)
+        };
+    }
+
+    // Sa shkronja të përshkrimit shihen te lista e komunës.
+    private const int CommunityDescriptionLength = 200;
 
     // Pikat për hartën e adminit: vetëm raportet me koordinata, me të njëjtat filtra, pa faqosje (harta i do të gjitha).
     public async Task<List<ReportPinDto>> GetPinsAsync(ReportQueryDto q)
@@ -253,6 +299,7 @@ public class ReportService
         return sort switch
         {
             "oldest" => query.OrderBy(r => r.CreatedAt).ThenBy(r => r.Id),
+            "votes" => query.OrderByDescending(r => r.Votes.Count()).ThenByDescending(r => r.CreatedAt).ThenByDescending(r => r.Id),
             "title" => query.OrderBy(r => r.Title).ThenBy(r => r.Id),
             "status" => query
                 .OrderBy(r => r.Status == ReportStatus.New ? 0 : r.Status == ReportStatus.InProgress ? 1 : r.Status == ReportStatus.Resolved ? 2 : 3)

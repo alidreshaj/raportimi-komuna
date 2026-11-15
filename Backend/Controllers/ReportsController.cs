@@ -13,10 +13,12 @@ namespace Backend.Controllers;
 public class ReportsController : ControllerBase
 {
     private readonly ReportService _reportService;
+    private readonly VoteService _voteService;
 
-    public ReportsController(ReportService reportService)
+    public ReportsController(ReportService reportService, VoteService voteService)
     {
         _reportService = reportService;
+        _voteService = voteService;
     }
 
     // POST /api/reports: qytetari krijon raport.
@@ -74,6 +76,55 @@ public class ReportsController : ControllerBase
     public async Task<IActionResult> GetMy([FromQuery] ReportQueryDto query)
     {
         return Ok(await _reportService.GetMyAsync(User.GetUserId(), query));
+    }
+
+    // GET /api/reports/community: raportet e komunës për qytetarët (pa të dhëna personale), me numrin e votave.
+    // Shembull: /api/reports/community?sort=votes&search=gropa&page=1&pageSize=10
+    [HttpGet("community")]
+    [Authorize(Roles = "Citizen")]
+    [ProducesResponseType(typeof(CommunityPageDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetCommunity([FromQuery] ReportQueryDto query)
+    {
+        if (query.From.HasValue && query.To.HasValue && query.From > query.To)
+        {
+            return BadRequest(new { message = "Data 'from' nuk mund të jetë pas datës 'to'." });
+        }
+
+        return Ok(await _reportService.GetCommunityAsync(User.GetUserId(), query));
+    }
+
+    // PUT /api/reports/{id}/vote: "edhe unë e kam këtë problem". Idempotent: përsëritja nuk e numëron dy herë.
+    [HttpPut("{id:int}/vote")]
+    [Authorize(Roles = "Citizen")]
+    [ProducesResponseType(typeof(VoteResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Vote(int id)
+    {
+        return VoteResponse(await _voteService.AddAsync(User.GetUserId(), id));
+    }
+
+    // DELETE /api/reports/{id}/vote: heq votën time.
+    [HttpDelete("{id:int}/vote")]
+    [Authorize(Roles = "Citizen")]
+    [ProducesResponseType(typeof(VoteResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Unvote(int id)
+    {
+        return VoteResponse(await _voteService.RemoveAsync(User.GetUserId(), id));
+    }
+
+    private IActionResult VoteResponse((ReportActionResult Result, VoteResultDto? Vote) outcome)
+    {
+        return outcome.Result switch
+        {
+            ReportActionResult.Success => Ok(outcome.Vote),
+            ReportActionResult.NotFound => NotFound(),
+            ReportActionResult.OwnReport => Conflict(new { message = "Nuk mund ta mbështesësh raportin tënd." }),
+            _ => Conflict(new { message = "Ky problem është zgjidhur, nuk pranon më mbështetje." })
+        };
     }
 
     // PUT /api/reports/{id}: qytetari ndryshon raportin e vet (vetëm kur është New).

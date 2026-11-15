@@ -15,8 +15,8 @@ public class ReportQueryDto
     [MaxLength(100, ErrorMessage = "Kërkimi nuk mund të ketë më shumë se 100 karaktere.")]
     public string? Search { get; set; }
 
-    // "newest" (paracaktuar), "oldest", "title" ose "status".
-    [RegularExpression("^(newest|oldest|title|status)$", ErrorMessage = "Radhitja duhet të jetë newest, oldest, title ose status.")]
+    // "newest" (paracaktuar), "oldest", "title", "status" ose "votes" (më të mbështeturat).
+    [RegularExpression("^(newest|oldest|title|status|votes)$", ErrorMessage = "Radhitja duhet të jetë newest, oldest, title, status ose votes.")]
     public string Sort { get; set; } = "newest";
 
     [Range(1, 1_000_000, ErrorMessage = "Faqja duhet të jetë 1 ose më shumë.")]

@@ -20,6 +20,7 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<VoteService>();
 builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IResetLinkSender, LogResetLinkSender>();
