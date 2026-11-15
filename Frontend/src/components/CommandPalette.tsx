@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
-import { BarChart3, ClipboardList, FileText, List, LogOut, Moon, PlusCircle, Search, Sun, UserRound } from 'lucide-react'
+import { BarChart3, ClipboardList, FileText, List, LogOut, Moon, PlusCircle, Search, Sun, UserRound, Users } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { getAllReports, getMyReports } from '../api/reports'
@@ -81,6 +81,7 @@ function CommandPalette() {
         : [
             { id: 'mine', label: 'Raportet e mia', icon: ClipboardList, run: go('/raportet') },
             { id: 'new', label: 'Raporto një problem', icon: PlusCircle, run: go('/raportet/i-ri') },
+            { id: 'community', label: 'Problemet e komunës', icon: Users, run: go('/komuna') },
           ]
 
     list.push(

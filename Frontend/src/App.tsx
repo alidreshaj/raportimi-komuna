@@ -13,6 +13,7 @@ const AdminReportDetailPage = lazy(
 );
 const AdminReportsPage = lazy(() => import("./pages/AdminReportsPage"));
 const AdminStatsPage = lazy(() => import("./pages/AdminStatsPage"));
+const CommunityPage = lazy(() => import("./pages/CommunityPage"));
 const EditReportPage = lazy(() => import("./pages/EditReportPage"));
 const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
 const LandingPage = lazy(() => import("./pages/LandingPage"));
@@ -65,6 +66,7 @@ function App() {
           <Route element={<ProtectedRoute role="Citizen" />}>
             <Route element={<AppLayout />}>
               <Route path="/raportet" element={<ReportsPage />} />
+              <Route path="/komuna" element={<CommunityPage />} />
               {/* /raportet/i-ri fiton mbi /raportet/:id sepse është më specifike */}
               <Route path="/raportet/i-ri" element={<NewReportPage />} />
               <Route path="/raportet/:id" element={<ReportDetailPage />} />

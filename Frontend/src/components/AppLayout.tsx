@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BarChart3, ClipboardList, Landmark, List, PlusCircle } from 'lucide-react'
+import { BarChart3, ClipboardList, Landmark, List, PlusCircle, Users } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import BackToTop from './BackToTop'
@@ -62,6 +62,10 @@ function AppLayout() {
                 <NavLink viewTransition to="/raportet/i-ri" className={({ isActive }) => (isActive ? 'active' : undefined)}>
                   <PlusCircle size={17} aria-hidden="true" />
                   Raporto një problem
+                </NavLink>
+                <NavLink viewTransition to="/komuna" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+                  <Users size={17} aria-hidden="true" />
+                  Problemet e komunës
                 </NavLink>
               </>
             )}

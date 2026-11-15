@@ -103,6 +103,9 @@ function NewReportPage() {
         <p className="page-subtitle">
           Përshkruaj çfarë po shikon. Sa më i qartë të jetë, aq më shpejt shqyrtohet.
         </p>
+        <p className="page-subtitle">
+          Mos e dyfisho: shiko më parë a e ka raportuar dikush në <Link to="/komuna">problemet e komunës</Link> dhe shtyp &quot;Edhe unë&quot;.
+        </p>
       </div>
 
       <form className="report-form" onSubmit={handleSubmit} noValidate>

@@ -1,4 +1,4 @@
-import type { Report, ReportInput, ReportPage, ReportPin, ReportStatus, Stats, StatusHistoryItem } from '../types'
+import type { CommunityPage, Report, ReportInput, ReportPage, ReportPin, ReportStatus, Stats, StatusHistoryItem, VoteResult } from '../types'
 import type { SortKey } from '../utils/reportList'
 import { apiFetch } from './client'
 
@@ -77,4 +77,19 @@ export function getStatusHistory(reportId: number): Promise<StatusHistoryItem[]>
 // Statistikat për komunën (vetëm Admin): totali, sipas statusit, sipas kategorisë dhe sipas muajit.
 export function getStats(): Promise<Stats> {
   return apiFetch<Stats>('/api/reports/stats')
+}
+
+// Raportet e komunës për qytetarët (pa të dhëna personale), me numrin e votave. Kërkimi dhe faqosja bëhen te serveri.
+export function getCommunityReports(query: ReportListQuery = {}): Promise<CommunityPage> {
+  return apiFetch<CommunityPage>(`/api/reports/community${toQueryString(query)}`)
+}
+
+// "Edhe unë e kam këtë problem": shton votën time. Idempotent. 409 nëse është raporti im ose problemi u zgjidh.
+export function voteReport(id: number): Promise<VoteResult> {
+  return apiFetch<VoteResult>(`/api/reports/${id}/vote`, { method: 'PUT' })
+}
+
+// Heq votën time.
+export function unvoteReport(id: number): Promise<VoteResult> {
+  return apiFetch<VoteResult>(`/api/reports/${id}/vote`, { method: 'DELETE' })
 }

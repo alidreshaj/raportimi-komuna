@@ -61,7 +61,38 @@ export interface Report {
   categoryName: string
   reporterName: string
   commentCount: number
+  // Sa qytetarë e mbështesin raportin ("edhe unë e kam këtë problem")
+  voteCount: number
   images: ImageInfo[]
+}
+
+// Raporti ashtu siç e sheh një qytetar tjetër te faqja e komunës: pa raportuesin dhe pa foto, me përshkrim të shkurtuar.
+export interface CommunityReport {
+  id: number
+  title: string
+  description: string
+  location: string
+  status: ReportStatus
+  createdAt: string
+  categoryName: string
+  voteCount: number
+  // A e kam mbështetur unë; A është raporti im
+  hasVoted: boolean
+  isMine: boolean
+}
+
+export interface CommunityPage {
+  items: CommunityReport[]
+  page: number
+  pageSize: number
+  totalCount: number
+  totalPages: number
+}
+
+// Përgjigja e votimit: numri i ri dhe gjendja ime.
+export interface VoteResult {
+  voteCount: number
+  hasVoted: boolean
 }
 
 export interface CommentItem {
