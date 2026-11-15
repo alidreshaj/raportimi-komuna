@@ -13,7 +13,7 @@ import StatusTimeline from '../components/StatusTimeline'
 import { useAuth } from '../context/useAuth'
 import { useToast } from '../context/useToast'
 import { useReport } from '../hooks/useReport'
-import { STATUS_LABELS, formatDate } from '../utils/format'
+import { STATUS_LABELS, formatDate, pluralize } from '../utils/format'
 import { usePageTitle } from '../hooks/usePageTitle'
 import './ReportDetailPage.css'
 
@@ -102,6 +102,10 @@ function ReportDetailPage() {
                 <div>
                   <dt>Kategoria</dt>
                   <dd>{report.categoryName}</dd>
+                </div>
+                <div>
+                  <dt>Mbështetje</dt>
+                  <dd>{pluralize(report.voteCount, 'qytetar', 'qytetarë')}</dd>
                 </div>
                 <div>
                   <dt>Dërguar më</dt>

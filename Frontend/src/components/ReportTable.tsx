@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { MessageSquare } from 'lucide-react'
+import { MessageSquare, ThumbsUp } from 'lucide-react'
 import { Link, useNavigate } from 'react-router'
 import type { Report } from '../types'
 import { formatDate } from '../utils/format'
@@ -32,6 +32,9 @@ function ReportTable({ reports, basePath, enter = false }: ReportTableProps) {
             </th>
             <th scope="col" className="hide-sm">
               Raportuar nga
+            </th>
+            <th scope="col" className="report-table-num">
+              Mbështetje
             </th>
             <th scope="col" className="report-table-num">
               Mesazhe
@@ -68,6 +71,12 @@ function ReportTable({ reports, basePath, enter = false }: ReportTableProps) {
                 </span>
               </td>
               <td className="hide-sm">{report.reporterName}</td>
+              <td className="report-table-num">
+                <span className="report-row-messages" title="Qytetarë që e mbështesin">
+                  <ThumbsUp size={14} aria-hidden="true" />
+                  {report.voteCount}
+                </span>
+              </td>
               <td className="report-table-num">
                 <span className="report-row-messages">
                   <MessageSquare size={14} aria-hidden="true" />

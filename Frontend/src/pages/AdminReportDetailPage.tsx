@@ -12,7 +12,7 @@ import StatusPanel from '../components/StatusPanel'
 import StatusTimeline from '../components/StatusTimeline'
 import { useReport } from '../hooks/useReport'
 import type { Report } from '../types'
-import { STATUS_LABELS, formatDate } from '../utils/format'
+import { STATUS_LABELS, formatDate, pluralize } from '../utils/format'
 import { usePageTitle } from '../hooks/usePageTitle'
 import './ReportDetailPage.css'
 
@@ -93,6 +93,10 @@ function AdminReportDetailPage() {
                 <div>
                   <dt>Kategoria</dt>
                   <dd>{report.categoryName}</dd>
+                </div>
+                <div>
+                  <dt>Mbështetje</dt>
+                  <dd>{pluralize(report.voteCount, 'qytetar', 'qytetarë')}</dd>
                 </div>
                 <div>
                   <dt>Dërguar më</dt>

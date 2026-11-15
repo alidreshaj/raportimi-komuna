@@ -1,12 +1,13 @@
 import type { ReportStatus, StatusCount } from '../types'
 
-export type SortKey = 'newest' | 'oldest' | 'title' | 'status'
+export type SortKey = 'newest' | 'oldest' | 'title' | 'status' | 'votes'
 
 export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'newest', label: 'Më të rejat' },
   { value: 'oldest', label: 'Më të vjetrat' },
   { value: 'title', label: 'Titulli A-Z' },
   { value: 'status', label: 'Statusi' },
+  { value: 'votes', label: 'Më të mbështeturat' },
 ]
 
 export type StatusCounts = Record<ReportStatus | 'all', number>

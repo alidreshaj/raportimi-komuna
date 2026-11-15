@@ -8,6 +8,7 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 - Krijimi i raportimeve me kategori, lokacion, foto dhe pikë në hartë
 - Ndjekja e statusit: New → InProgress → Resolved / Rejected, me historik të ndryshimeve (kush e ndryshoi dhe kur)
 - Komente mes komunës dhe qytetarit
+- Mbështetja e problemeve ("Edhe unë e kam këtë problem"): qytetarët shohin problemet e të tjerëve te faqja "Problemet e komunës" (pa emrin e raportuesit dhe pa foto), i mbështesin, dhe admini i radhit sipas mbështetjes
 - Paneli i adminit për menaxhimin e raportimeve
 - Statistika për komunën: totali, sipas statusit, sipas kategorisë dhe sipas muajit, me grafikë
 - Pamja: tema e çelët dhe e errët (çelës lart, ruhet te shfletuesi), njoftime të vogla pas veprimeve, skeletone ngarkimi, pult për qytetarin dhe kartë "Kërkon vëmendje" për adminin
@@ -152,6 +153,9 @@ Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat 
 | GET | `/api/reports/{id}` | I zoti ose Admin (të tjerët marrin 404) |
 | GET | `/api/reports` | vetëm Admin (një faqe). Parametra: `status`, `categoryId`, `from`, `to`, `search`, `sort`, `page`, `pageSize` (shih më poshtë) |
 | GET | `/api/reports/map` | vetëm Admin (pikat për hartën: vetëm raportet me koordinata, me të njëjtat filtra, pa faqosje, deri në 5000) |
+| GET | `/api/reports/community` | Qytetari (problemet e komunës pa të dhëna personale, pa të refuzuarat; përshkrimi shkurtohet në 200 shkronja; `sort=votes` ose `newest`) |
+| PUT | `/api/reports/{id}/vote` | Qytetari ("edhe unë e kam këtë problem"; idempotent; 409 për raportin e vet ose të zgjidhur; 404 për të refuzuarit) |
+| DELETE | `/api/reports/{id}/vote` | Qytetari (heq votën; lejohet edhe kur raporti u zgjidh) |
 | PUT | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | DELETE | `/api/reports/{id}` | Qytetari, raportin e vet, vetëm kur është `New` |
 | PATCH | `/api/reports/{id}/status` | vetëm Admin (New → InProgress → Resolved, ose New → Rejected). Fusha `reason` është e detyrueshme për `Rejected`, opsionale për të tjerat, dhe ruhet si koment |

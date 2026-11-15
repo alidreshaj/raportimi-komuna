@@ -1,4 +1,4 @@
-import { CalendarDays, Image, MapPin, MessageSquare, User } from 'lucide-react'
+import { CalendarDays, Image, MapPin, MessageSquare, ThumbsUp, User } from 'lucide-react'
 import { Link } from 'react-router'
 import { useInView } from '../hooks/useInView'
 import type { Report } from '../types'
@@ -60,6 +60,12 @@ function ReportCard({ report, to = `/raportet/${report.id}`, showReporter = fals
           <MessageSquare size={15} aria-hidden="true" />
           {report.commentCount === 1 ? '1 mesazh' : `${report.commentCount} mesazhe`}
         </span>
+        {report.voteCount > 0 && (
+          <span title="Qytetarë që e mbështesin">
+            <ThumbsUp size={15} aria-hidden="true" />
+            {report.voteCount === 1 ? '1 mbështetje' : `${report.voteCount} mbështetje`}
+          </span>
+        )}
         <span>
           <CalendarDays size={15} aria-hidden="true" />
           {formatDate(report.createdAt)}
