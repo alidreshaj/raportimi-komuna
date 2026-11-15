@@ -228,6 +228,24 @@ namespace Backend.Migrations
                     b.ToTable("Reports");
                 });
 
+            modelBuilder.Entity("Backend.Models.ReportVote", b =>
+                {
+                    b.Property<int>("ReportId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ReportId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ReportVotes");
+                });
+
             modelBuilder.Entity("Backend.Models.StatusHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -381,6 +399,25 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Backend.Models.ReportVote", b =>
+                {
+                    b.HasOne("Backend.Models.Report", "Report")
+                        .WithMany("Votes")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Backend.Models.StatusHistory", b =>
                 {
                     b.HasOne("Backend.Models.User", "ChangedByUser")
@@ -412,6 +449,8 @@ namespace Backend.Migrations
                     b.Navigation("Images");
 
                     b.Navigation("StatusHistory");
+
+                    b.Navigation("Votes");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>

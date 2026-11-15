@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<Image> Images => Set<Image>();
     public DbSet<StatusHistory> StatusHistories => Set<StatusHistory>();
+    public DbSet<ReportVote> ReportVotes => Set<ReportVote>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
 
@@ -87,6 +88,23 @@ public class AppDbContext : DbContext
             e.HasOne(i => i.Report)
                 .WithMany(r => r.Images)
                 .HasForeignKey(i => i.ReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ReportVote>(e =>
+        {
+            // Çelësi i përbërë garanton një votë për person për raport (edhe nëse dy kërkesa vijnë njëkohësisht).
+            e.HasKey(v => new { v.ReportId, v.UserId });
+
+            // Kur fshihet raporti ose përdoruesi, fshihen edhe votat e tyre.
+            e.HasOne(v => v.Report)
+                .WithMany(r => r.Votes)
+                .HasForeignKey(v => v.ReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(v => v.User)
+                .WithMany()
+                .HasForeignKey(v => v.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

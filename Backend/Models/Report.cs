@@ -29,4 +29,7 @@ public class Report
     public List<Image> Images { get; set; } = new();
     public List<Comment> Comments { get; set; } = new();
     public List<StatusHistory> StatusHistory { get; set; } = new();
+
+    // Qytetarët që e mbështesin raportin.
+    public List<ReportVote> Votes { get; set; } = new();
 }
