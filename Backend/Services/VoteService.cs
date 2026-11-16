@@ -8,11 +8,16 @@ namespace Backend.Services;
 // Mbështetja e raporteve ("edhe unë e kam këtë problem"). Vota është idempotente: të shtypësh dy herë nuk e numëron dy herë.
 public class VoteService
 {
-    private readonly AppDbContext _db;
+    // Njoftimi dërgohet vetëm kur numri i votave arrin një nga këto pragje, që i zoti të mos mbushet me njoftime.
+    private static readonly int[] Milestones = [5, 10, 25];
 
-    public VoteService(AppDbContext db)
+    private readonly AppDbContext _db;
+    private readonly NotificationService _notifications;
+
+    public VoteService(AppDbContext db, NotificationService notifications)
     {
         _db = db;
+        _notifications = notifications;
     }
 
     // Shton votën e qytetarit. Rregullat: raporti duhet të ekzistojë dhe të mos jetë i refuzuar (përndryshe 404, sepse qytetari
@@ -33,7 +38,7 @@ public class VoteService
         var report = await _db.Reports
             .AsNoTracking()
             .Where(r => r.Id == reportId && r.Status != ReportStatus.Rejected)
-            .Select(r => new { r.UserId, r.Status })
+            .Select(r => new { r.UserId, r.Status, r.Title })
             .FirstOrDefaultAsync();
 
         if (report is null)
@@ -57,6 +62,7 @@ public class VoteService
         if (add && existing is null)
         {
             _db.ReportVotes.Add(new ReportVote { ReportId = reportId, UserId = userId });
+            await QueueMilestoneAsync(reportId, report.UserId, report.Title);
             try
             {
                 await _db.SaveChangesAsync();
@@ -74,6 +80,26 @@ public class VoteService
         }
 
         return (ReportActionResult.Success, await ResultAsync(userId, reportId));
+    }
+
+    // Nëse kjo votë e bën numrin 5, 10 ose 25, i zoti njoftohet. Ruhet në të njëjtën ruajtje me votën.
+    // Njoftimi i të njëjtit prag nuk përsëritet (p.sh. dikush voton, heq votën dhe voton sërish).
+    private async Task QueueMilestoneAsync(int reportId, int ownerId, string title)
+    {
+        var count = await _db.ReportVotes.CountAsync(v => v.ReportId == reportId) + 1;
+        if (!Milestones.Contains(count))
+        {
+            return;
+        }
+
+        var message = $"Raporti yt \"{NotificationService.Short(title)}\" mbështetet nga {count} qytetarë.";
+        var alreadySent = await _db.Notifications.AnyAsync(n =>
+            n.UserId == ownerId && n.ReportId == reportId && n.Type == NotificationType.ReportSupported && n.Message == message);
+
+        if (!alreadySent)
+        {
+            _notifications.Queue(ownerId, reportId, NotificationType.ReportSupported, message);
+        }
     }
 
     private async Task<VoteResultDto> ResultAsync(int userId, int reportId)

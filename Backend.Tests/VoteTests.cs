@@ -29,7 +29,7 @@ public class VoteTests
         db.SaveChanges();
 
         var reports = new ReportService(db, null!, NullLogger<ReportService>.Instance, new NotificationService(db));
-        return (new VoteService(db), reports, db);
+        return (new VoteService(db, new NotificationService(db)), reports, db);
     }
 
     private static Report AddReport(AppDbContext db, ReportStatus status = ReportStatus.New, string description = "Gropë")
@@ -169,5 +169,56 @@ public class VoteTests
         Assert.Equal([many.Id, few.Id], page.Items.Select(i => i.Id));
         Assert.All(page.Items, i => Assert.True(i.IsMine));
         Assert.Equal(2, page.Items[0].VoteCount);
+    }
+
+    // Shton `count` qytetarë shtesë (id nga 100) dhe i bën të votojnë njëri pas tjetrit.
+    private static async Task VoteManyAsync(VoteService votes, AppDbContext db, int reportId, int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            var id = 100 + i;
+            if (!db.Users.Any(u => u.Id == id))
+            {
+                db.Users.Add(new User { Id = id, Name = $"U{id}", Email = $"u{id}@test.local", PasswordHash = "x" });
+                db.SaveChanges();
+            }
+            await votes.AddAsync(id, reportId);
+        }
+    }
+
+    [Fact]
+    public async Task PronariNjoftohetVetemKurArrihetNjePrag()
+    {
+        var (votes, _, db) = Create();
+        var report = AddReport(db);
+
+        await VoteManyAsync(votes, db, report.Id, 4);
+        Assert.Empty(db.Notifications);
+
+        await VoteManyAsync(votes, db, report.Id, 5); // vota e 5-të
+        var notification = Assert.Single(db.Notifications);
+        Assert.Equal(OwnerId, notification.UserId);
+        Assert.Equal(NotificationType.ReportSupported, notification.Type);
+        Assert.Contains("5 qytetarë", notification.Message);
+
+        await VoteManyAsync(votes, db, report.Id, 9); // 6-9: asnjë njoftim i ri
+        Assert.Single(db.Notifications);
+
+        await VoteManyAsync(votes, db, report.Id, 10); // vota e 10-të
+        Assert.Equal(2, db.Notifications.Count());
+    }
+
+    [Fact]
+    public async Task HeqjaEVotesDheVotimiSerishtNukPerseritNjoftimin()
+    {
+        var (votes, _, db) = Create();
+        var report = AddReport(db);
+        await VoteManyAsync(votes, db, report.Id, 5);
+        Assert.Single(db.Notifications);
+
+        await votes.RemoveAsync(104, report.Id);
+        await votes.AddAsync(104, report.Id); // përsëri 5
+
+        Assert.Single(db.Notifications);
     }
 }
