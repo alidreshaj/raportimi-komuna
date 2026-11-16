@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Bell, FilePlus, MessageSquare, RefreshCw } from 'lucide-react'
+import { Bell, FilePlus, MessageSquare, RefreshCw, ThumbsUp } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { getNotifications, markAllNotificationsRead, markNotificationRead } from '../api/notifications'
@@ -16,6 +16,7 @@ const ICONS: Record<NotificationType, LucideIcon> = {
   StatusChanged: RefreshCw,
   NewComment: MessageSquare,
   NewReport: FilePlus,
+  ReportSupported: ThumbsUp,
 }
 
 // Zilja te menyja me numrin e njoftimeve të palexuara. Kliko dhe hapet një panel me listën; kliko një njoftim dhe të çon te raporti

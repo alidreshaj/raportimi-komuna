@@ -166,7 +166,7 @@ export interface ReportPin {
 }
 
 // Një njoftim (GET /api/notifications). Shihet vetëm nga i zoti.
-export type NotificationType = 'StatusChanged' | 'NewComment' | 'NewReport'
+export type NotificationType = 'StatusChanged' | 'NewComment' | 'NewReport' | 'ReportSupported'
 
 export interface NotificationItem {
   id: number
