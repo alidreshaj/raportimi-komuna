@@ -35,8 +35,10 @@ export async function updateProfile(name: string): Promise<AuthResponse> {
 }
 
 // Ndryshon fjalëkalimin kur je i loguar. Fjalëkalimi aktual i gabuar kthen ApiError 400 me mesazh (jo 401, që të mos mbyllet sesioni).
-export function changePassword(currentPassword: string, newPassword: string): Promise<void> {
-  return apiFetch<void>('/api/auth/change-password', { method: 'POST', body: { currentPassword, newPassword } })
+// Serveri mbyll sesionet e tjera dhe kthen një token të ri për këtë, që e ruajmë menjëherë: ti vazhdon të jesh i loguar.
+export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  const result = await apiFetch<AuthResponse>('/api/auth/change-password', { method: 'POST', body: { currentPassword, newPassword } })
+  saveToken(result.token)
 }
 
 // "Harrova fjalëkalimin": kërkon lidhjen e rivendosjes. Serveri përgjigjet njësoj edhe kur email-i nuk ekziston.

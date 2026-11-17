@@ -17,6 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddSingleton<PasswordHasher>();
 builder.Services.AddSingleton<ImageFileService>();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<SessionValidator>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReportService>();
@@ -51,6 +52,19 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
             ClockSkew = TimeSpan.Zero
+        };
+
+        // Pas firmës dhe skadencës, kontrollojmë edhe që përdoruesi ekziston dhe tokeni nuk është anuluar (shih SessionValidator).
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var validator = context.HttpContext.RequestServices.GetRequiredService<SessionValidator>();
+                if (!await validator.IsCurrentAsync(context.Principal!))
+                {
+                    context.Fail("Sesioni nuk është më i vlefshëm.");
+                }
+            }
         };
     });
 

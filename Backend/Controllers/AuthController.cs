@@ -67,15 +67,16 @@ public class AuthController : ControllerBase
     // Fjalëkalimi aktual i gabuar kthen 400, jo 401: frontend-i te 401 e mbyll sesionin, dhe këtu përdoruesi është ende i loguar.
     [HttpPost("change-password")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    // Sukses kthen token të ri (sesionet e tjera mbyllen, ky vazhdon).
+    [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
     {
-        var result = await _authService.ChangePasswordAsync(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), dto);
+        var (result, auth) = await _authService.ChangePasswordAsync(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), dto);
 
         return result switch
         {
-            AuthService.ChangePasswordResult.Success => NoContent(),
+            AuthService.ChangePasswordResult.Success => Ok(auth),
             AuthService.ChangePasswordResult.WrongCurrentPassword => BadRequest(new { message = "Fjalëkalimi aktual është i gabuar." }),
             AuthService.ChangePasswordResult.SameAsCurrent => BadRequest(new { message = "Fjalëkalimi i ri duhet të jetë ndryshe nga ai aktual." }),
             _ => NotFound()

@@ -106,28 +106,30 @@ public class AuthService
     }
 
     // Ndryshon fjalëkalimin e përdoruesit të loguar. Kërkon fjalëkalimin aktual.
-    public async Task<ChangePasswordResult> ChangePasswordAsync(int userId, ChangePasswordDto dto)
+    // Kthen edhe një token të ri: versioni rritet, kështu sesionet e tjera mbyllen, por ky vazhdon.
+    public async Task<(ChangePasswordResult Result, AuthResponseDto? Auth)> ChangePasswordAsync(int userId, ChangePasswordDto dto)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user is null)
         {
-            return ChangePasswordResult.NotFound;
+            return (ChangePasswordResult.NotFound, null);
         }
 
         if (!_passwordHasher.Verify(dto.CurrentPassword, user.PasswordHash))
         {
-            return ChangePasswordResult.WrongCurrentPassword;
+            return (ChangePasswordResult.WrongCurrentPassword, null);
         }
 
         if (dto.CurrentPassword == dto.NewPassword)
         {
-            return ChangePasswordResult.SameAsCurrent;
+            return (ChangePasswordResult.SameAsCurrent, null);
         }
 
         user.PasswordHash = _passwordHasher.Hash(dto.NewPassword);
+        user.TokenVersion++;
         await _db.SaveChangesAsync();
 
-        return ChangePasswordResult.Success;
+        return (ChangePasswordResult.Success, BuildAuthResponse(user));
     }
 
     // "Harrova fjalëkalimin": krijon një kod të përkohshëm dhe e dërgon lidhjen. Nuk tregon kurrë nëse email-i ekziston
@@ -152,11 +154,7 @@ public class AuthService
         var old = await _db.PasswordResetTokens.Where(t => t.UserId == user.Id && t.UsedAt == null).ToListAsync();
         _db.PasswordResetTokens.RemoveRange(old);
 
-        // Pastrim: kodet e përdorura ose të skaduara prej më shumë se një dite nuk i duhen më askujt, prandaj tabela nuk rritet pa fund.
-        var cutoff = DateTime.UtcNow.AddDays(-1);
-        await _db.PasswordResetTokens
-            .Where(t => t.ExpiresAt < cutoff)
-            .ExecuteDeleteAsync();
+        // Kodet e skaduara fshihen nga CleanupService një herë në ditë.
 
         var token = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
         _db.PasswordResetTokens.Add(new PasswordResetToken
@@ -186,6 +184,7 @@ public class AuthService
         }
 
         record.User.PasswordHash = _passwordHasher.Hash(dto.NewPassword);
+        record.User.TokenVersion++; // mbyll çdo sesion ekzistues (kush e ka vjedhur tokenin humbet qasjen)
         record.UsedAt = now; // përdoret vetëm një herë
 
         await _db.SaveChangesAsync();

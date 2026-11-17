@@ -12,6 +12,9 @@ public class User
     public Role Role { get; set; } = Role.Citizen;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    // Rritet sa herë ndryshon fjalëkalimi. Tokenet mbajnë versionin me të cilin u krijuan; kur nuk përputhet, tokeni nuk vlen më.
+    public int TokenVersion { get; set; }
+
     // Një përdorues ka shumë raporte dhe shumë komente.
     public List<Report> Reports { get; set; } = new();
     public List<Comment> Comments { get; set; } = new();

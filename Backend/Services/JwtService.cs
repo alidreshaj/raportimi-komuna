@@ -25,7 +25,8 @@ public class JwtService
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Name, user.Name),
-            new(ClaimTypes.Role, user.Role.ToString())
+            new(ClaimTypes.Role, user.Role.ToString()),
+            new(SessionValidator.VersionClaim, user.TokenVersion.ToString())
         };
 
         // Çelësi sekret vjen nga user-secrets, jo nga kodi.
