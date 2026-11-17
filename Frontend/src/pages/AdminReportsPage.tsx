@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router'
 import { getAllReports, getReportPins } from '../api/reports'
 import type { ReportListQuery } from '../api/reports'
 import AttentionPanel from '../components/AttentionPanel'
+import TopSupportedPanel from '../components/TopSupportedPanel'
 import EmptyState from '../components/EmptyState'
 import ReportsMap from '../components/maps/ReportsMap'
 import Pagination from '../components/Pagination'
@@ -185,6 +186,7 @@ function AdminReportsPage() {
       </div>
 
       <AttentionPanel />
+      <TopSupportedPanel />
 
       <div className="admin-filters">
         <StatusChips value={status} onChange={(value) => setParam('status', value)} counts={counts} />
