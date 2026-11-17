@@ -59,3 +59,14 @@ export function toReportInput(form: ReportFormState): ReportInput {
     longitude: form.point?.longitude ?? null,
   }
 }
+
+// Fjalët e titullit që përdoren për të gjetur probleme të ngjashme: deri në dy fjalët e para me të paktën 4 shkronja
+// (fjalët e shkurtra si "në", "te", "dhe" janë të pakuptimta). Kërkimi kërkon që çdo fjalë të gjendet, prandaj nuk marrim shumë.
+export function similarSearchTerms(title: string): string {
+  return title
+    .split(/\s+/)
+    .map((word) => word.replace(/[^\p{L}\p{N}]/gu, ''))
+    .filter((word) => word.length >= 4)
+    .slice(0, 2)
+    .join(' ')
+}

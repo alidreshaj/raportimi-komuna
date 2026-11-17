@@ -143,7 +143,7 @@ Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat 
 | POST | `/api/auth/login` | publike (kthen JWT) |
 | GET | `/api/auth/me` | çdo përdorues i loguar |
 | PUT | `/api/auth/me` | çdo përdorues i loguar (ndryshon emrin; kthen token të ri, sepse emri është brenda tokenit) |
-| POST | `/api/auth/change-password` | çdo përdorues i loguar (kërkon fjalëkalimin aktual; i gabuar kthen 400, jo 401) |
+| POST | `/api/auth/change-password` | çdo përdorues i loguar (kërkon fjalëkalimin aktual; i gabuar kthen 400, jo 401). Sukses kthen token të ri; tokenet e tjera të vjetra anulohen |
 | POST | `/api/auth/forgot-password` | publike (kërkon lidhjen e rivendosjes; gjithmonë 204, edhe kur email-i nuk ekziston) |
 | POST | `/api/auth/reset-password` | publike (kodi nga lidhja + fjalëkalimi i ri; kodi vlen 30 minuta dhe përdoret një herë) |
 | GET | `/api/auth/admin-only` | vetëm Admin (endpoint prove) |

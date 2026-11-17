@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router'
 import { uploadImages } from '../api/images'
 import { createReport } from '../api/reports'
 import PhotoPicker from '../components/PhotoPicker'
+import SimilarReports from '../components/SimilarReports'
 import Breadcrumbs from '../components/Breadcrumbs'
 import LoadingButton from '../components/LoadingButton'
 import ReportFields from '../components/ReportFields'
@@ -120,6 +121,9 @@ function NewReportPage() {
             onRetryCategories={retryCategories}
           />
         </fieldset>
+
+        {/* Probleme të ngjashme të raportuara tashmë (vetëm para se raporti të krijohet) */}
+        {!reportCreated && <SimilarReports title={form.title} />}
 
         {/* Zona e fotove mbetet e hapur edhe pasi raporti krijohet: mund ta heqësh foton e pavlefshme. */}
         <PhotoPicker files={photos} onChange={setPhotos} />
