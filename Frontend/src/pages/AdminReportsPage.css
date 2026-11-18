@@ -40,3 +40,11 @@
   transition: opacity var(--ease);
   pointer-events: none;
 }
+
+/* Butoni "Shkarko CSV" dhe çelësi i pamjes, krah për krah (në ekran të ngushtë bien njëri nën tjetrin). */
+.reports-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}

@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { Inbox, SearchX } from 'lucide-react'
+import { Download, Inbox, SearchX } from 'lucide-react'
 import { useSearchParams } from 'react-router'
-import { getAllReports, getReportPins } from '../api/reports'
+import { downloadReportsCsv, getAllReports, getReportPins } from '../api/reports'
 import type { ReportListQuery } from '../api/reports'
 import AttentionPanel from '../components/AttentionPanel'
 import TopSupportedPanel from '../components/TopSupportedPanel'
 import EmptyState from '../components/EmptyState'
+import LoadingButton from '../components/LoadingButton'
 import ReportsMap from '../components/maps/ReportsMap'
 import Pagination from '../components/Pagination'
 import ReportCard from '../components/ReportCard'
@@ -15,6 +16,7 @@ import ReportTable from '../components/ReportTable'
 import SearchBox from '../components/SearchBox'
 import StatusChips from '../components/StatusChips'
 import ViewSwitch from '../components/ViewSwitch'
+import { useToast } from '../context/useToast'
 import { useCategories } from '../hooks/useCategories'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import { useEnterOnce } from '../hooks/useEnterOnce'
@@ -40,6 +42,8 @@ function AdminReportsPage() {
   usePageTitle('Të gjitha raportet')
   const { categories } = useCategories()
   const [params, setParams] = useSearchParams()
+  const toast = useToast()
+  const [exporting, setExporting] = useState(false)
 
   const status = (STATUSES.includes(params.get('status') as ReportStatus) ? params.get('status') : '') as ReportStatus | ''
   const query = params.get('q') ?? ''
@@ -130,6 +134,18 @@ function AdminReportsPage() {
     }
   }, [view, filters, badRange, pinsKey])
 
+  // Shkarkon CSV me filtrat dhe radhitjen aktuale (jo vetëm faqen që po shihet).
+  async function exportCsv() {
+    setExporting(true)
+    try {
+      await downloadReportsCsv({ ...filters, sort })
+    } catch (e) {
+      toast.show((e as Error).message, 'error')
+    } finally {
+      setExporting(false)
+    }
+  }
+
   function retry() {
     setError(null)
     setResult(null)
@@ -173,16 +189,29 @@ function AdminReportsPage() {
           )}
         </div>
 
-        <ViewSwitch
-          label="Pamja"
-          options={[
-            { value: 'table', label: 'Tabelë' },
-            { value: 'cards', label: 'Kartë' },
-            { value: 'map', label: 'Hartë' },
-          ]}
-          value={view}
-          onChange={(value) => setParam('view', value, 'table')}
-        />
+        <div className="reports-header-actions">
+          <LoadingButton
+            className="btn btn-secondary"
+            loading={exporting}
+            loadingLabel="Duke shkarkuar..."
+            disabled={badRange}
+            icon={<Download size={17} aria-hidden="true" />}
+            onClick={exportCsv}
+          >
+            Shkarko CSV
+          </LoadingButton>
+
+          <ViewSwitch
+            label="Pamja"
+            options={[
+              { value: 'table', label: 'Tabelë' },
+              { value: 'cards', label: 'Kartë' },
+              { value: 'map', label: 'Hartë' },
+            ]}
+            value={view}
+            onChange={(value) => setParam('view', value, 'table')}
+          />
+        </div>
       </div>
 
       <AttentionPanel />

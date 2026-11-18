@@ -1,6 +1,6 @@
 import type { CommunityPage, Report, ReportInput, ReportPage, ReportPin, ReportStatus, Stats, StatusHistoryItem, VoteResult } from '../types'
 import type { SortKey } from '../utils/reportList'
-import { apiFetch } from './client'
+import { apiFetch, apiFetchBlob } from './client'
 
 // Detajet e një raporti (i zoti ose Admin). Kthen 404 nëse nuk ekziston ose nuk është i yti.
 export function getReport(id: number): Promise<Report> {
@@ -92,4 +92,18 @@ export function voteReport(id: number): Promise<VoteResult> {
 // Heq votën time.
 export function unvoteReport(id: number): Promise<VoteResult> {
   return apiFetch<VoteResult>(`/api/reports/${id}/vote`, { method: 'DELETE' })
+}
+
+// Shkarkon raportet (me të njëjtat filtra dhe radhitje si lista, pa faqosje) si file CSV që hapet te Excel (vetëm Admin).
+export async function downloadReportsCsv(query: ReportListQuery = {}): Promise<void> {
+  const { page: _page, pageSize: _pageSize, ...filters } = query
+  const blob = await apiFetchBlob(`/api/reports/export${toQueryString(filters)}`)
+
+  // Shfletuesi e shkarkon file-in përmes një lidhjeje të përkohshme (fetch nuk shkarkon vetë, dhe na duhet tokeni).
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `raportet-${new Date().toISOString().slice(0, 10)}.csv`
+  link.click()
+  URL.revokeObjectURL(url)
 }

@@ -8,6 +8,7 @@ dhe komuna i shqyrton, u ndryshon statusin dhe u përgjigjet.
 - Krijimi i raportimeve me kategori, lokacion, foto dhe pikë në hartë
 - Ndjekja e statusit: New → InProgress → Resolved / Rejected, me historik të ndryshimeve (kush e ndryshoi dhe kur)
 - Komente mes komunës dhe qytetarit
+- Eksport CSV nga admini (butoni "Shkarko CSV", me filtrat aktualë), që hapet te Excel
 - Mbështetja e problemeve ("Edhe unë e kam këtë problem"): qytetarët shohin problemet e të tjerëve te faqja "Problemet e komunës" (pa emrin e raportuesit dhe pa foto), i mbështesin, dhe admini i radhit sipas mbështetjes
 - Paneli i adminit për menaxhimin e raportimeve
 - Statistika për komunën: totali, sipas statusit, sipas kategorisë dhe sipas muajit, me grafikë
@@ -152,6 +153,7 @@ Të gjitha hartat shfaqin vetëm pamjen satelitore (Esri World Imagery me emrat 
 | GET | `/api/reports/my` | Qytetari (një faqe e raporteve të veta). Parametra: `status`, `search`, `sort`, `page`, `pageSize` (shih më poshtë) |
 | GET | `/api/reports/{id}` | I zoti ose Admin (të tjerët marrin 404) |
 | GET | `/api/reports` | vetëm Admin (një faqe). Parametra: `status`, `categoryId`, `from`, `to`, `search`, `sort`, `page`, `pageSize` (shih më poshtë) |
+| GET | `/api/reports/export` | vetëm Admin (file CSV me të njëjtat filtra dhe radhitje si lista, pa faqosje, deri në 10 000 rreshta; UTF-8 me BOM për Excel; qelizat që fillojnë me `=`, `+`, `-`, `@` marrin apostrof përpara kundër injektimit të formulave) |
 | GET | `/api/reports/map` | vetëm Admin (pikat për hartën: vetëm raportet me koordinata, me të njëjtat filtra, pa faqosje, deri në 5000) |
 | GET | `/api/reports/community` | Qytetari (problemet e komunës pa të dhëna personale, pa të refuzuarat; përshkrimi shkurtohet në 200 shkronja; `sort=votes` ose `newest`) |
 | PUT | `/api/reports/{id}/vote` | Qytetari ("edhe unë e kam këtë problem"; idempotent; 409 për raportin e vet ose të zgjidhur; 404 për të refuzuarit) |
@@ -212,6 +214,8 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 Backend (xUnit, databazë në memorie, pa PostgreSQL):
 
     dotnet test Backend.Tests
+
+Teste integrimi (`ApiTests`, `ExportTests`): nisin API-n e vërtetë me `WebApplicationFactory` mbi databazë në memorie dhe provojnë kodet 400, 401, 403, 404, 409 përmes HTTP.
 
 Frontend (Vitest): `npm test` te folderi `Frontend`. GitHub Actions (`.github/workflows/ci.yml`) i ekzekuton të dyja me çdo push.
 
