@@ -104,6 +104,66 @@ public class ReportService
         return BuildPageAsync(_db.Reports.AsNoTracking(), q, includeReporter: true);
     }
 
+    // Kufiri i sigurisë i eksportit: një file CSV nuk ka më shumë rreshta se kaq.
+    public const int MaxExportRows = 10_000;
+
+    // Të gjitha raportet me filtrat e dhënë (pa faqosje), si file CSV për komunën (Excel). Vetëm Admin.
+    public async Task<byte[]> ExportCsvAsync(ReportQueryDto q)
+    {
+        var filtered = ApplyFilters(_db.Reports.AsNoTracking(), q, includeReporter: true);
+        if (q.Status.HasValue)
+        {
+            filtered = filtered.Where(r => r.Status == q.Status.Value);
+        }
+
+        var rows = await ApplySort(filtered, q.Sort)
+            .Take(MaxExportRows)
+            .Select(r => new
+            {
+                r.Id,
+                r.Title,
+                Category = r.Category.Name,
+                r.Status,
+                Reporter = r.User.Name,
+                r.Location,
+                r.Latitude,
+                r.Longitude,
+                r.CreatedAt,
+                Votes = r.Votes.Count(),
+                Comments = r.Comments.Count()
+            })
+            .ToListAsync();
+
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+        string[] header =
+        [
+            "Nr", "Titulli", "Kategoria", "Statusi", "Raportuar nga", "Vendi", "Gjerësia", "Gjatësia", "Data (UTC)", "Mbështetje", "Mesazhe"
+        ];
+
+        return CsvWriter.Build(header, rows.Select(r => (IReadOnlyList<string>)
+        [
+            r.Id.ToString(inv),
+            r.Title,
+            r.Category,
+            StatusLabel(r.Status),
+            r.Reporter,
+            r.Location,
+            r.Latitude?.ToString(inv) ?? "",
+            r.Longitude?.ToString(inv) ?? "",
+            r.CreatedAt.ToString("yyyy-MM-dd HH:mm", inv),
+            r.Votes.ToString(inv),
+            r.Comments.ToString(inv)
+        ]));
+    }
+
+    private static string StatusLabel(ReportStatus status) => status switch
+    {
+        ReportStatus.New => "E re",
+        ReportStatus.InProgress => "Në trajtim",
+        ReportStatus.Resolved => "U zgjidh",
+        _ => "Refuzuar"
+    };
+
     // Raportet e komunës ashtu siç i sheh një qytetar (për "edhe unë e kam këtë problem"): të gjitha përveç të refuzuarave,
     // me përshkrim të shkurtuar dhe pa emrin e raportuesit. Kërkimi ka të njëjtat rregulla, por pa emrin e raportuesit.
     public async Task<CommunityPageDto> GetCommunityAsync(int userId, ReportQueryDto q)

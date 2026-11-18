@@ -54,6 +54,22 @@ public class ReportsController : ControllerBase
         return Ok(await _reportService.GetAllAsync(query));
     }
 
+    // GET /api/reports/export: file CSV me të njëjtat filtra si lista, pa faqosje (vetëm Admin).
+    [HttpGet("export")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Export([FromQuery] ReportQueryDto query)
+    {
+        if (query.From.HasValue && query.To.HasValue && query.From > query.To)
+        {
+            return BadRequest(new { message = "Data 'from' nuk mund të jetë pas datës 'to'." });
+        }
+
+        var bytes = await _reportService.ExportCsvAsync(query);
+        return File(bytes, "text/csv; charset=utf-8", $"raportet-{DateTime.UtcNow:yyyy-MM-dd}.csv");
+    }
+
     // GET /api/reports/map: pikat për hartën e adminit, me të njëjtat filtra por pa faqosje (vetëm Admin).
     [HttpGet("map")]
     [Authorize(Roles = "Admin")]
