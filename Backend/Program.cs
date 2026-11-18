@@ -161,3 +161,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Që projekti i testeve të mund ta nisë API-n e vërtetë me WebApplicationFactory.
+public partial class Program;
