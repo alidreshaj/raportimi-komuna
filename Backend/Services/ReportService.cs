@@ -619,9 +619,18 @@ public class ReportService
         var lateCutoff = DateTime.UtcNow.AddDays(-LateAfterDays);
         var lateNew = await _db.Reports.CountAsync(r => r.Status == ReportStatus.New && r.CreatedAt <= lateCutoff);
 
+        // Koha mesatare e zgjidhjes: nga krijimi i raportit deri te momenti kur statusi u bë Resolved (nga historiku).
+        // Rrumbullakoset në një shifër pas presjes.
+        var averageDays = await _db.StatusHistories
+            .AsNoTracking()
+            .Where(h => h.ToStatus == ReportStatus.Resolved)
+            .Select(h => (double?)(h.ChangedAt - h.Report.CreatedAt).TotalDays)
+            .AverageAsync();
+
         return new StatsDto
         {
             Total = byStatus.Sum(s => s.Count),
+            AverageResolutionDays = averageDays is null ? null : Math.Round(averageDays.Value, 1),
             LateNew = lateNew,
             ByStatus = byStatus,
             ByCategory = byCategory,

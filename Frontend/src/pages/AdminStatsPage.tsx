@@ -109,6 +109,11 @@ function StatsContent({ stats }: { stats: Stats }) {
           hint={`${resolved} nga ${stats.total}`}
           color={STATUS_COLORS.Resolved}
         />
+        <StatTile
+          label="Koha e zgjidhjes"
+          value={stats.averageResolutionDays === null ? '—' : `${stats.averageResolutionDays.toLocaleString('sq', { maximumFractionDigits: 1 })} ditë`}
+          hint={stats.averageResolutionDays === null ? 'asnjë raport i zgjidhur ende' : 'mesatarisht, nga dërgimi te zgjidhja'}
+        />
       </div>
 
       <div className="stats-grid">

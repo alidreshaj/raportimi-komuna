@@ -135,6 +135,8 @@ export interface Stats {
   total: number
   // Raporte të reja që presin mbi 3 ditë
   lateNew: number
+  // Sa ditë mesatarisht nga dërgimi deri te zgjidhja; null kur asnjë raport nuk është zgjidhur me historik
+  averageResolutionDays: number | null
   byStatus: StatusCount[]
   byCategory: CategoryCount[]
   // 6 muajt e fundit, nga më i vjetri

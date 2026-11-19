@@ -9,6 +9,10 @@ public class StatsDto
     // Sa raporte të reja (New) presin më shumë se 3 ditë. Për kartën "Kërkon vëmendje" te admini.
     public int LateNew { get; set; }
 
+    // Sa ditë mesatarisht kalojnë nga dërgimi i një raporti deri sa të zgjidhet (statusi Resolved), me një shifër pas presjes.
+    // null kur asnjë raport nuk është zgjidhur me historik (raportet e zgjidhura para historikut nuk numërohen).
+    public double? AverageResolutionDays { get; set; }
+
     // Gjithmonë të katër statuset, edhe me 0, që frontend-i të mos plotësojë asgjë vetë.
     public List<StatusCountDto> ByStatus { get; set; } = new();
 
