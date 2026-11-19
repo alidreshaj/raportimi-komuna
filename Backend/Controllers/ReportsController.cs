@@ -15,6 +15,8 @@ public class ReportsController : ControllerBase
     private readonly ReportService _reportService;
     private readonly VoteService _voteService;
 
+    private const string ConcurrentChangeMessage = "Raporti u ndryshua nga dikush tjetër në të njëjtën kohë. Rifreskoje faqen dhe provo përsëri.";
+
     public ReportsController(ReportService reportService, VoteService voteService)
     {
         _reportService = reportService;
@@ -159,6 +161,7 @@ public class ReportsController : ControllerBase
             ReportActionResult.Success => Ok(report),
             ReportActionResult.NotFound => NotFound(),
             ReportActionResult.NotEditable => Conflict(new { message = "Raporti nuk mund të ndryshohet pasi komuna e ka marrë në shqyrtim." }),
+            ReportActionResult.Conflict => Conflict(new { message = ConcurrentChangeMessage }),
             _ => BadRequest(new { message = "Kategoria nuk ekziston." })
         };
     }
@@ -179,6 +182,7 @@ public class ReportsController : ControllerBase
             ReportActionResult.Success => Ok(report),
             ReportActionResult.NotFound => NotFound(),
             ReportActionResult.ReasonRequired => BadRequest(new { message = "Arsyeja është e detyrueshme kur raporti refuzohet." }),
+            ReportActionResult.Conflict => Conflict(new { message = ConcurrentChangeMessage }),
             _ => Conflict(new { message = "Ky ndryshim statusi nuk lejohet. Rrugët: New → InProgress → Resolved, ose New → Rejected." })
         };
     }
@@ -197,6 +201,7 @@ public class ReportsController : ControllerBase
         {
             ReportActionResult.Success => NoContent(),
             ReportActionResult.NotFound => NotFound(),
+            ReportActionResult.Conflict => Conflict(new { message = ConcurrentChangeMessage }),
             _ => Conflict(new { message = "Raporti nuk mund të fshihet pasi komuna e ka marrë në shqyrtim." })
         };
     }

@@ -49,6 +49,14 @@ public class AppDbContext : DbContext
             e.Property(r => r.Location).IsRequired().HasMaxLength(300);
             e.Property(r => r.Status).HasConversion<string>().HasMaxLength(20);
 
+            // Mbrojtje nga ndryshimet e njëkohshme (p.sh. qytetari ndryshon raportin ndërsa admini ia ndryshon statusin).
+            // PostgreSQL ka kolonën e brendshme "xmin" që ndryshon sa herë ndryshon rreshti; EF e krahason kur ruan, dhe
+            // nëse dikush e ndryshoi rreshtin në mes, hedh DbUpdateConcurrencyException. Kolona ekziston tashmë: pa migrim.
+            if (Database.IsNpgsql())
+            {
+                e.Property<uint>("xmin").IsRowVersion();
+            }
+
             // Lista e adminit filtron sipas statusit dhe radhitet sipas datës; indeksi e shmang leximin e gjithë tabelës.
             e.HasIndex(r => new { r.Status, r.CreatedAt });
 

@@ -434,7 +434,11 @@ public class ReportService
         _notifications.Queue(report.UserId, report.Id, NotificationType.StatusChanged, message);
 
         // Një ruajtje e vetme: ose ruhen të gjitha (statusi, historiku, komenti dhe njoftimi), ose asnjëra.
-        await _db.SaveChangesAsync();
+        // Nëse një admin tjetër (ose qytetari) e ndryshoi raportin në të njëjtën çast, ruajtja dështon dhe nuk humbet asgjë pa e ditur.
+        if (!await TrySaveAsync())
+        {
+            return (ReportActionResult.Conflict, null);
+        }
 
         var updated = await _db.Reports
             .AsNoTracking()
@@ -443,6 +447,21 @@ public class ReportService
             .FirstAsync();
 
         return (ReportActionResult.Success, updated);
+    }
+
+    // Ruan ndryshimet. Kthen false nëse rreshti u ndryshua ose u fshi nga dikush tjetër gjatë kohës që e kishim në dorë.
+    private async Task<bool> TrySaveAsync()
+    {
+        try
+        {
+            await _db.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            _db.ChangeTracker.Clear();
+            return false;
+        }
     }
 
     // Ndryshon raportin e vet. Lejohet vetëm kur statusi është New.
@@ -474,7 +493,10 @@ public class ReportService
         report.CategoryId = dto.CategoryId;
         report.UpdatedAt = DateTime.UtcNow; // CreatedAt nuk ndryshon
 
-        await _db.SaveChangesAsync();
+        if (!await TrySaveAsync())
+        {
+            return (ReportActionResult.Conflict, null);
+        }
 
         var updated = await _db.Reports
             .AsNoTracking()
@@ -507,7 +529,10 @@ public class ReportService
 
         // Databaza e para: raporti dhe rreshtat e fotove (Cascade) fshihen. Nëse dështon, asgjë nuk ka ndryshuar.
         _db.Reports.Remove(report);
-        await _db.SaveChangesAsync();
+        if (!await TrySaveAsync())
+        {
+            return ReportActionResult.Conflict;
+        }
 
         // Pastaj file-t nga disku. Nëse një file nuk fshihet, mbetet vetëm një file i tepërt (jetim):
         // e regjistrojmë, por përdoruesi merr sukses, sepse raporti u fshi.
