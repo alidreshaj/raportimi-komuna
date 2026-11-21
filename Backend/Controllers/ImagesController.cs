@@ -3,6 +3,7 @@ using Backend.Extensions;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Backend.Controllers;
 
@@ -65,6 +66,7 @@ public class ImagesController : ControllerBase
     // Kufiri i gjithë kërkesës: 5 foto x 5 MB + pak shtesë. Nëse kalohet, kërkesa refuzohet
     // para se të ruhet gjë (kthehet 400 me mesazh "Request body too large").
     [HttpPost]
+    [EnableRateLimiting("write")]
     [Authorize(Roles = "Citizen")]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(27_000_000)]

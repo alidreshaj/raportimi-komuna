@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using Backend.Data;
@@ -100,7 +101,9 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod());
 });
 
-// Kufizimi i kërkesave: hyrja, regjistrimi dhe rivendosja lejojnë 10 kërkesa në minutë për çdo adresë IP.
+// Kufizimi i kërkesave. Dy politika:
+// - "auth": hyrja, regjistrimi dhe rivendosja lejojnë 10 kërkesa në minutë për çdo adresë IP.
+// - "write": veprimet që krijojnë ose ndryshojnë gjëra (raport, koment, votë, foto) lejojnë 30 në minutë për çdo përdorues të loguar.
 // Pa këtë, dikush mund të provonte mijëra fjalëkalime radhazi. Kur kalohet, API kthen 429.
 builder.Services.AddRateLimiter(options =>
 {
@@ -110,6 +113,17 @@ builder.Services.AddRateLimiter(options =>
         _ => new FixedWindowRateLimiterOptions
         {
             PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        }));
+
+    // Kjo politikë ndahet sipas përdoruesit (jo sipas IP-së): disa qytetarë mund të ndajnë të njëjtën rrjet (p.sh. një zyrë),
+    // por një person i vetëm nuk duhet të mbushë sistemin me raporte, komente ose vota.
+    options.AddPolicy("write", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+        httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 30,
             Window = TimeSpan.FromMinutes(1),
             QueueLimit = 0
         }));
@@ -152,10 +166,11 @@ app.UseHttpsRedirection();
 
 // CORS vjen para autentikimit: kërkesa "pyetëse" e shfletuesit (OPTIONS) nuk ka token.
 app.UseCors("Frontend");
-app.UseRateLimiter();
 
-// Rendi ka rëndësi: fillimisht "kush je?", pastaj "çfarë të lejohet?".
+// Rendi ka rëndësi: fillimisht "kush je?", pastaj kufizimi (politika "write" ndahet sipas përdoruesit, prandaj duhet të dijë kush je),
+// pastaj "çfarë të lejohet?".
 app.UseAuthentication();
+app.UseRateLimiter();
 app.UseAuthorization();
 
 app.MapControllers();

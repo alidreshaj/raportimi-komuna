@@ -3,6 +3,7 @@ using Backend.Extensions;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Backend.Controllers;
 
@@ -36,6 +37,7 @@ public class CommentsController : ControllerBase
 
     // POST /api/reports/{reportId}/comments: shton koment (i zoti ose Admin).
     [HttpPost]
+    [EnableRateLimiting("write")]
     [ProducesResponseType(typeof(CommentDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

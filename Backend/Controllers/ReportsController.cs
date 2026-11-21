@@ -4,6 +4,7 @@ using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Backend.Controllers;
 
@@ -25,6 +26,7 @@ public class ReportsController : ControllerBase
 
     // POST /api/reports: qytetari krijon raport.
     [HttpPost]
+    [EnableRateLimiting("write")]
     [Authorize(Roles = "Citizen")]
     [ProducesResponseType(typeof(ReportDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -114,6 +116,7 @@ public class ReportsController : ControllerBase
 
     // PUT /api/reports/{id}/vote: "edhe unë e kam këtë problem". Idempotent: përsëritja nuk e numëron dy herë.
     [HttpPut("{id:int}/vote")]
+    [EnableRateLimiting("write")]
     [Authorize(Roles = "Citizen")]
     [ProducesResponseType(typeof(VoteResultDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -125,6 +128,7 @@ public class ReportsController : ControllerBase
 
     // DELETE /api/reports/{id}/vote: heq votën time.
     [HttpDelete("{id:int}/vote")]
+    [EnableRateLimiting("write")]
     [Authorize(Roles = "Citizen")]
     [ProducesResponseType(typeof(VoteResultDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -147,6 +151,7 @@ public class ReportsController : ControllerBase
 
     // PUT /api/reports/{id}: qytetari ndryshon raportin e vet (vetëm kur është New).
     [HttpPut("{id:int}")]
+    [EnableRateLimiting("write")]
     [Authorize(Roles = "Citizen")]
     [ProducesResponseType(typeof(ReportDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
