@@ -206,6 +206,8 @@ Datat e filtrave llogariten sipas UTC. Tokeni vlen 120 minuta.
 - Lejohen vetëm `.jpg`, `.jpeg`, `.png`, maksimumi **5 MB** për foto dhe **5 foto** për raport.
 - Serveri kontrollon përmbajtjen e vërtetë të file-it (jo vetëm emrin), dhe e ruan me emër të rastësishëm.
 - Fotot ruhen si file te `Backend/uploads/` (krijohet vetë në ngarkimin e parë), dhe te databaza ruhet vetëm emri i file-it.
+- Folderi mund të ndryshohet me `Uploads:Path` (p.sh. një disk i veçantë te serveri); rruga relative llogaritet nga folderi `Backend`.
+- Foto kthehet me `Cache-Control: private, no-cache` dhe `ETag`: shfletuesi e ruan, por pyet serverin para çdo përdorimi (që të kontrollohet e drejta) dhe merr 304 pa bajte kur nuk ka ndryshuar.
 - `Backend/uploads/` është te `.gitignore`: fotot e qytetarëve nuk shkojnë kurrë në Git.
 - Fotot shihen vetëm përmes endpoint-it të mbrojtur (kërkon token). Nuk mund të hapen direkt nga shfletuesi pa token.
 - Kur fshihet një raport ose një foto, file-t fshihen edhe nga disku.

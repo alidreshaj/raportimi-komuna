@@ -33,7 +33,14 @@ public class ImagesController : ControllerBase
 
         // Shfletuesi të mos "hamendësojë" llojin e file-it: trajtoje strikt si foto.
         Response.Headers["X-Content-Type-Options"] = "nosniff";
-        return PhysicalFile(image.FullPath, image.ContentType);
+
+        // Një foto nuk ndryshon kurrë pasi ngarkohet (ka id të vetën), por është e mbrojtur. "private, no-cache" do të thotë:
+        // shfletuesi e ruan, por para çdo përdorimi pyet serverin me ETag. Serveri kontrollon sërish që kërkuesi ka të drejtë
+        // (kështu një përdorues tjetër i së njëjtës pajisje nuk e merr foton nga cache-i) dhe përgjigjet 304 pa bajte
+        // në vend të foto-s së plotë: lista dhe detajet e të njëjtit raport nuk e shkarkojnë dy herë.
+        Response.Headers.CacheControl = "private, no-cache";
+        var etag = new Microsoft.Net.Http.Headers.EntityTagHeaderValue($"\"{imageId}-{image.Length}-{image.LastModified.ToUnixTimeSeconds()}\"");
+        return PhysicalFile(image.FullPath, image.ContentType, image.LastModified, etag);
     }
 
     // DELETE /api/reports/{reportId}/images/{imageId}: qytetari heq një foto të raportit të vet (vetëm kur është New).

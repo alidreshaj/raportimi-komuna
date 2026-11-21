@@ -21,9 +21,11 @@ public class ImageFileService
 
     private readonly string _uploadsPath;
 
-    public ImageFileService(IWebHostEnvironment env)
+    // Folderi i fotove: paracaktuar "uploads" brenda projektit; mund të ndryshohet me `Uploads:Path` (p.sh. një disk i veçantë
+    // te serveri, ose një folder i përkohshëm te testet). Rruga relative llogaritet nga folderi i projektit.
+    public ImageFileService(IWebHostEnvironment env, IConfiguration config)
     {
-        _uploadsPath = Path.Combine(env.ContentRootPath, "uploads");
+        _uploadsPath = Path.GetFullPath(config["Uploads:Path"] ?? "uploads", env.ContentRootPath);
     }
 
     // Kontrollon file-in. Kthen rezultatin dhe prapashtesën e saktë për ta ruajtur (.jpg ose .png).

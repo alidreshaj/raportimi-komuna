@@ -26,7 +26,8 @@ public enum ImageDeleteResult
 public record ImageUploadOutcome(ImageUploadResult Result, List<ImageDto>? Images = null, string? Message = null);
 
 // Një foto gati për t'u dërguar: rruga e plotë në disk dhe lloji i përmbajtjes.
-public record ImageFile(string FullPath, string ContentType);
+// Lloji dhe të dhënat e file-it (madhësia, data e ndryshimit) për header-at e cache-it.
+public record ImageFile(string FullPath, string ContentType, long Length, DateTimeOffset LastModified);
 
 public class ImageService
 {
@@ -67,7 +68,8 @@ public class ImageService
 
         // Lloji nxirret nga prapashtesa që e ruajtëm ne (e vërtetuar sipas përmbajtjes), jo nga klienti.
         var contentType = Path.GetExtension(fileName) == ".png" ? "image/png" : "image/jpeg";
-        return new ImageFile(fullPath, contentType);
+        var info = new FileInfo(fullPath);
+        return new ImageFile(fullPath, contentType, info.Length, new DateTimeOffset(info.LastWriteTimeUtc));
     }
 
     // Heq një foto të raportit të vet. Lejohet vetëm kur raporti është New.

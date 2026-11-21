@@ -16,9 +16,13 @@ public class ApiFactory : WebApplicationFactory<Program>
 {
     private readonly string _dbName = Guid.NewGuid().ToString();
 
+    // Fotot e testeve shkojnë te një folder i përkohshëm, jo te Backend/uploads.
+    public string UploadsPath { get; } = Path.Combine(Path.GetTempPath(), "komuna-tests-" + Guid.NewGuid().ToString("N"));
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("Jwt:Key", new string('k', 40));
+        builder.UseSetting("Uploads:Path", UploadsPath);
         builder.UseSetting("ConnectionStrings:DefaultConnection", "Host=unused");
 
         builder.ConfigureServices(services =>
@@ -75,6 +79,32 @@ public class ApiFactory : WebApplicationFactory<Program>
         db.Reports.Add(report);
         db.SaveChanges();
         return report.Id;
+    }
+
+    // Krijon një foto të vërtetë (file + rresht te databaza) për një raport. Kthen id-në e foto-s.
+    public int CreateImage(int reportId)
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        Directory.CreateDirectory(UploadsPath);
+        var fileName = Guid.NewGuid().ToString("N") + ".png";
+        // Titulli i një PNG (8 bajtet e para); mjafton që të ketë përmbajtje.
+        File.WriteAllBytes(Path.Combine(UploadsPath, fileName), [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+
+        var image = new Image { ReportId = reportId, FilePath = fileName };
+        db.Images.Add(image);
+        db.SaveChanges();
+        return image.Id;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing && Directory.Exists(UploadsPath))
+        {
+            Directory.Delete(UploadsPath, recursive: true);
+        }
     }
 
     public HttpClient ClientFor(string? token = null)
