@@ -156,6 +156,7 @@ function AccountPage() {
             <PasswordInput
               id="new"
               autoComplete="new-password"
+              maxLength={72}
               placeholder="Të paktën 8 karaktere"
               value={next}
               onChange={(e) => setNext(e.target.value)}

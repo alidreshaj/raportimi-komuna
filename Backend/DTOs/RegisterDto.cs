@@ -16,6 +16,6 @@ public class RegisterDto
 
     [Required(ErrorMessage = "Fjalëkalimi është i detyrueshëm.")]
     [MinLength(8, ErrorMessage = "Fjalëkalimi duhet të ketë të paktën 8 karaktere.")]
-    [MaxLength(100, ErrorMessage = "Fjalëkalimi nuk mund të ketë më shumë se 100 karaktere.")]
+    [MaxUtf8Bytes(72, ErrorMessage = "Fjalëkalimi është shumë i gjatë (maksimumi 72 karaktere; ë dhe ç numërohen si dy).")]
     public string Password { get; set; } = string.Empty;
 }

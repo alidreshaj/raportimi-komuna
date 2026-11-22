@@ -74,6 +74,7 @@ function ResetPasswordPage() {
           <PasswordInput
             id="password"
             autoComplete="new-password"
+            maxLength={72}
             placeholder="Të paktën 8 karaktere"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

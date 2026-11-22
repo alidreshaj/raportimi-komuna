@@ -19,7 +19,7 @@ public class ChangePasswordDto
 
     [Required(ErrorMessage = "Shkruaj fjalëkalimin e ri.")]
     [MinLength(8, ErrorMessage = "Fjalëkalimi i ri duhet të ketë të paktën 8 karaktere.")]
-    [MaxLength(100, ErrorMessage = "Fjalëkalimi nuk mund të ketë më shumë se 100 karaktere.")]
+    [MaxUtf8Bytes(72, ErrorMessage = "Fjalëkalimi është shumë i gjatë (maksimumi 72 karaktere; ë dhe ç numërohen si dy).")]
     public string NewPassword { get; set; } = string.Empty;
 }
 
@@ -41,6 +41,6 @@ public class ResetPasswordDto
 
     [Required(ErrorMessage = "Shkruaj fjalëkalimin e ri.")]
     [MinLength(8, ErrorMessage = "Fjalëkalimi i ri duhet të ketë të paktën 8 karaktere.")]
-    [MaxLength(100, ErrorMessage = "Fjalëkalimi nuk mund të ketë më shumë se 100 karaktere.")]
+    [MaxUtf8Bytes(72, ErrorMessage = "Fjalëkalimi është shumë i gjatë (maksimumi 72 karaktere; ë dhe ç numërohen si dy).")]
     public string NewPassword { get; set; } = string.Empty;
 }

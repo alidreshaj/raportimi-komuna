@@ -77,7 +77,7 @@ function RegisterPage() {
             id="name"
             type="text"
             autoComplete="name"
-            maxLength={100}
+            maxLength={72}
             placeholder="Emri dhe mbiemri"
             value={name}
             onChange={(e) => setName(e.target.value)}
