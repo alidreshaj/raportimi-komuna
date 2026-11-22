@@ -35,8 +35,8 @@ jobs:
           Jwt__Key: 0123456789012345678901234567890123456789
           ConnectionStrings__DefaultConnection: Host=unused
         run: |
-          dotnet tool install --global dotnet-ef --version 10.0.12
-          dotnet ef migrations has-pending-model-changes --project Backend
+          dotnet tool restore
+          dotnet ef migrations has-pending-model-changes --project Backend --verbose
 
   frontend:
     runs-on: ubuntu-latest
