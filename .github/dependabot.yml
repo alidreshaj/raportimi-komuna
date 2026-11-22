@@ -1,0 +1,26 @@
+# Dependabot hap vetë pull request kur dalin versione të reja (ose rregullime sigurie) të bibliotekave.
+# Një herë në javë, i grupuar, që të mos mbushet me dhjetëra kërkesa të vogla.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directories:
+      - /Backend
+      - /Backend.Tests
+    schedule:
+      interval: weekly
+    groups:
+      nuget:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /Frontend
+    schedule:
+      interval: weekly
+    groups:
+      npm:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
