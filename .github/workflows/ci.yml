@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
       # -warnaserror: një paralajmërim i ri (p.sh. null i mundshëm) e ndalon CI-në, që mos grumbullohen pa u vënë re.
