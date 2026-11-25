@@ -36,7 +36,8 @@ jobs:
       - name: Kontrollo që migrimet janë të plota
         env:
           ASPNETCORE_ENVIRONMENT: Production
-          Jwt__Key: 0123456789012345678901234567890123456789
+          # Në thonjëza: pa to YAML e lexon si numër (p.sh. 1.23e+38) dhe çelësi del shumë i shkurtër.
+          Jwt__Key: "ci-only-key-not-secret-0123456789abcdef"
           ConnectionStrings__DefaultConnection: Host=unused
         # Logu i GitHub-it shihet vetëm me hyrje; nëse hapi dështon, 30 rreshtat e fundit dalin edhe si "annotation"
         # (te faqja e provës, dhe te API-ja publike), që shkaku të shihet pa hapur logun.
