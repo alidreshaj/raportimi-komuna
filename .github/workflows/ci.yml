@@ -38,9 +38,14 @@ jobs:
           ASPNETCORE_ENVIRONMENT: Production
           Jwt__Key: 0123456789012345678901234567890123456789
           ConnectionStrings__DefaultConnection: Host=unused
+        # Logu i GitHub-it shihet vetëm me hyrje; nëse hapi dështon, 30 rreshtat e fundit dalin edhe si "annotation"
+        # (te faqja e provës, dhe te API-ja publike), që shkaku të shihet pa hapur logun.
         run: |
-          dotnet tool restore
-          dotnet ef migrations has-pending-model-changes --project Backend --verbose
+          set -o pipefail
+          { dotnet tool restore && dotnet ef migrations has-pending-model-changes --project Backend --verbose; } 2>&1 | tee ef.log || {
+            echo "::error title=Migrimet::$(tail -n 30 ef.log | sed -e ':a;N;$!ba' -e 's/%/%25/g;s/\r//g;s/\n/%0A/g')"
+            exit 1
+          }
 
   frontend:
     runs-on: ubuntu-latest
