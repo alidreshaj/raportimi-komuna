@@ -24,8 +24,12 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-      - name: Ndërto dhe provo
-        run: dotnet test Backend.Tests/Backend.Tests.csproj
+      # -warnaserror: një paralajmërim i ri (p.sh. null i mundshëm) e ndalon CI-në, që mos grumbullohen pa u vënë re.
+      # Lokalisht mbeten paralajmërime, që `dotnet run` të mos bllokohet gjatë punës.
+      - name: Ndërto pa paralajmërime
+        run: dotnet build Backend.Tests/Backend.Tests.csproj -warnaserror
+      - name: Provo
+        run: dotnet test Backend.Tests/Backend.Tests.csproj --no-build
 
       # Nëse ndryshon një model (p.sh. shtohet një fushë) dhe harrohet `dotnet ef migrations add`, databaza e vërtetë
       # nuk do të përputhej me kodin. Kjo provë e kap para se të shkojë në prodhim. Nuk lidhet me databazë.

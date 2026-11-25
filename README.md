@@ -219,7 +219,7 @@ Backend (xUnit, databazë në memorie, pa PostgreSQL):
 
 Teste integrimi (`ApiTests`, `ExportTests`): nisin API-n e vërtetë me `WebApplicationFactory` mbi databazë në memorie dhe provojnë kodet 400, 401, 403, 404, 409 përmes HTTP.
 
-Frontend (Vitest): `npm test` te folderi `Frontend`. GitHub Actions (`.github/workflows/ci.yml`) i ekzekuton të dyja me çdo push, dhe kontrollon edhe që migrimet janë të plota (`dotnet ef migrations has-pending-model-changes`: kap rastin kur ndryshon një model por harrohet migrimi). `.github/dependabot.yml` hap një pull request në javë për versionet e reja të bibliotekave (NuGet, npm, GitHub Actions).
+Frontend (Vitest): `npm test` te folderi `Frontend`. GitHub Actions (`.github/workflows/ci.yml`) i ekzekuton të dyja me çdo push (backend-i duhet të ndërtohet pa asnjë paralajmërim, `-warnaserror`), dhe kontrollon edhe që migrimet janë të plota (`dotnet ef migrations has-pending-model-changes`: kap rastin kur ndryshon një model por harrohet migrimi). `.github/dependabot.yml` hap një pull request në javë për versionet e reja të bibliotekave (NuGet, npm, GitHub Actions).
 
 ## Statusi
 ✅ I përfunduar. Fazat 1-20: backend-i i plotë, frontend-i i qytetarit, paneli i adminit, historiku i statuseve, statistikat për komunën, hartat, faqosja dhe kërkimi, njoftimet, llogaria dhe rivendosja e fjalëkalimit, dhe ngritja premium e pamjes, i lidhur me API-n dhe i provuar.

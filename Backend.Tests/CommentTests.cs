@@ -110,7 +110,9 @@ public class CommentTests
         var forOwner = await comments.GetAsync(OwnerId, false, reportId);
         var forAdmin = await comments.GetAsync(AdminId, true, reportId);
 
-        Assert.Equal(["I pari", "I dyti", "I treti"], forOwner!.Select(c => c.Text));
-        Assert.Equal(forOwner.Select(c => c.Id), forAdmin!.Select(c => c.Id));
+        Assert.NotNull(forOwner);
+        Assert.NotNull(forAdmin);
+        Assert.Equal(["I pari", "I dyti", "I treti"], forOwner.Select(c => c.Text));
+        Assert.Equal(forOwner.Select(c => c.Id), forAdmin.Select(c => c.Id));
     }
 }

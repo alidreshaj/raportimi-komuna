@@ -111,7 +111,8 @@ public class SessionTests
     {
         var (auth, validator, db, sender) = Create();
         await auth.ForgotPasswordAsync(new ForgotPasswordDto { Email = "ali@test.local" });
-        var token = sender.Link![(sender.Link.IndexOf("token=", StringComparison.Ordinal) + 6)..];
+        Assert.NotNull(sender.Link);
+        var token = sender.Link[(sender.Link.IndexOf("token=", StringComparison.Ordinal) + 6)..];
 
         var ok = await auth.ResetPasswordAsync(new ResetPasswordDto { Token = token, NewPassword = "FjalekalimIRi2" });
 
